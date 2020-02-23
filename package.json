@@ -1,0 +1,11 @@
+{
+  "name": "typescript-project-template",
+  "version": "1.0.0",
+  "description": "template files for typescript project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joone Hur",
+  "license": "MIT"
+}

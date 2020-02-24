@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "test": "mocha -r ts-node/register src/**/test.ts"
+    "test": "mocha -r ts-node/register src/**/test.ts",
+    "lint": "eslint 'src/**/*.{js,ts}'"
   },
   "author": "Joone Hur",
   "license": "MIT",

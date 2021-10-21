@@ -1,7 +1,7 @@
 import * as express from 'express'
 
 class App {
-  public express 
+  public express : any
 
   constructor () {
     this.express = express()

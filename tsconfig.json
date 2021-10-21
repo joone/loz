@@ -4,7 +4,7 @@
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
-    "strict": false,
+    "strict": true,
     "resolveJsonModule": true
   },
   "files": [

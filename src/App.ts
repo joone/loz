@@ -1,4 +1,5 @@
 import * as express from 'express'
+import * as postAPI from "./api"
 
 class App {
   public express : any
@@ -15,6 +16,10 @@ class App {
         message: 'Hello World!'
       })
     })
+    router.get("/api/getPost", (req, res) => {
+       res.json(postAPI.getPost())
+    })
+
     this.express.use('/', router)
   }
 }

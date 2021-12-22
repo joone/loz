@@ -1,27 +1,27 @@
-import * as express from 'express'
-import * as postAPI from "./api"
+import * as express from "express";
+import * as postAPI from "./api";
 
 class App {
-  public express : any
+  public express: any;
 
-  constructor () {
-    this.express = express()
-    this.mountRoutes()
+  constructor() {
+    this.express = express();
+    this.mountRoutes();
   }
 
-  private mountRoutes (): void {
-    const router = express.Router()
-    router.get('/', (req, res) => {
+  private mountRoutes(): void {
+    const router = express.Router();
+    router.get("/", (req, res) => {
       res.json({
-        message: 'Hello World!'
-      })
-    })
+        message: "Hello World!",
+      });
+    });
     router.get("/api/getPost", (req, res) => {
-       res.json(postAPI.getPost())
-    })
+      res.json(postAPI.getPost());
+    });
 
-    this.express.use('/', router)
+    this.express.use("/", router);
   }
 }
 
-export default new App().express
+export default new App().express;

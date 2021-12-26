@@ -1,6 +1,6 @@
 ## typescript-template
 
-This is a typescript template repository. Basically, you can run and debug your project with Visual Studio code. This template supports express.js, eslint, mocha, and chai.
+This is a typescript template repository. Basically, you can run and debug your project with Visual Studio code. This template supports express.js, eslint, mocha,  chai, and prettier.
 
 Start your web application:
 
@@ -13,6 +13,11 @@ Run test cases
 ```
 $ npm test
 $ npm run-script lint
+```
+
+Fix style
+```
+$ npm run style
 ```
 
 Build a Docker image and run the container image

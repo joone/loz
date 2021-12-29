@@ -16,7 +16,7 @@ class App {
         message: "Hello World!",
       });
     });
-    router.get("/api/getPost", (req, res) => {
+    router.get("/posts", (req, res) => {
       res.json(postAPI.getPost());
     });
 

@@ -1,4 +1,4 @@
-import app from "./App";
+import app from "./app";
 import * as config from "./config.json";
 
 const port = process.env.PORT || config.server.port;

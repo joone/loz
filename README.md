@@ -1,41 +1,47 @@
 ## typescript-template
 
-This is a TypeScript template repository, which supports the below features: 
-* express.js
-* eslint
-* mocha
-* chai
-* prettier
-* typeorm
-* mongodb
-* Docker
+This is a TypeScript template repository, which supports the below features:
+
+- express.js
+- eslint
+- mocha
+- chai
+- prettier
+- typeorm
+- mongodb
+- Docker
 
 You can also run and debug your project with Visual Studio Code.
 
 Develop your web application with this template code more easily!
 
 Start your web application:
+
 ```
 $ npm start
 ```
 
 Run test cases:
+
 ```
 $ npm test
 $ npm run-script lint
 ```
 
 Run prettier to fix styles:
+
 ```
 $ npm run style
 ```
 
 ## MongoDB and TypeORM
+
 You need to check out [typeorm-mongdb branch](https://github.com/joone/typescript-template/tree/typeorm-mongodb).
 
 ## Docker
 
 Build a Docker image and run the container:
+
 ```
 $ sudo ./build_docker.sh
 $ sudo docker ps

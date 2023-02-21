@@ -1,0 +1,13 @@
+#!/bin/bash
+
+files=$(git diff --name-only --cached --diff-filter=ACM "*.js" "*.jsx" "*.ts" "*.tsx" | sed 's| |\\ |g')
+[ -z "$files" ] && exit 0
+
+# Prettify all staged files
+echo "$files" | xargs ./node_modules/.bin/prettier --write
+
+# Add back the modified/prettified files to staging
+echo "$files" | xargs git add
+
+exit 0
+

@@ -1,59 +1,59 @@
-## typescript-template
+# typescript-template
 
-This is a TypeScript template repository, which supports the below features:
-
-- express.js
-- eslint
-- mocha
-- chai
-- prettier
-- typeorm
-- mongodb
+This repository is a TypeScript template that includes the following features:
+- Express.js
+- ESLint
+- Mocha
+- Chai
+- Prettier
+- TypeORM
+- MongoDB
 - Docker
 
-You can also run and debug your project with Visual Studio Code.
+In addition, it allows for easy debugging and running of your project with Visual Studio Code. 
 
-Develop your web application with this template code more easily!
+Use this template to develop your web application with ease!
 
-Start your web application:
-
+## Installation
 ```
-$ npm start
-```
-
-Run test cases:
-
-```
-$ npm test
-$ npm run-script lint
+./install.sh
 ```
 
-Run prettier to fix styles:
-
+## Starting Your Web Application:
 ```
-$ npm run style
+npm start
+```
+## Running Test Cases:
+```
+npm test
+npm run-script lint
+```
+
+## Running Prettier to Fix Styles:
+```
+npm run style
 ```
 
 ## MongoDB and TypeORM
 
-You need to check out [typeorm-mongdb branch](https://github.com/joone/typescript-template/tree/typeorm-mongodb).
+For MongoDB and TypeORM, check out the [typeorm-mongdb branch](https://github.com/joone/typescript-template/tree/typeorm-mongodb).
 
 ## Docker
 
-Build a Docker image and run the container:
-
+To build a Docker image and run the container, use the following commands:
 ```
-$ sudo ./build_docker.sh
-$ sudo docker ps
-$ curl -v http://localhost:3001
+sudo ./build_docker.sh
+sudo docker ps
+curl -v http://localhost:
 ```
 
-## Other node.js project templates
-
+## Other Node.js Project Templates
+For other Node.js project templates, check out: 
 - https://github.com/microsoft/TypeScript-Node-Starter
 
 ## References
 
+Here are some helpful references for developing with TypeScript and related frameworks:
 - https://blog.risingstack.com/building-a-node-js-app-with-typescript-tutorial/
 - https://itnext.io/how-to-make-tests-using-chai-and-mocha-e9db7d8d48bc
 - https://journal.artfuldev.com/write-tests-for-typescript-projects-with-mocha-and-chai-in-typescript-86e053bdb2b6

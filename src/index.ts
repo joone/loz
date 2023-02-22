@@ -1,3 +1,4 @@
+import * as yargs from "yargs";
 const { Configuration, OpenAIApi } = require("openai");
 require('dotenv').config()
 
@@ -30,11 +31,17 @@ async function runCompletion (prompt : string) {
   console.log(completion.data.choices[0].text);
 }
 
+const parser = yargs(process.argv.slice(2)).options({
+    natural: { type: "string", description: "Make the given sentence sound natural" },
+  }).argv;
+
 (async () => {
-  let prompt = runtimeArgs[0];
-  if (prompt !== undefined) {
-    prompt = "Could you please rephrase the following sentence to make it sound more natural?: " + prompt;
-    await runCompletion(prompt);
-  } else
-    console.info("Please input your prompt");
+    const argv = await parser;
+  
+    if (argv.natural) {
+      const prompt = "Could you please rephrase the following sentence to make it sound more natural?: " + argv.natural;
+      await runCompletion(prompt);
+    } else {
+      console.info("Please input your prompt");
+    }  
 })();

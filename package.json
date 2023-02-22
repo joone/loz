@@ -4,7 +4,8 @@
   "description": "template files for typescript project",
   "main": "dist/index.js",
   "scripts": {
-    "start": "tsc && node dist/index.js",
+    "start": "node dist/index.js",
+    "build": "tsc",
     "test": "mocha -r ts-node/register tests/**/test.ts",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "style": "npx prettier --write ."

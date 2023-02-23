@@ -55,7 +55,6 @@ const args = yargs
   console.log(args);
 
 (async () => {
-
   switch (args.service) {
     case 'natural':
       {
@@ -73,6 +72,13 @@ const args = yargs
       break;
       }
     default:
-      console.info("Please input your prompt");
+      {
+      if (args.sentence === undefined && args.service !== undefined) {
+        const prompt = "" + args.service;
+        await runCompletion(prompt);
+      } else {
+        console.info("Please input your prompt");
+      }
+    }
   }
 })();

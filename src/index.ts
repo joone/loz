@@ -2,12 +2,6 @@ import * as yargs from "yargs";
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
-// get runtime parameters
-const runtimeArgs = process.argv.slice(2);
-
-// print the runtime parameters
-console.log("Runtime parameters:", runtimeArgs);
-
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -51,8 +45,6 @@ const args = yargs
   })
   .help()
   .parseSync();
-
-console.log(args);
 
 (async () => {
   switch (args.service) {

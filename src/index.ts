@@ -29,22 +29,43 @@ async function runCompletion(prompt: string) {
   console.log(completion.data.choices[0].text);
 }
 
-const parser = yargs(process.argv.slice(2)).options({
-  natural: {
-    type: "string",
-    description: "Make the given sentence sound natural",
-  },
-}).argv;
+const args = yargs
+  .wrap(null)
+  .command("$0 [service] [sentence]", "Specify a ChatGPT service",
+   (yargs) => {
+    yargs.positional("service", {
+      description: "ChatGPT service",
+      type: "string",
+    });
+    yargs.positional("sentence", {
+      description: "Sentence to be rephrased",
+      type: "string",
+    });
+  })
+  .options({
+    headless: {
+      type: 'boolean',
+      alias: "h",
+      describe: "run your program",
+      default: true,
+    },
+  })
+  .help().parseSync();
+
+  console.log(args);
 
 (async () => {
-  const argv = await parser;
 
-  if (argv.natural) {
-    const prompt =
-      "Could you please rephrase the following sentence to make it sound more natural?: " +
-      argv.natural;
-    await runCompletion(prompt);
-  } else {
-    console.info("Please input your prompt");
+  switch (args.service) {
+    case 'natural':
+      {
+      const prompt =
+        "Could you please rephrase the following sentence to make it sound more natural?: " +
+        args.sentence;
+      await runCompletion(prompt);
+      break;
+      }
+    default:
+      console.info("Please input your prompt");
   }
 })();

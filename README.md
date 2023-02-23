@@ -1,72 +1,35 @@
-# typescript-template
+# LVZ Project
 
-This repository is a TypeScript template that includes the following features:
+This is a simple command line chatbot project written in TypeScript using the official ChatGPT API
 
-- Express.js
-- ESLint
-- Mocha
-- Chai
-- Prettier
-- TypeORM
-- MongoDB
-- Docker
+## Getting Started
 
-In addition, it allows for easy debugging and running of your project with Visual Studio Code.
-
-Use this template to develop your web application with ease!
-
-## Installation
+To get started, first clone the repository:
 
 ```
-./install.sh
+$ git clone https://github.com/joone/lvz.git
 ```
 
-## Starting Your Web Application:
+Then install the required dependencies:
 
 ```
-npm start
+$ ./install.sh
 ```
 
-## Running Test Cases:
+Next, configure your OpenAPI credentials. You will need to create a `.env` file in the root of the project and add the following variables:
 
 ```
-npm test
-npm run-script lint
+OPENAI_API_KEY=YOUR_KEY
 ```
 
-## Running Prettier to Fix Styles:
+## Usage
 
 ```
-npm run style
+$ lvz
 ```
 
-## MongoDB and TypeORM
+Once lvz is running, you can start a conversation by interacting with it. lvz will respond with a relevant message based on the input.
 
-For MongoDB and TypeORM, check out the [typeorm-mongdb branch](https://github.com/joone/typescript-template/tree/typeorm-mongodb).
+## Contributing
 
-## Docker
-
-To build a Docker image and run the container, use the following commands:
-
-```
-sudo ./build_docker.sh
-sudo docker ps
-curl -v http://localhost:
-```
-
-## Other Node.js Project Templates
-
-For other Node.js project templates, check out:
-
-- https://github.com/microsoft/TypeScript-Node-Starter
-
-## References
-
-Here are some helpful references for developing with TypeScript and related frameworks:
-
-- https://blog.risingstack.com/building-a-node-js-app-with-typescript-tutorial/
-- https://itnext.io/how-to-make-tests-using-chai-and-mocha-e9db7d8d48bc
-- https://journal.artfuldev.com/write-tests-for-typescript-projects-with-mocha-and-chai-in-typescript-86e053bdb2b6
-- https://kay0426.tistory.com/41
-- https://orkhan.gitbook.io/typeorm/docs/mongodb
-- https://www.tutorialspoint.com/typeorm/index.htm
+If you'd like to contribute to this project, feel free to submit a pull request.

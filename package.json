@@ -1,7 +1,7 @@
 {
-  "name": "typescript-project-template",
-  "version": "1.0.0",
-  "description": "template files for typescript project",
+  "name": "lvz",
+  "version": "0.0.1",
+  "description": "CLI for various knowledge services",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
@@ -11,7 +11,7 @@
     "style": "npx prettier --write ."
   },
   "author": "Joone Hur",
-  "license": "MIT",
+  "license": "BSD3",
   "devDependencies": {
     "@types/chai": "^4.2.9",
     "@types/express": "^4.17.2",
@@ -32,5 +32,11 @@
     "express": "^4.17.3",
     "openai": "^3.1.0",
     "yargs": "^17.7.1"
-  }
+  },
+  "bin": {
+    "lvz": "bin/index.js"
+  },
+  "files": [
+    "dist"
+  ]
 }

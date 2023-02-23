@@ -65,6 +65,13 @@ const args = yargs
       await runCompletion(prompt);
       break;
       }
+    case 'git':
+      {
+      const prompt ="Please rephrase the following sentence to make it sound more like a git commit title?: " +
+        args.sentence;
+      await runCompletion(prompt);
+      break;
+      }
     default:
       console.info("Please input your prompt");
   }

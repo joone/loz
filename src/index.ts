@@ -31,8 +31,7 @@ async function runCompletion(prompt: string) {
 
 const args = yargs
   .wrap(null)
-  .command("$0 [service] [sentence]", "Specify a ChatGPT service",
-   (yargs) => {
+  .command("$0 [service] [sentence]", "Specify a ChatGPT service", (yargs) => {
     yargs.positional("service", {
       description: "ChatGPT service",
       type: "string",
@@ -44,35 +43,34 @@ const args = yargs
   })
   .options({
     headless: {
-      type: 'boolean',
+      type: "boolean",
       alias: "h",
       describe: "run your program",
       default: true,
     },
   })
-  .help().parseSync();
+  .help()
+  .parseSync();
 
-  console.log(args);
+console.log(args);
 
 (async () => {
   switch (args.service) {
-    case 'natural':
-      {
+    case "natural": {
       const prompt =
         "Could you please rephrase the following sentence to make it sound more natural?: " +
         args.sentence;
       await runCompletion(prompt);
       break;
-      }
-    case 'git':
-      {
-      const prompt ="Please rephrase the following sentence to make it sound more like a git commit title?: " +
+    }
+    case "git": {
+      const prompt =
+        "Please rephrase the following sentence to make it sound more like a git commit title?: " +
         args.sentence;
       await runCompletion(prompt);
       break;
-      }
-    default:
-      {
+    }
+    default: {
       if (args.sentence === undefined && args.service !== undefined) {
         const prompt = "" + args.service;
         await runCompletion(prompt);

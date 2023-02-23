@@ -8,18 +8,8 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-async function runCompletion(prompt: string) {
-  if (prompt === undefined) return;
-
-  const completion = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt: prompt,
-    temperature: 0,
-    max_tokens: 60,
-    top_p: 1.0,
-    frequency_penalty: 0.0,
-    presence_penalty: 0.0,
-  });
+async function runCompletion(settings: any) {
+  const completion = await openai.createCompletion(settings);
   console.log(completion.data.choices[0].text);
 }
 
@@ -46,26 +36,52 @@ const args = yargs
   .help()
   .parseSync();
 
+  interface GPTSettings {
+    model: string,
+    prompt: string,
+    temperature: number,
+    max_tokens: number,
+    top_p: number,
+    frequency_penalty: number,
+    presence_penalty: number,
+    stop?: string[],
+  };
+
+let defaultSettings: GPTSettings = {
+  model: "text-davinci-003",
+  prompt: '',
+  temperature: 0,
+  max_tokens: 60,
+  top_p: 1.0,
+  frequency_penalty: 0.0,
+  presence_penalty: 0.0,
+};
+
 (async () => {
   switch (args.service) {
     case "natural": {
       const prompt =
         "Could you please rephrase the following sentence to make it sound more natural?: " +
         args.sentence;
-      await runCompletion(prompt);
+        defaultSettings.prompt = prompt
+      await runCompletion(defaultSettings);
       break;
     }
     case "git": {
       const prompt =
         "Please rephrase the following sentence to make it sound more like a git commit title?: " +
         args.sentence;
-      await runCompletion(prompt);
+        defaultSettings.prompt = prompt
+      await runCompletion(defaultSettings);
       break;
     }
     default: {
+      // Answer questions based on existing knowledge.
       if (args.sentence === undefined && args.service !== undefined) {
         const prompt = "" + args.service;
-        await runCompletion(prompt);
+        defaultSettings.prompt = prompt
+        defaultSettings.max_tokens = 4000;
+        await runCompletion(defaultSettings);
       } else {
         console.info("Please input your prompt");
       }

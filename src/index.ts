@@ -4,6 +4,12 @@ require("dotenv").config();
 
 const DEBUG = process.env.DEBUG === "true" ? true : false;
 
+if (process.env.OPENAI_API_KEY === undefined) {
+  console.error("Please set OPENAI_API_KEY in your environment variables");
+  // system end
+  process.exit(1);
+}
+
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });

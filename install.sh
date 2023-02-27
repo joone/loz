@@ -9,6 +9,7 @@ elif [ "$os" = "Darwin" ]; then
 fi
 
 node -v
-npm install -g typescript
-npm install
+sudo npm install -g typescript
+tsc
+sudo npm install -g
 

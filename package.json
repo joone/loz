@@ -2,6 +2,10 @@
   "name": "lvz",
   "version": "0.0.1",
   "description": "CLI for various knowledge services",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joone/lvz.git"
+  },
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",

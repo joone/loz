@@ -10,7 +10,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-async function runCompletion(settings: any) {
+async function runCompletion(settings: any, interactive: boolean) {
   const res = await openai.createCompletion(settings, {
     responseType: "stream",
   });
@@ -27,6 +27,9 @@ async function runCompletion(settings: any) {
         if (message === "[DONE]") {
           process.stdout.write("\n");
           process.stdout.write("\n");
+          if (interactive === true) {
+            console.log("Please input your prompt:");
+          }
           return; // Stream finished
         }
         try {
@@ -93,7 +96,7 @@ let defaultSettings: GPTSettings = {
         "Could you please rephrase the following sentence to make it sound more natural?: " +
         args.sentence;
       defaultSettings.prompt = prompt;
-      await runCompletion(defaultSettings);
+      await runCompletion(defaultSettings, false);
       break;
     }
     case "git": {
@@ -101,7 +104,7 @@ let defaultSettings: GPTSettings = {
         "Please rephrase the following sentence to make it sound more like a git commit title?: " +
         args.sentence;
       defaultSettings.prompt = prompt;
-      await runCompletion(defaultSettings);
+      await runCompletion(defaultSettings, false);
       break;
     }
     default: {
@@ -129,7 +132,7 @@ let defaultSettings: GPTSettings = {
           defaultSettings.prompt = prompt;
           defaultSettings.max_tokens = 4000;
 
-          await runCompletion(defaultSettings);
+          await runCompletion(defaultSettings, true);
         }
       } else {
         console.info("Please input your prompt");

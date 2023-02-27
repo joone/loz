@@ -129,6 +129,8 @@ let defaultSettings: GPTSettings = {
             console.log("Goodbye!");
             break;
           }
+          if (prompt.length === 0) continue;
+
           defaultSettings.prompt = prompt;
           defaultSettings.max_tokens = 4000;
 

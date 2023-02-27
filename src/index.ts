@@ -101,7 +101,7 @@ const args = yargs
   .wrap(null)
   .command("$0 [service] [sentence]", "Specify a ChatGPT service", (yargs) => {
     yargs.positional("service", {
-      description: "ChatGPT service",
+      description: "rephrase or git",
       type: "string",
     });
     yargs.positional("sentence", {

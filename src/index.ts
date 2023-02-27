@@ -2,6 +2,8 @@ import * as yargs from "yargs";
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
+const DEBUG = process.env.DEBUG === "true" ? true : false;
+
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -10,7 +12,7 @@ const openai = new OpenAIApi(configuration);
 
 async function runCompletion(settings: any) {
   const completion = await openai.createCompletion(settings);
-  console.log(completion.data);
+  if (DEBUG === true) console.log(completion.data);
   console.log(completion.data.choices[0].text);
 }
 

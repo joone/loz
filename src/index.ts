@@ -143,9 +143,9 @@ let defaultSettings: GPTSettings = {
 
 (async () => {
   switch (args.service) {
-    case "natural": {
+    case "rephrase": {
       const prompt =
-        "Could you please rephrase the following sentence to make it sound more natural?: " +
+        "Please rephrase the following sentence to make it sound more natural: " +
         args.sentence;
       defaultSettings.prompt = prompt;
       await runCompletion(defaultSettings, undefined);
@@ -153,8 +153,7 @@ let defaultSettings: GPTSettings = {
     }
     case "git": {
       const prompt =
-        "Please rephrase the following sentence to make it sound more like a git commit title?: " +
-        args.sentence;
+        "Please rephrase a sentence as a git commit message: " + args.sentence;
       defaultSettings.prompt = prompt;
       await runCompletion(defaultSettings, undefined);
       break;

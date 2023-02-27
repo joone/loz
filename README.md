@@ -28,7 +28,7 @@ OPENAI_API_KEY=YOUR_KEY
 $ loz
 ```
 
-Once lvz is running, you can start a conversation by interacting with it. lvz will respond with a relevant message based on the input.
+Once loz is running, you can start a conversation by interacting with it. loz will respond with a relevant message based on the input.
 
 ## Contributing
 

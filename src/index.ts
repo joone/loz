@@ -1,4 +1,5 @@
 import * as yargs from "yargs";
+const readline = require("readline");
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
@@ -16,7 +17,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-async function runCompletion(settings: any, interactive: boolean) {
+async function runCompletion(settings: any, rl: any) {
   const res = await openai.createCompletion(settings, {
     responseType: "stream",
   });
@@ -33,8 +34,8 @@ async function runCompletion(settings: any, interactive: boolean) {
         if (message === "[DONE]") {
           process.stdout.write("\n");
           process.stdout.write("\n");
-          if (interactive === true) {
-            console.log("Please input your prompt:");
+          if (rl !== undefined) {
+            rl.prompt();
           }
           return; // Stream finished
         }
@@ -49,6 +50,51 @@ async function runCompletion(settings: any, interactive: boolean) {
   } catch (error) {
     console.error("An error occurred during OpenAI request: ", error);
   }
+}
+
+function handlePrompt(settings: any) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  // Set the prompt to display before each input
+  rl.setPrompt("> ");
+
+  // Show the cursor and prompt the user for input
+  rl.prompt();
+
+  // Set the terminal to raw mode to allow for cursor manipulation
+  process.stdin.setRawMode(true);
+
+  // Display a blinking cursor
+  setInterval(() => {
+    process.stdout.write("\x1B[?25h");
+    setTimeout(() => {
+      process.stdout.write("\x1B[?25l");
+    }, 500);
+  }, 1000);
+
+  // Listen for user input
+  rl.on("line", (input: String) => {
+    if (input === "exit" || input === "quit") {
+      console.log("Goodbye!");
+      process.exit(0);
+    }
+
+    if (input.length !== 0) {
+      settings.prompt = input;
+      settings.max_tokens = 4000;
+      runCompletion(settings, rl);
+    }
+  });
+
+  // Handle CTRL+C to exit the program
+  rl.on("SIGINT", () => {
+    rl.close();
+    console.log("Goodbye!");
+    process.exit(0);
+  });
 }
 
 const args = yargs
@@ -102,7 +148,7 @@ let defaultSettings: GPTSettings = {
         "Could you please rephrase the following sentence to make it sound more natural?: " +
         args.sentence;
       defaultSettings.prompt = prompt;
-      await runCompletion(defaultSettings, false);
+      await runCompletion(defaultSettings, undefined);
       break;
     }
     case "git": {
@@ -110,40 +156,13 @@ let defaultSettings: GPTSettings = {
         "Please rephrase the following sentence to make it sound more like a git commit title?: " +
         args.sentence;
       defaultSettings.prompt = prompt;
-      await runCompletion(defaultSettings, false);
+      await runCompletion(defaultSettings, undefined);
       break;
     }
     default: {
       // Interactive mode
       if (args.sentence === undefined && args.service == undefined) {
-        console.log("Please input your prompt:");
-        const waitingSymbol = "> ";
-
-        while (true) {
-          // wait for user input and run completion
-          const prompt: any = await new Promise((resolve) => {
-            const readline = require("readline").createInterface({
-              input: process.stdin,
-              output: process.stdout,
-            });
-            readline.question(waitingSymbol, (text: string) => {
-              readline.close();
-              resolve(text);
-            });
-          });
-          if (prompt === "exit" || prompt === "quit") {
-            console.log("Goodbye!");
-            break;
-          }
-          if (prompt.length === 0) continue;
-
-          defaultSettings.prompt = prompt;
-          defaultSettings.max_tokens = 4000;
-
-          await runCompletion(defaultSettings, true);
-        }
-      } else {
-        console.info("Please input your prompt");
+        handlePrompt(defaultSettings);
       }
     }
   }

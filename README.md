@@ -1,4 +1,4 @@
-# LVZ Project
+# Loz
 
 This is a simple command line chatbot project written in TypeScript using the official ChatGPT API
 
@@ -7,7 +7,7 @@ This is a simple command line chatbot project written in TypeScript using the of
 To get started, first clone the repository:
 
 ```
-$ git clone https://github.com/joone/lvz.git
+$ git clone https://github.com/joone/loz.git
 ```
 
 Then install the required dependencies:
@@ -25,7 +25,7 @@ OPENAI_API_KEY=YOUR_KEY
 ## Usage
 
 ```
-$ lvz
+$ loz
 ```
 
 Once lvz is running, you can start a conversation by interacting with it. lvz will respond with a relevant message based on the input.

@@ -1,10 +1,10 @@
 {
-  "name": "lvz",
+  "name": "loz",
   "version": "0.0.3",
   "description": "CLI for various knowledge services",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joone/lvz.git"
+    "url": "https://github.com/joone/loz.git"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "yargs": "^17.7.1"
   },
   "bin": {
-    "lvz": "bin/index.js"
+    "loz": "bin/index.js"
   },
   "files": [
     "dist"

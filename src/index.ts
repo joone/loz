@@ -11,9 +11,35 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 async function runCompletion(settings: any) {
-  const completion = await openai.createCompletion(settings);
-  if (DEBUG === true) console.log(completion.data);
-  console.log(completion.data.choices[0].text);
+  const res = await openai.createCompletion(settings, {
+    responseType: "stream",
+  });
+  if (DEBUG === true) console.log(res.data);
+
+  try {
+    res.data.on("data", (data: any) => {
+      const lines = data
+        .toString()
+        .split("\n")
+        .filter((line: any) => line.trim() !== "");
+      for (const line of lines) {
+        const message = line.replace(/^data: /, "");
+        if (message === "[DONE]") {
+          process.stdout.write("\n");
+          process.stdout.write("\n");
+          return; // Stream finished
+        }
+        try {
+          const parsed = JSON.parse(message);
+          process.stdout.write(parsed.choices[0].text);
+        } catch (error) {
+          console.error("Could not JSON parse stream message", message, error);
+        }
+      }
+    });
+  } catch (error) {
+    console.error("An error occurred during OpenAI request: ", error);
+  }
 }
 
 const args = yargs
@@ -37,25 +63,25 @@ const args = yargs
   .help()
   .parseSync();
 
-  interface GPTSettings {
-    model: string,
-    prompt: string,
-    temperature: number,
-    max_tokens: number,
-    top_p: number,
-    stream: boolean,
-    frequency_penalty: number,
-    presence_penalty: number,
-    stop?: string[],
-  };
+interface GPTSettings {
+  model: string;
+  prompt: string;
+  temperature: number;
+  max_tokens: number;
+  top_p: number;
+  stream: boolean;
+  frequency_penalty: number;
+  presence_penalty: number;
+  stop?: string[];
+}
 
 let defaultSettings: GPTSettings = {
   model: "text-davinci-003",
-  prompt: '',
+  prompt: "",
   temperature: 0,
   max_tokens: 60,
   top_p: 1.0,
-  stream: false,
+  stream: true,
   frequency_penalty: 0.0,
   presence_penalty: 0.0,
 };
@@ -66,7 +92,7 @@ let defaultSettings: GPTSettings = {
       const prompt =
         "Could you please rephrase the following sentence to make it sound more natural?: " +
         args.sentence;
-        defaultSettings.prompt = prompt
+      defaultSettings.prompt = prompt;
       await runCompletion(defaultSettings);
       break;
     }
@@ -74,7 +100,7 @@ let defaultSettings: GPTSettings = {
       const prompt =
         "Please rephrase the following sentence to make it sound more like a git commit title?: " +
         args.sentence;
-        defaultSettings.prompt = prompt
+      defaultSettings.prompt = prompt;
       await runCompletion(defaultSettings);
       break;
     }
@@ -82,11 +108,11 @@ let defaultSettings: GPTSettings = {
       // Interactive mode
       if (args.sentence === undefined && args.service == undefined) {
         console.log("Please input your prompt:");
-        const  waitingSymbol = '> ';
+        const waitingSymbol = "> ";
 
-        while(true) {
+        while (true) {
           // wait for user input and run completion
-          const prompt : any = await new Promise((resolve) => {
+          const prompt: any = await new Promise((resolve) => {
             const readline = require("readline").createInterface({
               input: process.stdin,
               output: process.stdout,
@@ -96,16 +122,14 @@ let defaultSettings: GPTSettings = {
               resolve(text);
             });
           });
-          if (prompt === 'exit' || prompt === 'quit') {
+          if (prompt === "exit" || prompt === "quit") {
             console.log("Goodbye!");
             break;
           }
-          defaultSettings.prompt = prompt
+          defaultSettings.prompt = prompt;
           defaultSettings.max_tokens = 4000;
-          //defaultSettings.stream = true;
-         
-          await runCompletion(defaultSettings);
 
+          await runCompletion(defaultSettings);
         }
       } else {
         console.info("Please input your prompt");

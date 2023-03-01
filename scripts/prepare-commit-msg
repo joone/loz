@@ -1,0 +1,13 @@
+#!/bin/bash
+
+files=$(git diff --name-only --cached --diff-filter=ACM "*.js" "*.jsx" "*.ts" "*.tsx" "*.md" | sed 's| |\\ |g')
+[ -z "$files" ] && exit 0
+
+# Get the name of the user who is committing the changes
+author=$(git config user.name)
+
+# Get the commit message entered by the user
+message=$(git diff --staged | loz --git)
+
+echo "$message" > "$1"
+

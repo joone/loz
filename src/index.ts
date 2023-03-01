@@ -5,10 +5,12 @@ require("dotenv").config();
 
 const DEBUG = process.env.DEBUG === "true" ? true : false;
 
-if (process.env.OPENAI_API_KEY === undefined) {
-  console.error("Please set OPENAI_API_KEY in your environment variables");
-  // system end
-  process.exit(1);
+function checkEnv() {
+  if (process.env.OPENAI_API_KEY === undefined) {
+    console.error("Please set OPENAI_API_KEY in your environment variables");
+    // system end
+    process.exit(1);
+  }
 }
 
 const configuration = new Configuration({
@@ -137,6 +139,7 @@ let defaultSettings: GPTSettings = {
 
 (async () => {
   if (args.git !== undefined) {
+    checkEnv();
     const prompt =
       "Please generate a Git commit message that summarizes the changes made in the diff: ";
     process.stdin.setEncoding("utf8");
@@ -154,6 +157,7 @@ let defaultSettings: GPTSettings = {
     });
     return;
   } else {
+    checkEnv();
     // Interactive mode
     handlePrompt(defaultSettings);
   }

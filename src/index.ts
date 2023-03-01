@@ -99,16 +99,6 @@ function handlePrompt(settings: any) {
 
 const args = yargs
   .wrap(null)
-  .command("$0 [service] [sentence]", "Specify a ChatGPT service", (yargs) => {
-    yargs.positional("service", {
-      description: "rephrase or git",
-      type: "string",
-    });
-    yargs.positional("sentence", {
-      description: "Sentence to be rephrased",
-      type: "string",
-    });
-  })
   .options({
     interactive: {
       alias: "i",
@@ -163,38 +153,8 @@ let defaultSettings: GPTSettings = {
       //process.exit();
     });
     return;
-  }
-
-  switch (args.service) {
-    case "rephrase": {
-      const prompt =
-        "Please rephrase the following sentence to make it sound more natural: " +
-        args.sentence;
-      defaultSettings.prompt = prompt;
-      await runCompletion(defaultSettings, undefined);
-      break;
-    }
-    case "git": {
-      const prompt =
-        "Please rephrase a sentence as a git commit message: " + args.sentence;
-      defaultSettings.prompt = prompt;
-      await runCompletion(defaultSettings, undefined);
-      process.stdin.setEncoding("utf8");
-
-      process.stdin.on("data", (data: String) => {
-        process.stdout.write(data.toUpperCase());
-      });
-
-      process.stdin.on("end", () => {
-        process.exit();
-      });
-      break;
-    }
-    default: {
-      // Interactive mode
-      if (args.sentence === undefined && args.service == undefined) {
-        handlePrompt(defaultSettings);
-      }
-    }
+  } else {
+    // Interactive mode
+    handlePrompt(defaultSettings);
   }
 })();

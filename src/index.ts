@@ -138,7 +138,7 @@ let defaultSettings: GPTSettings = {
 (async () => {
   if (args.git !== undefined) {
     const prompt =
-      "Please write full GIT commit messages with the following changes: ";
+      "Please generate a Git commit message that summarizes the changes made in the diff: ";
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {

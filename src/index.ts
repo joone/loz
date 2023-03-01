@@ -101,6 +101,12 @@ function handlePrompt(settings: any) {
 
 const args = yargs
   .wrap(null)
+  .command("$0 [prompt]", "Luv: a simple ChatGTP CLI tool", (yargs) => {
+    yargs.positional("prompt", {
+      description: "Prompt to start the conversation",
+      type: "string",
+    });
+  })
   .options({
     interactive: {
       alias: "i",
@@ -138,7 +144,20 @@ let defaultSettings: GPTSettings = {
 };
 
 (async () => {
-  if (args.git !== undefined) {
+  if (args.prompt !== undefined) {
+    checkEnv();
+
+    let prompt: string = args.prompt + ": ";
+    process.stdin.setEncoding("utf8");
+
+    process.stdin.on("data", async (data: String) => {
+      defaultSettings.prompt = prompt + data;
+      defaultSettings.stream = false;
+      defaultSettings.max_tokens = 500;
+      const res = await openai.createCompletion(defaultSettings);
+      process.stdout.write(res.data.choices[0].text);
+    });
+  } else if (args.git !== undefined) {
     checkEnv();
     const prompt =
       "Please generate a Git commit message that summarizes the changes made in the diff: ";

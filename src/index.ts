@@ -114,6 +114,10 @@ const args = yargs
       alias: "i",
       describe: "interactive mode",
     },
+    git: {
+      alias: "g",
+      describe: "Rephrase a sentence as a git commit message",
+    },
   })
   .help()
   .parseSync();
@@ -142,6 +146,25 @@ let defaultSettings: GPTSettings = {
 };
 
 (async () => {
+  if (args.git !== undefined) {
+    const prompt =
+      "Please write full GIT commit messages with the following changes: ";
+    process.stdin.setEncoding("utf8");
+
+    process.stdin.on("data", async (data: String) => {
+      defaultSettings.prompt = prompt + data;
+      defaultSettings.stream = false;
+      defaultSettings.max_tokens = 500;
+      const res = await openai.createCompletion(defaultSettings);
+      process.stdout.write(res.data.choices[0].text);
+    });
+
+    process.stdin.on("end", () => {
+      //process.exit();
+    });
+    return;
+  }
+
   switch (args.service) {
     case "rephrase": {
       const prompt =
@@ -156,6 +179,15 @@ let defaultSettings: GPTSettings = {
         "Please rephrase a sentence as a git commit message: " + args.sentence;
       defaultSettings.prompt = prompt;
       await runCompletion(defaultSettings, undefined);
+      process.stdin.setEncoding("utf8");
+
+      process.stdin.on("data", (data: String) => {
+        process.stdout.write(data.toUpperCase());
+      });
+
+      process.stdin.on("end", () => {
+        process.exit();
+      });
       break;
     }
     default: {

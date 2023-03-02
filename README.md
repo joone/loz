@@ -1,6 +1,6 @@
 # Loz
 
-This is a command-line interface tool based on ChatGPT that allows Unix pipes to be used with other Unix tools.
+Loz is a command-line interface tool based on ChatGPT that allows Unix pipes to be used with other Unix tools.
 
 ## Getting Started
 
@@ -42,7 +42,7 @@ $ loz
 Once loz is running, you can start a conversation by interacting with it. loz will respond with a relevant message based on the input.
 
 ### Pipe mode
-Luz is capable of processing input from other command-line tools by utilizing a Unix pipe.
+Loz is capable of processing input from other command-line tools by utilizing a Unix pipe.
 
 ```
 $ ls | loz "Count the number of files: "

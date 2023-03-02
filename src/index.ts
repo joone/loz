@@ -17,7 +17,7 @@ interface GPTSettings {
   stop?: string[];
 }
 
-class Loz {
+export class Loz {
   defaultSettings: GPTSettings;
   openai: any;
 
@@ -47,12 +47,12 @@ class Loz {
     }
   }
 
-  answerAnyQuestion() {
-    let prompt: string = args.prompt + ": ";
+  answerAnyQuestion(prompt: string) {
+    let promptUnpdated: string = prompt + ": ";
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      this.defaultSettings.prompt = prompt + data;
+      this.defaultSettings.prompt = promptUnpdated + data;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
       const res = await this.openai.createCompletion(this.defaultSettings);
@@ -162,35 +162,3 @@ class Loz {
     });
   }
 }
-
-const args = yargs
-  .wrap(null)
-  .command("$0 [prompt]", "Luv: a simple ChatGTP CLI tool", (yargs) => {
-    yargs.positional("prompt", {
-      description: "Prompt to start the conversation",
-      type: "string",
-    });
-  })
-  .options({
-    interactive: {
-      alias: "i",
-      describe: "interactive mode",
-    },
-    git: {
-      alias: "g",
-      describe: "Rephrase a sentence as a git commit message",
-    },
-  })
-  .help()
-  .parseSync();
-
-(async () => {
-  let loz = new Loz();
-  if (args.prompt !== undefined) {
-    loz.answerAnyQuestion();
-  } else if (args.git !== undefined) {
-    loz.writeGitCommitMessage();
-  } else {
-    loz.handlePrompt();
-  }
-})();

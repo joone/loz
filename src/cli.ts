@@ -17,7 +17,8 @@ const args = yargs
     },
     git: {
       alias: "g",
-      describe: "Rephrase a sentence as a git commit message",
+      describe:
+        "Generate a Git commit message that summarizes the changes made in the diff",
     },
   })
   .help()

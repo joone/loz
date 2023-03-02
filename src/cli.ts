@@ -13,7 +13,7 @@ const args = yargs
   .options({
     interactive: {
       alias: "i",
-      describe: "interactive mode",
+      describe: "Interactive mode",
     },
     git: {
       alias: "g",

@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 import * as yargs from "yargs";
-
-// import Loz
 import { Loz } from "./index";
 
 const args = yargs

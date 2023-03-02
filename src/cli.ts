@@ -32,6 +32,6 @@ const args = yargs
   } else if (args.git !== undefined) {
     loz.writeGitCommitMessage();
   } else {
-    loz.handlePrompt();
+    loz.runPromptIntractive();
   }
 })();

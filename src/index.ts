@@ -144,7 +144,7 @@ export class Loz {
     // Listen for user input
     rl.on("line", (input: string) => {
       if (input === "exit" || input === "quit") {
-        console.log("Goodbye!");
+        console.log("Good bye!");
         process.exit(0);
       }
 
@@ -158,7 +158,7 @@ export class Loz {
     // Handle CTRL+C to exit the program
     rl.on("SIGINT", () => {
       rl.close();
-      console.log("Goodbye!");
+      console.log("Good bye!");
       process.exit(0);
     });
   }

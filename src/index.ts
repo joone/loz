@@ -57,6 +57,7 @@ export class Loz {
       this.defaultSettings.max_tokens = 500;
       const res = await this.openai.createCompletion(this.defaultSettings);
       process.stdout.write(res.data.choices[0].text);
+      process.stdout.write("\n");
     });
   }
 

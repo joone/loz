@@ -1,6 +1,6 @@
 # Loz
 
-This is a simple command line chatbot project written in TypeScript using the official ChatGPT API
+This is a command-line interface tool based on ChatGPT that allows Unix pipes to be used with other Unix tools.
 
 ## Getting Started
 

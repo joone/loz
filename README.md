@@ -96,7 +96,6 @@ $ chmod a+x .git/hooks/prepare-commit-msg
 ```
 
 Loz writes commit messages by reading the diff of the staged files.
-FYI, prepare-commit-msg only supports JavaScript and TypeScript files, but you can add any source file type that you want to check."
 
 ## Contributing
 If you'd like to contribute to this project, feel free to submit a pull request.

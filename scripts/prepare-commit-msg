@@ -1,6 +1,6 @@
 #!/bin/bash
 
-files=$(git diff --name-only --cached --diff-filter=ACM "*.js" "*.jsx" "*.ts" "*.tsx" "*.md" | sed 's| |\\ |g')
+files=$(git diff --name-only --cached --diff-filter=ACM "*" | sed 's| |\\ |g')
 [ -z "$files" ] && exit 0
 
 # Get the name of the user who is committing the changes

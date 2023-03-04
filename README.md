@@ -1,6 +1,6 @@
 # Loz
 
-Loz is a command-line interface tool based on ChatGPT that allows Unix pipes to be used with other Unix tools.
+Loz is a command-line interface tool based on [OpenAI API](https://platform.openai.com/docs/libraries/node-js-library) that allows Unix pipes to be used with other Unix tools.
 
 ## Getting Started
 

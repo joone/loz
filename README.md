@@ -100,5 +100,8 @@ It also generates commit messages by reading the changes using the git show comm
 $ git show HEAD | node bin -g
 ```
 
+## Find chat history
+To access chat histories, look for the .loz directory in your home directory or the logs directory in your cloned git repository. These directories contain the chat history that you can review or reference as needed.
+
 ## Contributing
 If you'd like to contribute to this project, feel free to submit a pull request.

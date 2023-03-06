@@ -10,6 +10,7 @@ fi
 
 node -v
 sudo npm install -g typescript
+npm install
 tsc
-sudo npm install -g
+sudo npm install -g .
 

@@ -92,7 +92,7 @@ export class Loz {
       : path.join(this.configfPath, fileName);
     this.chatHistory.date = date.toString();
     if (DEBUG) console.log(this.chatHistory);
-    const json = JSON.stringify(this.chatHistory);
+    const json = JSON.stringify(this.chatHistory, null, 2);
 
     fs.writeFileSync(filePath, json);
   }

@@ -1,9 +1,16 @@
 import * as yargs from "yargs";
+import * as fs from "fs";
+import * as path from "path";
+import { ChatHistory, PromptAndAnswer } from "./history";
+
 const readline = require("readline");
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
 const DEBUG = process.env.DEBUG === "true" ? true : false;
+// Get the path to the home directory
+const HOME_PATH = process.env.HOME || "";
+const LOG_DEV_PATH = "logs";
 
 interface GPTSettings {
   model: string;
@@ -20,6 +27,10 @@ interface GPTSettings {
 export class Loz {
   defaultSettings: GPTSettings;
   openai: any;
+  chatHistory: ChatHistory = { date: "", dialogue: [] };
+  curPromptAndAnswer: PromptAndAnswer = { prompt: "", answer: "" };
+  configfPath: string;
+  curCompleteText: string = "";
 
   constructor() {
     this.checkEnv();
@@ -37,6 +48,18 @@ export class Loz {
       apiKey: process.env.OPENAI_API_KEY,
     });
     this.openai = new OpenAIApi(configuration);
+
+    // Create a config for the application
+    this.configfPath = path.join(HOME_PATH, ".loz");
+    if (!fs.existsSync(this.configfPath)) {
+      fs.mkdirSync(this.configfPath);
+    }
+
+    if (this.checkGitRepo() === true) {
+      if (!fs.existsSync(LOG_DEV_PATH)) {
+        fs.mkdirSync(LOG_DEV_PATH);
+      }
+    }
   }
 
   checkEnv() {
@@ -45,6 +68,33 @@ export class Loz {
       // system end
       process.exit(1);
     }
+  }
+
+  // Save chat history (JSON) to file.
+  async saveChatHistory() {
+    const date = new Date();
+
+    const fileName =
+      date.getFullYear() +
+      "-" +
+      (date.getMonth() + 1) +
+      "-" +
+      date.getDate() +
+      "-" +
+      date.getHours() +
+      "-" +
+      date.getMinutes() +
+      "-" +
+      date.getSeconds() +
+      ".json";
+    const filePath = this.checkGitRepo()
+      ? path.join(LOG_DEV_PATH, fileName)
+      : path.join(this.configfPath, fileName);
+    this.chatHistory.date = date.toString();
+    if (DEBUG) console.log(this.chatHistory);
+    const json = JSON.stringify(this.chatHistory);
+
+    fs.writeFileSync(filePath, json);
   }
 
   answerAnyQuestion(prompt: string) {
@@ -97,13 +147,24 @@ export class Loz {
             process.stdout.write("\n");
             process.stdout.write("\n");
             if (rl !== undefined) {
+              this.curPromptAndAnswer.answer = this.curCompleteText;
+              this.chatHistory.dialogue.push(this.curPromptAndAnswer);
+              this.curCompleteText = "";
+
               rl.prompt();
             }
             return; // Stream finished
           }
           try {
+            // Handle the stream message (partial completion).
             const parsed = JSON.parse(message);
+            // check if the prompt only has white space.
+            if (parsed.choices[0].text.trim() === "") {
+              // if so, don't add it to the prompt.
+              return;
+            }
             process.stdout.write(parsed.choices[0].text);
+            this.curCompleteText += parsed.choices[0].text;
           } catch (error) {
             console.error(
               "Could not JSON parse stream message",
@@ -145,13 +206,15 @@ export class Loz {
     rl.on("line", (input: string) => {
       if (input === "exit" || input === "quit") {
         console.log("Good bye!");
+        this.saveChatHistory();
         process.exit(0);
       }
 
       if (input.length !== 0) {
-        this.defaultSettings.prompt = input;
+        this.defaultSettings.prompt += input;
         this.defaultSettings.max_tokens = 4000;
         this.runCompletion(this.defaultSettings, rl);
+        this.curPromptAndAnswer = new PromptAndAnswer(input, "");
       }
     });
 
@@ -161,5 +224,14 @@ export class Loz {
       console.log("Good bye!");
       process.exit(0);
     });
+  }
+
+  // check if the program is running in it's git repository.
+  checkGitRepo() {
+    const gitRepoPath = path.join(__dirname, "../.git");
+    if (fs.existsSync(gitRepoPath)) {
+      return true;
+    }
+    return false;
   }
 }

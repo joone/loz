@@ -94,8 +94,11 @@ Copy script/prepare-commit-msg to .git/hooks
 ```
 $ chmod a+x .git/hooks/prepare-commit-msg
 ```
-
 Loz writes commit messages by reading the diff of the staged files.
+It also generates commit messages by reading the changes using the git show command like this:
+```
+$ git show HEAD | node bin -g
+```
 
 ## Contributing
 If you'd like to contribute to this project, feel free to submit a pull request.

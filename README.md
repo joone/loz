@@ -97,7 +97,7 @@ $ chmod a+x .git/hooks/prepare-commit-msg
 
 Loz uses the LOZ=true environment variable to generate commit messages by reading the diff of the staged files.
 ```
-$ LOZ=ture git commit
+$ LOZ=true git commit
 ```
 
 REMINDER: If you've already copied the old version, please update prepare-commit-msg.

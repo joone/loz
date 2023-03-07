@@ -133,7 +133,7 @@ export class Loz {
 
   writeGitCommitMessage() {
     const prompt =
-      "Please generate a Git commit message that summarizes the changes made in the diff: ";
+      "Create a Git commit message that includes a title, description: ";
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {

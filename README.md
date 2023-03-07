@@ -94,8 +94,15 @@ Copy script/prepare-commit-msg to .git/hooks
 ```
 $ chmod a+x .git/hooks/prepare-commit-msg
 ```
-Loz writes commit messages by reading the diff of the staged files.
-It also generates commit messages by reading the changes using the git show command like this:
+
+Loz uses the LOZ=true environment variable to generate commit messages by reading the diff of the staged files.
+```
+$ LOZ=ture git commit
+```
+
+REMINDER: If you've already copied the old version, please update prepare-commit-msg.
+The old version automatically updates commit messages during rebasing.
+
 ```
 $ git diff HEAD~1 | loz -g
 ```

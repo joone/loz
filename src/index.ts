@@ -222,6 +222,7 @@ export class Loz {
     rl.on("SIGINT", () => {
       rl.close();
       console.log("Good bye!");
+      this.saveChatHistory();
       process.exit(0);
     });
   }

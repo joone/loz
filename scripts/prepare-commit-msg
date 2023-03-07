@@ -1,5 +1,7 @@
 #!/bin/bash
 
+if [ "$LOZ" ]; then
+
 files=$(git diff --name-only --cached --diff-filter=ACM "*" | sed 's| |\\ |g')
 [ -z "$files" ] && exit 0
 
@@ -11,3 +13,4 @@ message=$(git diff --staged | loz --git)
 
 echo "$message" > "$1"
 
+fi

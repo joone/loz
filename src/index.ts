@@ -2,6 +2,7 @@ import * as yargs from "yargs";
 import * as fs from "fs";
 import * as path from "path";
 import { ChatHistory, PromptAndAnswer } from "./history";
+import { Config, ConfigItem } from "./config";
 
 const readline = require("readline");
 const { Configuration, OpenAIApi } = require("openai");
@@ -28,9 +29,10 @@ export class Loz {
   defaultSettings: GPTSettings;
   openai: any;
   chatHistory: ChatHistory = { date: "", dialogue: [] };
-  curPromptAndAnswer: PromptAndAnswer = { prompt: "", answer: "" };
+  curPromptAndAnswer: PromptAndAnswer = { mode: "", prompt: "", answer: "" };
   configfPath: string;
   curCompleteText: string = "";
+  config: Config = new Config();
 
   constructor() {
     this.checkEnv();
@@ -60,6 +62,17 @@ export class Loz {
         fs.mkdirSync(LOG_DEV_PATH);
       }
     }
+
+    this.loadingConfigFromJSONFile();
+  }
+
+  // load config from JSON file
+  async loadingConfigFromJSONFile() {
+    // Check if the config file exists
+    if (this.checkGitRepo() === true) {
+      this.config.loadConfig(".");
+    }
+    //this.config.add(new ConfigItem("mode", "learning_english"));
   }
 
   checkEnv() {
@@ -95,6 +108,13 @@ export class Loz {
     const json = JSON.stringify(this.chatHistory, null, 2);
 
     fs.writeFileSync(filePath, json);
+  }
+
+  saveConfig() {
+    if (this.checkGitRepo() === true) {
+      const json = JSON.stringify(this.config, null, 2);
+      fs.writeFileSync("config.json", json);
+    }
   }
 
   answerAnyQuestion(prompt: string) {
@@ -158,11 +178,6 @@ export class Loz {
           try {
             // Handle the stream message (partial completion).
             const parsed = JSON.parse(message);
-            // check if the prompt only has white space.
-            if (parsed.choices[0].text.trim() === "") {
-              // if so, don't add it to the prompt.
-              return;
-            }
             process.stdout.write(parsed.choices[0].text);
             this.curCompleteText += parsed.choices[0].text;
           } catch (error) {
@@ -204,17 +219,43 @@ export class Loz {
 
     // Listen for user input
     rl.on("line", (input: string) => {
+      // Tokenize the input with space as the delimiter
+      const tokens = input.split(" ");
       if (input === "exit" || input === "quit") {
         console.log("Good bye!");
         this.saveChatHistory();
+        this.saveConfig();
         process.exit(0);
+      } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
+        if (tokens.length === 3) {
+          if (this.config.get(tokens[1]) !== undefined) {
+            console.log(
+              `${this.config.get(tokens[1])?.value} will be updated with ${
+                tokens[2]
+              }`
+            );
+          }
+          this.config.set(tokens[1], tokens[2]);
+        } else if (tokens.length === 2) {
+          console.log(this.config.get(tokens[1]));
+        } else if (tokens.length === 1) {
+          this.config.print();
+        } else console.log("Invalid command");
+        rl.prompt();
+        return;
       }
 
       if (input.length !== 0) {
+        let mode = this.config.get("mode")?.value;
+        if (this.config.get("mode")?.value === "els") {
+          this.defaultSettings.prompt =
+            "Rephrase the following question to make it sound more natural and asnwer the question: \n";
+        }
         this.defaultSettings.prompt += input;
         this.defaultSettings.max_tokens = 4000;
         this.runCompletion(this.defaultSettings, rl);
-        this.curPromptAndAnswer = new PromptAndAnswer(input, "");
+        if (mode === undefined) mode = "default";
+        this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
       }
     });
 
@@ -223,6 +264,7 @@ export class Loz {
       rl.close();
       console.log("Good bye!");
       this.saveChatHistory();
+      this.saveConfig();
       process.exit(0);
     });
   }

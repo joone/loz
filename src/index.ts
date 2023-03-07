@@ -133,7 +133,7 @@ export class Loz {
 
   writeGitCommitMessage() {
     const prompt =
-      "Create a Git commit message that includes a title, description: ";
+      "Create a Git commit message that includes title and description without labels: ";
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {

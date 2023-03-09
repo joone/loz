@@ -125,7 +125,17 @@ export class Loz {
       this.defaultSettings.prompt = promptUnpdated + data;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
-      const res = await this.openai.createCompletion(this.defaultSettings);
+      let res: any;
+      try {
+        res = await this.openai.createCompletion(this.defaultSettings);
+      } catch (error: any) {
+        if (error.response) {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        } else {
+          console.log(error.message);
+        }
+      }
       process.stdout.write(res.data.choices[0].text);
       process.stdout.write("\n");
     });
@@ -150,7 +160,17 @@ export class Loz {
       this.defaultSettings.prompt = prompt + commitMessage;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
-      const res = await this.openai.createCompletion(this.defaultSettings);
+      let res: any;
+      try {
+        res = await this.openai.createCompletion(this.defaultSettings);
+      } catch (error: any) {
+        if (error.response) {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        } else {
+          console.log(error.message);
+        }
+      }
       process.stdout.write(res.data.choices[0].text);
     });
 
@@ -160,9 +180,19 @@ export class Loz {
   }
 
   async runCompletion(settings: any, rl: any) {
-    const res = await this.openai.createCompletion(settings, {
-      responseType: "stream",
-    });
+    let res: any;
+    try {
+      res = await this.openai.createCompletion(settings, {
+        responseType: "stream",
+      });
+    } catch (error: any) {
+      if (error.response) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+      } else {
+        console.log(error.message);
+      }
+    }
     if (DEBUG === true) console.log(res.data);
 
     try {

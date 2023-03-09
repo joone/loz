@@ -1,4 +1,3 @@
-import * as yargs from "yargs";
 import * as fs from "fs";
 import * as path from "path";
 import { ChatHistory, PromptAndAnswer } from "./history";

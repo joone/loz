@@ -110,7 +110,7 @@ Or
 ```
 $ git diff | loz -g
 ```
-Note that the author, date, and commit ID lines are stripped from the commit message before sending it to the OpenAPI server.
+Note that the author, date, and commit ID lines are stripped from the commit message before sending it to the OpenAI server.
 
 ## Find chat history
 To access chat histories, look for the .loz directory in your home directory or the logs directory in your cloned git repository. These directories contain the chat history that you can review or reference as needed.

@@ -147,7 +147,6 @@ export class Loz {
         .replace(/Author: .*\n/, "")
         .replace(/Date: .*\n/, "");
 
-      console.log(commitMessage);
       this.defaultSettings.prompt = prompt + commitMessage;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;

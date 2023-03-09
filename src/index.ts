@@ -137,7 +137,18 @@ export class Loz {
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      this.defaultSettings.prompt = prompt + data;
+      // Remove the first line from data
+      // because it is not needed for GPT-3 (added by Copilot)
+      data = data.replace(/.*\n/, "");
+      // Remove Author and Date from commit message
+      // because it is not needed for GPT-3 (added by Copilot)
+      const commitMessage = data
+        .toString()
+        .replace(/Author: .*\n/, "")
+        .replace(/Date: .*\n/, "");
+
+      console.log(commitMessage);
+      this.defaultSettings.prompt = prompt + commitMessage;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
       const res = await this.openai.createCompletion(this.defaultSettings);

@@ -141,6 +141,8 @@ export class Loz {
     });
   }
 
+  // FIXME: refacor this function
+  // Use a Promise to handle exec function
   async runGitCommit() {
     const prompt =
       "Create a Git commit message that includes title and description without labels: ";

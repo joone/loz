@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+const { exec } = require("child_process");
 import { ChatHistory, PromptAndAnswer } from "./history";
 import { Config, ConfigItem } from "./config";
 
@@ -137,6 +138,64 @@ export class Loz {
       }
       process.stdout.write(res.data.choices[0].text);
       process.stdout.write("\n");
+    });
+  }
+
+  async runGitCommit() {
+    const prompt =
+      "Create a Git commit message that includes title and description without labels: ";
+    let diff = "";
+    exec("git diff --staged", async (error: any, stdout: any, stderr: any) => {
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`Error: ${stderr}`);
+        return;
+      }
+      diff = stdout;
+
+      console.log(diff);
+      let data = diff.replace(/.*\n/, "");
+      // Remove Author and Date from commit message
+      // because it is not needed for GPT-3 (added by Copilot)
+      const commitMessage = data
+        .toString()
+        .replace(/Author: .*\n/, "")
+        .replace(/Date: .*\n/, "");
+
+      this.defaultSettings.prompt = prompt + commitMessage;
+      this.defaultSettings.stream = false;
+      this.defaultSettings.max_tokens = 500;
+      let res: any;
+      try {
+        res = await this.openai.createCompletion(this.defaultSettings);
+      } catch (error: any) {
+        if (error.response) {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        } else {
+          console.log(error.message);
+        }
+      }
+      const message = res.data.choices[0].text;
+
+      // Run a Git commit command
+      exec(
+        `git commit -m "${message}"`,
+        (error: any, stdout: any, stderr: any) => {
+          if (error) {
+            console.error(`Error: ${error.message}`);
+            return;
+          }
+          if (stderr) {
+            console.error(`Error: ${stderr}`);
+            return;
+          }
+          console.log(`Git commit output:\n${stdout}`);
+        }
+      );
     });
   }
 

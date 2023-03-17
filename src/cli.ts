@@ -20,6 +20,10 @@ const args = yargs
       describe:
         "Generate a Git commit message that summarizes the changes made in the diff",
     },
+    commit: {
+      alias: "c",
+      describe: "Generate a Git commit message in the current git repository",
+    },
   })
   .help()
   .parseSync();
@@ -30,6 +34,8 @@ const args = yargs
     loz.answerAnyQuestion(args.prompt as string);
   } else if (args.git !== undefined) {
     loz.writeGitCommitMessage();
+  } else if (args.commit !== undefined) {
+    loz.runGitCommit();
   } else {
     loz.runPromptIntractive();
   }

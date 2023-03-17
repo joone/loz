@@ -25,6 +25,7 @@ export class Config implements ConfigInterface {
 
   constructor() {
     this.items = [];
+    this.set("mode", "default");
   }
 
   add(item: ConfigItemInterface) {
@@ -64,7 +65,7 @@ export class Config implements ConfigInterface {
     let config = JSON.parse(rawData);
 
     for (let item of config.items) {
-      this.add(new ConfigItem(item.name, item.value));
+      this.set(item.name, item.value);
     }
   }
 }

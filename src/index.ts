@@ -239,6 +239,9 @@ export class Loz {
       output: process.stdout,
     });
 
+    // Output the current mode.
+    this.config.print();
+
     // Set the prompt to display before each input
     rl.setPrompt("> ");
 

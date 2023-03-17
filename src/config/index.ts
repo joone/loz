@@ -59,7 +59,7 @@ export class Config implements ConfigInterface {
   }
 
   loadConfig(configPath: string) {
-    const configFilePath = path.join(".", "config.json");
+    const configFilePath = path.join(configPath, "config.json");
     if (!fs.existsSync(configFilePath)) return;
     let rawData: any = fs.readFileSync(configFilePath);
     let config = JSON.parse(rawData);

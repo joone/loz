@@ -69,7 +69,7 @@ export class Loz {
   async loadingConfigFromJSONFile() {
     // Check if the config file exists
     if (this.checkGitRepo() === true) {
-      this.config.loadConfig(".");
+      this.config.loadConfig(this.configfPath);
     }
     //this.config.add(new ConfigItem("mode", "learning_english"));
   }
@@ -112,7 +112,7 @@ export class Loz {
   saveConfig() {
     if (this.checkGitRepo() === true) {
       const json = JSON.stringify(this.config, null, 2);
-      fs.writeFileSync("config.json", json);
+      fs.writeFileSync(this.configfPath + "/config.json", json);
     }
   }
 

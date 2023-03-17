@@ -289,6 +289,9 @@ export class Loz {
         if (this.config.get("mode")?.value === "els") {
           this.defaultSettings.prompt =
             "Rephrase the following question to make it sound more natural and asnwer the question: \n";
+        } else if (this.config.get("mode")?.value === "proofread") {
+          this.defaultSettings.prompt =
+            "Can you proofread the following setnence? Show me the difference between the given sentence and your correction.\n";
         }
         this.defaultSettings.prompt += input;
         this.defaultSettings.max_tokens = 4000;

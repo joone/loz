@@ -150,15 +150,12 @@ export class Loz {
     diff = diff.replace(/.*\n/, "");
 
     const prompt =
-      "Create a Git commit message that includes title and description without labels: ";
-    // Remove Author and Date from commit message
-    // because it is not needed for GPT-3 (added by Copilot)
-    const commitMessage = diff
-      .toString()
-      .replace(/Author: .*\n/, "")
-      .replace(/Date: .*\n/, "");
+      "Generate a commit message for the following code changes like this:\n\
+       title\n\
+       <empty line>\n\
+       description\n";
 
-    this.defaultSettings.prompt = prompt + commitMessage;
+    this.defaultSettings.prompt = prompt + diff;
     this.defaultSettings.stream = false;
     this.defaultSettings.max_tokens = 500;
     let res: any;
@@ -176,7 +173,7 @@ export class Loz {
     try {
       await this.git.commit(res.data.choices[0].text);
     } catch (error: any) {
-      console.log(error.message);
+      console.log(error);
     }
   }
 

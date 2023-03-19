@@ -329,7 +329,8 @@ export class Loz {
 
       if (input.length !== 0) {
         let mode = this.config.get("mode")?.value;
-        if (this.config.get("mode")?.value === "els") {
+        // ESL: English as a Second Language
+        if (this.config.get("mode")?.value === "esl") {
           this.defaultSettings.prompt =
             "Rephrase the following question to make it sound more natural and asnwer the question: \n";
         } else if (this.config.get("mode")?.value === "proofread") {

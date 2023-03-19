@@ -1,8 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
-const { exec } = require("child_process");
+
 import { ChatHistory, PromptAndAnswer } from "./history";
 import { Config, ConfigItem } from "./config";
+import { Git } from "./git";
 
 const readline = require("readline");
 const { Configuration, OpenAIApi } = require("openai");
@@ -33,6 +34,7 @@ export class Loz {
   configfPath: string;
   curCompleteText: string = "";
   config: Config = new Config();
+  git: Git = new Git();
 
   constructor() {
     this.checkEnv();
@@ -141,64 +143,41 @@ export class Loz {
     });
   }
 
-  // FIXME: refacor this function
-  // Use a Promise to handle exec function
   async runGitCommit() {
+    let diff = await this.git.getDiffFromStaged();
+
+    // Remove the first line of the diff
+    diff = diff.replace(/.*\n/, "");
+
     const prompt =
       "Create a Git commit message that includes title and description without labels: ";
-    let diff = "";
-    exec("git diff --staged", async (error: any, stdout: any, stderr: any) => {
-      if (error) {
-        console.error(`Error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`Error: ${stderr}`);
-        return;
-      }
-      diff = stdout;
+    // Remove Author and Date from commit message
+    // because it is not needed for GPT-3 (added by Copilot)
+    const commitMessage = diff
+      .toString()
+      .replace(/Author: .*\n/, "")
+      .replace(/Date: .*\n/, "");
 
-      console.log(diff);
-      let data = diff.replace(/.*\n/, "");
-      // Remove Author and Date from commit message
-      // because it is not needed for GPT-3 (added by Copilot)
-      const commitMessage = data
-        .toString()
-        .replace(/Author: .*\n/, "")
-        .replace(/Date: .*\n/, "");
-
-      this.defaultSettings.prompt = prompt + commitMessage;
-      this.defaultSettings.stream = false;
-      this.defaultSettings.max_tokens = 500;
-      let res: any;
-      try {
-        res = await this.openai.createCompletion(this.defaultSettings);
-      } catch (error: any) {
-        if (error.response) {
-          console.log(error.response.status);
-          console.log(error.response.data);
-        } else {
-          console.log(error.message);
-        }
+    this.defaultSettings.prompt = prompt + commitMessage;
+    this.defaultSettings.stream = false;
+    this.defaultSettings.max_tokens = 500;
+    let res: any;
+    try {
+      res = await this.openai.createCompletion(this.defaultSettings);
+    } catch (error: any) {
+      if (error.response) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+      } else {
+        console.log(error.message);
       }
-      const message = res.data.choices[0].text;
-
-      // Run a Git commit command
-      exec(
-        `git commit -m "${message}"`,
-        (error: any, stdout: any, stderr: any) => {
-          if (error) {
-            console.error(`Error: ${error.message}`);
-            return;
-          }
-          if (stderr) {
-            console.error(`Error: ${stderr}`);
-            return;
-          }
-          console.log(`Git commit output:\n${stdout}`);
-        }
-      );
-    });
+    }
+    console.log(res.data.choices[0].text);
+    try {
+      await this.git.commit(res.data.choices[0].text);
+    } catch (error: any) {
+      console.log(error.message);
+    }
   }
 
   writeGitCommitMessage() {

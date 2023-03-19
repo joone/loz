@@ -92,22 +92,13 @@ $ ls -l | loz "convert the ls output to JSON format: "
 ]
 ```
 
-### Automatically write a GIT commit message.
-
-Copy script/prepare-commit-msg to .git/hooks
-
+### Automatically write a GIT commit message
+If you run loz commit in your Git repository, loz will automatically generate a commit message with the staged changes like this:
 ```
-$ chmod a+x .git/hooks/prepare-commit-msg
+$  git add --update
+$  loz commit
 ```
-
-Loz uses the LOZ=true environment variable to generate commit messages by reading the diff of the staged files.
-
-```
-$ LOZ=true git commit
-```
-
-REMINDER: If you've already copied the old version, please update prepare-commit-msg.
-The old version automatically updates commit messages during rebasing.
+REMINDER: script/prepare-commit-msg is not supported so if you've already copied prepare-commit-msg, please remove it from .git/hooks.
 
 ```
 $ git diff HEAD~1 | loz -g

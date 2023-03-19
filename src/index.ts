@@ -175,8 +175,6 @@ export class Loz {
     } catch (error: any) {
       console.log(error);
     }
-
-    await this.git.commitAmend();
   }
 
   writeGitCommitMessage() {

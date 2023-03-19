@@ -37,7 +37,7 @@ const args = yargs
 (async () => {
   let loz = new Loz();
   if (args.prompt !== undefined) {
-    if (args.prompt === "commit") loz.runGitCommit();
+    if (args.prompt === "commit") await loz.runGitCommit();
     else loz.handlePipeInput(args.prompt as string);
   } else if (args.git !== undefined) {
     loz.writeGitCommitMessage();

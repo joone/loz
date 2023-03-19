@@ -121,11 +121,10 @@ export class Loz {
 
   // Handle the input from the pipe
   handlePipeInput(prompt: string) {
-    let promptUnpdated: string = prompt + ": ";
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      this.defaultSettings.prompt = promptUnpdated + data;
+      this.defaultSettings.prompt = prompt + ": \n" + data;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
       let res: any;

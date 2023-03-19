@@ -4,7 +4,7 @@ import { Loz } from "./index";
 
 const args = yargs
   .wrap(null)
-  .command("$0 [prompt]", "Luv: a simple ChatGTP CLI tool", (yargs) => {
+  .command("$0 [prompt]", "Loz: a simple ChatGTP CLI tool", (yargs) => {
     yargs.positional("prompt", {
       description: "Prompt to answer",
       type: "string",

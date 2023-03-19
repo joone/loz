@@ -17,8 +17,8 @@ export class Git {
           return;
         }
         if (stderr) {
-          console.error(`Error: ${stderr}`);
-          reject(error.message);
+          //console.error(`Error: ${stderr}`);
+          reject(`Error: ${stderr}`);
           return;
         }
         resolve(stdout);
@@ -37,8 +37,8 @@ export class Git {
             return;
           }
           if (stderr) {
-            console.error(`Error: ${stderr}`);
-            reject(stderr.message);
+            //console.error(`Error: ${stderr}`);
+            reject(`Error: ${stderr}`);
             return;
           }
           resolve(stdout);

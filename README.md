@@ -98,7 +98,21 @@ If you run loz commit in your Git repository, loz will automatically generate a 
 $  git add --update
 $  loz commit
 ```
-REMINDER: script/prepare-commit-msg is not supported so if you've already copied prepare-commit-msg, please remove it from .git/hooks.
+
+Or copy script/prepare-commit-msg to .git/hooks
+
+```
+$ chmod a+x .git/hooks/prepare-commit-msg
+```
+
+Loz uses the LOZ=true environment variable to generate commit messages by reading the diff of the staged files.
+
+```
+$ LOZ=true git commit
+```
+
+REMINDER: If you've already copied the old version, please update prepare-commit-msg.
+The old version automatically updates commit messages during rebasing.
 
 ```
 $ git diff HEAD~1 | loz -g

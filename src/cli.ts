@@ -38,7 +38,7 @@ const args = yargs
   let loz = new Loz();
   if (args.prompt !== undefined) {
     if (args.prompt === "commit") loz.runGitCommit();
-    else loz.answerAnyQuestion(args.prompt as string);
+    else loz.handlePipeInput(args.prompt as string);
   } else if (args.git !== undefined) {
     loz.writeGitCommitMessage();
   } else {

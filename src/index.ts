@@ -119,7 +119,8 @@ export class Loz {
     }
   }
 
-  answerAnyQuestion(prompt: string) {
+  // Handle the input from the pipe
+  handlePipeInput(prompt: string) {
     let promptUnpdated: string = prompt + ": ";
     process.stdin.setEncoding("utf8");
 

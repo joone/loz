@@ -46,4 +46,22 @@ export class Git {
       );
     });
   }
+
+  public async commitAmend(): Promise<string> {
+    return await new Promise((resolve, reject) => {
+      exec("git commit --amend", (error: any, stdout: any, stderr: any) => {
+        if (error) {
+          console.error(`Error: ${error.message}`);
+          reject(error.message);
+          return;
+        }
+        if (stderr) {
+          //console.error(`Error: ${stderr}`);
+          reject(`Error: ${stderr}`);
+          return;
+        }
+        resolve(stdout);
+      });
+    });
+  }
 }

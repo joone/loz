@@ -225,17 +225,23 @@ export class Loz {
         responseType: "stream",
       });
     } catch (error: any) {
+      console.log(error.message + ":");
       if (error.response) {
-        console.log(error.response.status);
-        console.log(error.response.data);
-      } else {
-        console.log(error.message);
+        // console.log(error.response.data);
+        if (error.response.status === 401) {
+          console.log("Invalid API key");
+        } else if (error.response.status === 429) {
+          console.log("API request limit reached");
+        }
       }
+      process.exit();
     }
     if (DEBUG === true) console.log(res.data);
 
     try {
       res.data.on("data", (data: any) => {
+        if (data === null)
+          return;
         const lines = data
           .toString()
           .split("\n")

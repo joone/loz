@@ -16,7 +16,9 @@ Or clone the repository:
 $ git clone https://github.com/joone/loz.git
 ```
 
-Then install the required dependencies:
+NodeJS and npm are required for this program to work. If you're on Linux, install them using your package manager. `sudo apt install nodejs npm` or `sudo dnf install nodejs npm` or `sudo pacman -S nodejs npm`
+
+Then install the other required dependencies:
 
 ```
 $ ./install.sh

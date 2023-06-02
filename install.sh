@@ -17,8 +17,6 @@ then
       exit
 fi
 
-pause
-
 node -v
 sudo npm install -g typescript
 npm install

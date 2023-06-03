@@ -42,7 +42,7 @@ const args = yargs
   } else if (args.git !== undefined) {
     loz.writeGitCommitMessage();
   } else {
-    console.log("Luv: a simple ChatGTP CLI tool");
+    console.log("Loz: a simple ChatGTP CLI tool");
     loz.runPromptIntractive();
   }
 })();

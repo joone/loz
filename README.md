@@ -36,6 +36,14 @@ Or if you install Loz using npm command, add OPENAI_API_KEY=YOUR_KEY in .bashrc
 export OPENAI_API_KEY=YOUR_KEY
 ```
 
+If you encounter the following error, it means you have exceeded your free quota:
+```
+Request failed with status code 429:
+API request limit reached
+```
+To continue using the API, it is necessary to set up a payment method through the following link:
+https://platform.openai.com/account/billing/payment-methods
+
 ## Usage
 
 ### Interactive mode

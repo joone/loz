@@ -37,10 +37,12 @@ export OPENAI_API_KEY=YOUR_KEY
 ```
 
 If you encounter the following error, it means you have exceeded your free quota:
+
 ```
 Request failed with status code 429:
 API request limit reached
 ```
+
 To continue using the API, it is necessary to set up a payment method through the following link:
 https://platform.openai.com/account/billing/payment-methods
 
@@ -103,7 +105,9 @@ $ ls -l | loz "convert the ls output to JSON format: "
 ```
 
 ### Automatically write a GIT commit message
+
 If you run loz commit in your Git repository, loz will automatically generate a commit message with the staged changes like this:
+
 ```
 $  git add --update
 $  loz commit

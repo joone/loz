@@ -207,7 +207,7 @@ export class Loz {
       this.defaultSettings.max_tokens = 500;
       const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt + commitMessage}],
+        messages: [{ role: "user", content: prompt + commitMessage }],
       };
       let completion: any;
       try {
@@ -254,10 +254,9 @@ export class Loz {
     try {
       for await (const data of stream) {
         if (data === null) return;
-           process.stdout.write(data.choices[0]?.delta?.content || "");
+        process.stdout.write(data.choices[0]?.delta?.content || "");
       }
       process.stdout.write("\n");
-  
     } catch (error) {
       console.error("An error occurred during OpenAI request: ", error);
     }

@@ -82,6 +82,8 @@ export class Loz {
       // system end
       process.exit(1);
     }
+
+    return true;
   }
 
   // Save chat history (JSON) to file.

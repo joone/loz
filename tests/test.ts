@@ -1,10 +1,12 @@
-import { hello } from "../src/hello-test";
+import { Loz } from "../src/index";
 import { expect } from "chai";
 import "mocha";
 
-describe("First test", () => {
+describe("Loz.chekcEnv()", () => {
   it("should return true", () => {
-    const result = hello();
+    let loz = new Loz();
+
+    const result = loz.checkEnv()
     expect(result).to.equal(true);
   });
 });

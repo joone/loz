@@ -120,6 +120,12 @@ export class Loz {
     }
   }
 
+  async openaiChatCompletionCreate(params: OpenAI.Chat.ChatCompletionCreateParams) {
+    const completion = await this.openai.chat.completions.create(params);
+
+    return completion;
+  }
+
   // Handle the input from the pipe
   handlePipeInput(prompt: string) {
     process.stdin.setEncoding("utf8");
@@ -137,7 +143,7 @@ export class Loz {
 
       let completion: any;
       try {
-        completion = await this.openai.chat.completions.create(params);
+        completion = this.openaiChatCompletionCreate(params);
       } catch (error: any) {
         if (error.response) {
           console.log(error.response.status);

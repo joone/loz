@@ -1,12 +1,13 @@
 import * as fs from "fs";
 import * as path from "path";
+import OpenAI from "openai";
 
 import { ChatHistory, PromptAndAnswer } from "./history";
 import { Config, ConfigItem } from "./config";
 import { Git } from "./git";
 
 const readline = require("readline");
-const { Configuration, OpenAIApi } = require("openai");
+
 require("dotenv").config();
 
 const DEBUG = process.env.DEBUG === "true" ? true : false;
@@ -39,7 +40,7 @@ export class Loz {
   constructor() {
     this.checkEnv();
     this.defaultSettings = {
-      model: "text-davinci-003",
+      model: "gpt-3.5-turbo",
       prompt: "",
       temperature: 0,
       max_tokens: 60,
@@ -48,10 +49,8 @@ export class Loz {
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
     };
-    const configuration = new Configuration({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    this.openai = new OpenAIApi(configuration);
+
+    this.openai = new OpenAI();
 
     // Create a config for the application
     this.configfPath = path.join(HOME_PATH, ".loz");
@@ -158,9 +157,15 @@ export class Loz {
     this.defaultSettings.prompt = prompt + diff;
     this.defaultSettings.stream = false;
     this.defaultSettings.max_tokens = 500;
-    let res: any;
+
+    const params: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt + diff }],
+    };
+
+    let completion: any;
     try {
-      res = await this.openai.createCompletion(this.defaultSettings);
+      completion = await this.openai.chat.completions.create(params);
     } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
@@ -169,9 +174,10 @@ export class Loz {
         console.log(error.message);
       }
     }
-    console.log(res.data.choices[0].text);
+    console.log(completion.choices[0]?.message?.content);
+
     try {
-      await this.git.commit(res.data.choices[0].text);
+      await this.git.commit(completion.choices[0]?.message?.content);
     } catch (error: any) {
       console.log(error);
     }
@@ -199,9 +205,13 @@ export class Loz {
       this.defaultSettings.prompt = prompt + commitMessage;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
-      let res: any;
+      const params: OpenAI.Chat.ChatCompletionCreateParams = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt + commitMessage}],
+      };
+      let completion: any;
       try {
-        res = await this.openai.createCompletion(this.defaultSettings);
+        completion = await this.openai.chat.completions.create(params);
       } catch (error: any) {
         if (error.response) {
           console.log(error.response.status);
@@ -210,7 +220,7 @@ export class Loz {
           console.log(error.message);
         }
       }
-      process.stdout.write(res.data.choices[0].text);
+      process.stdout.write(completion.choices[0]?.message?.content);
     });
 
     process.stdin.on("end", () => {
@@ -219,11 +229,14 @@ export class Loz {
   }
 
   async runCompletion(settings: any, rl: any) {
-    let res: any;
+    let stream: any;
+    const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: settings.prompt }],
+      stream: true,
+    };
     try {
-      res = await this.openai.createCompletion(settings, {
-        responseType: "stream",
-      });
+      stream = await this.openai.chat.completions.create(streaming_params);
     } catch (error: any) {
       console.log(error.message + ":");
       if (error.response) {
@@ -236,47 +249,19 @@ export class Loz {
       }
       process.exit();
     }
-    if (DEBUG === true) console.log(res.data);
+    if (DEBUG === true) console.log(stream.data);
 
     try {
-      res.data.on("data", (data: any) => {
-        if (data === null)
-          return;
-        const lines = data
-          .toString()
-          .split("\n")
-          .filter((line: any) => line.trim() !== "");
-        for (const line of lines) {
-          const message = line.replace(/^data: /, "");
-          if (message === "[DONE]") {
-            process.stdout.write("\n");
-            process.stdout.write("\n");
-            if (rl !== undefined) {
-              this.curPromptAndAnswer.answer = this.curCompleteText;
-              this.chatHistory.dialogue.push(this.curPromptAndAnswer);
-              this.curCompleteText = "";
-
-              rl.prompt();
-            }
-            return; // Stream finished
-          }
-          try {
-            // Handle the stream message (partial completion).
-            const parsed = JSON.parse(message);
-            process.stdout.write(parsed.choices[0].text);
-            this.curCompleteText += parsed.choices[0].text;
-          } catch (error) {
-            console.error(
-              "Could not JSON parse stream message",
-              message,
-              error
-            );
-          }
-        }
-      });
+      for await (const data of stream) {
+        if (data === null) return;
+           process.stdout.write(data.choices[0]?.delta?.content || "");
+      }
+      process.stdout.write("\n");
+  
     } catch (error) {
       console.error("An error occurred during OpenAI request: ", error);
     }
+    rl.prompt();
   }
 
   runPromptIntractive() {

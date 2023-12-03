@@ -21,6 +21,7 @@
     "@types/express": "^4.17.2",
     "@types/mocha": "^7.0.1",
     "@types/node": "^13.7.4",
+    "@types/yargs": "^17.0.32",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "chai": "^4.2.0",
@@ -31,11 +32,10 @@
     "typescript": "^3.8.2"
   },
   "dependencies": {
-    "@types/yargs": "^17.0.22",
     "dotenv": "^16.0.3",
     "express": "^4.17.3",
     "openai": "^4.20.1",
-    "yargs": "^17.7.1"
+    "yargs": "^17.7.2"
   },
   "bin": {
     "loz": "bin/index.js"

@@ -273,12 +273,18 @@ export class Loz {
     try {
       for await (const data of stream) {
         if (data === null) return;
-        process.stdout.write(data.choices[0]?.delta?.content || "");
+        const streamData = data.choices[0]?.delta?.content || "";
+        this.curCompleteText += streamData;
+        process.stdout.write(streamData);
       }
       process.stdout.write("\n");
     } catch (error) {
       console.error("An error occurred during OpenAI request: ", error);
     }
+
+    this.curPromptAndAnswer.answer = this.curCompleteText;
+    this.chatHistory.dialogue.push(this.curPromptAndAnswer);
+    this.curCompleteText = "";
     rl.prompt();
   }
 

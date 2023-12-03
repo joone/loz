@@ -73,11 +73,12 @@ AS AI TECHNLOGY ADVANCED, A SMALL TOWN IN THE COUNTRYSIDE DECIDED TO IMPLEMENT A
 ```
 
 ```
-$ cat example.txt | loz "please proofread the following text and list up any spelling errors: "
+$ cat example.txt | loz "can you find any spelling errors: "
 
-Spelling errors:
-- technlogy  (technology)
-- sophistcated (sophisticated)
+Yes, there are a few spelling errors in the given text:
+
+1. "technlogy" should be "technology"
+2. "sophistcated" should be "sophisticated"
 ```
 
 ```

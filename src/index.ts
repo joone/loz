@@ -126,9 +126,16 @@ export class Loz {
       this.defaultSettings.prompt = prompt + ": \n" + data;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
-      let res: any;
+
+      const params: OpenAI.Chat.ChatCompletionCreateParams = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: this.defaultSettings.prompt }],
+        max_tokens:  this.defaultSettings.max_tokens,
+      }
+
+      let completion: any;
       try {
-        res = await this.openai.createCompletion(this.defaultSettings);
+        completion = await this.openai.chat.completions.create(params);
       } catch (error: any) {
         if (error.response) {
           console.log(error.response.status);
@@ -137,7 +144,7 @@ export class Loz {
           console.log(error.message);
         }
       }
-      process.stdout.write(res.data.choices[0].text);
+      process.stdout.write(completion.choices[0]?.message?.content);
       process.stdout.write("\n");
     });
   }

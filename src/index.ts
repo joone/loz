@@ -156,10 +156,7 @@ export class Loz {
     diff = diff.replace(/.*\n/, "");
 
     const prompt =
-      "Generate a commit message for the following code changes like this:\n\
-       title\n\
-       <empty line>\n\
-       description\n";
+      "Generate a commit message for the following code changes:\n";
 
     this.defaultSettings.prompt = prompt + diff;
     this.defaultSettings.stream = false;

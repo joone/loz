@@ -123,7 +123,7 @@ export class Loz {
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      this.defaultSettings.prompt = prompt + ": \n" + data;
+      this.defaultSettings.prompt = prompt + "\n" + data;
       this.defaultSettings.stream = false;
       this.defaultSettings.max_tokens = 500;
 

@@ -130,8 +130,8 @@ export class Loz {
       const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: this.defaultSettings.prompt }],
-        max_tokens:  this.defaultSettings.max_tokens,
-      }
+        max_tokens: this.defaultSettings.max_tokens,
+      };
 
       let completion: any;
       try {
@@ -168,7 +168,7 @@ export class Loz {
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt + diff }],
-      max_tokens:  this.defaultSettings.max_tokens,
+      max_tokens: this.defaultSettings.max_tokens,
       temperature: this.defaultSettings.temperature,
       top_p: this.defaultSettings.top_p,
       frequency_penalty: this.defaultSettings.frequency_penalty,
@@ -247,7 +247,7 @@ export class Loz {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: settings.prompt }],
       stream: true,
-      max_tokens:  this.defaultSettings.max_tokens,
+      max_tokens: this.defaultSettings.max_tokens,
       temperature: this.defaultSettings.temperature,
       top_p: this.defaultSettings.top_p,
       frequency_penalty: this.defaultSettings.frequency_penalty,

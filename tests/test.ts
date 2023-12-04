@@ -7,12 +7,10 @@ describe("Loz.chekcEnv()", () => {
   it("should return true", () => {
     let loz = new Loz();
 
-    const result = loz.checkEnv()
+    const result = loz.checkEnv();
     expect(result).to.equal(true);
   });
-
 });
-
 
 describe("Loz.openaiChatCompletionCreate()", () => {
   it("should return true", async () => {
@@ -26,7 +24,6 @@ describe("Loz.openaiChatCompletionCreate()", () => {
     };
 
     const completion = await loz.openaiChatCompletionCreate(params);
-    expect(completion.choices[0]?.message?.content).to.equal('1+1=2');
+    expect(completion.choices[0]?.message?.content).to.equal("1+1=2");
   });
-
 });

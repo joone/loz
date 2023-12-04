@@ -143,7 +143,7 @@ export class Loz {
 
       let completion: any;
       try {
-        completion = this.openaiChatCompletionCreate(params);
+        completion = await this.openaiChatCompletionCreate(params);
       } catch (error: any) {
         if (error.response) {
           console.log(error.response.status);

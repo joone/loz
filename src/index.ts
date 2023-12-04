@@ -250,7 +250,6 @@ export class Loz {
       top_p: this.defaultSettings.top_p,
       frequency_penalty: this.defaultSettings.frequency_penalty,
       presence_penalty: this.defaultSettings.presence_penalty,
-      stop: ["\n", "Author:", "Date:"],
     };
     try {
       stream = await this.openaiChatCompletionCreate(streaming_params);

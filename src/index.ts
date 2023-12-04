@@ -177,7 +177,7 @@ export class Loz {
 
     let completion: any;
     try {
-      completion = await this.openai.chat.completions.create(params);
+      completion = await this.openaiChatCompletionCreate(params);
     } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
@@ -222,7 +222,7 @@ export class Loz {
       };
       let completion: any;
       try {
-        completion = await this.openai.chat.completions.create(params);
+        completion = await this.openaiChatCompletionCreate(params);
       } catch (error: any) {
         if (error.response) {
           console.log(error.response.status);
@@ -253,7 +253,7 @@ export class Loz {
       stop: ["\n", "Author:", "Date:"],
     };
     try {
-      stream = await this.openai.chat.completions.create(streaming_params);
+      stream = await this.openaiChatCompletionCreate(streaming_params);
     } catch (error: any) {
       console.log(error.message + ":");
       if (error.response) {

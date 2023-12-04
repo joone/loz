@@ -38,9 +38,9 @@ const args = yargs
   let loz = new Loz();
   if (args.prompt !== undefined) {
     if (args.prompt === "commit") await loz.runGitCommit();
-    else loz.handlePipeInput(args.prompt as string);
+    else await loz.handlePipeInput(args.prompt as string);
   } else if (args.git !== undefined) {
-    loz.writeGitCommitMessage();
+    await loz.writeGitCommitMessage();
   } else {
     console.log("Loz: a simple ChatGTP CLI tool");
     loz.runPromptIntractive();

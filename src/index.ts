@@ -127,7 +127,7 @@ export class Loz {
   }
 
   // Handle the input from the pipe
-  handlePipeInput(prompt: string) {
+ async handlePipeInput(prompt: string) {
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
@@ -194,7 +194,7 @@ export class Loz {
     }
   }
 
-  writeGitCommitMessage() {
+  async writeGitCommitMessage() {
     const prompt =
       "Generate a commit message for the following code changes like this:\n\
          title\n\

@@ -203,30 +203,29 @@ export class Loz {
 
   async writeGitCommitMessage() {
     const prompt =
-      "Generate a commit message for the following code changes like this:\n\
-         title\n\
-         <empty line>\n\
-         description\n";
+      "Generate a commit message for the following code changes:\n";
+
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
       // Remove the first line from data
-      // because it is not needed for GPT-3 (added by Copilot)
+      // because it is not needed for GPT-3.
       data = data.replace(/.*\n/, "");
       // Remove Author and Date from commit message
-      // because it is not needed for GPT-3 (added by Copilot)
+      // because it is not needed for GPT-3.
       const commitMessage = data
         .toString()
         .replace(/Author: .*\n/, "")
         .replace(/Date: .*\n/, "");
 
-      this.defaultSettings.prompt = prompt + commitMessage;
-      this.defaultSettings.stream = false;
-      this.defaultSettings.max_tokens = 500;
       const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: prompt + commitMessage }],
+        stream: false,
+        max_tokens: 500,
+        temperature: 0,
       };
+
       let completion: any;
       try {
         completion = await this.openaiChatCompletionCreate(params);

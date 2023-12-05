@@ -44,6 +44,9 @@ const args = yargs
     await loz.writeGitCommitMessage();
   } else {
     console.log("Loz: a simple ChatGTP CLI tool");
-    loz.runPromptIntractive();
+    await loz.runPromptIntractiveMode();
+    console.log("Good bye!");
+    loz.saveChatHistory();
+    loz.saveConfig();
   }
 })();

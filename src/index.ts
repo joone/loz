@@ -298,85 +298,85 @@ export class Loz {
     rl.prompt();
   }
 
-  runPromptIntractive() {
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
+  async runPromptIntractiveMode() {
+    return new Promise((resolve, reject) => {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
 
-    // Output the current mode.
-    this.config.print();
+      // Output the current mode.
+      this.config.print();
 
-    // Set the prompt to display before each input
-    rl.setPrompt("> ");
+      // Set the prompt to display before each input
+      rl.setPrompt("> ");
 
-    // Show the cursor and prompt the user for input
-    rl.prompt();
+      // Show the cursor and prompt the user for input
+      rl.prompt();
 
-    // Set the terminal to raw mode to allow for cursor manipulation
-    process.stdin.setRawMode(true);
+      // Set the terminal to raw mode to allow for cursor manipulation
+      process.stdin.setRawMode(true);
 
-    // Display a blinking cursor
-    setInterval(() => {
-      process.stdout.write("\x1B[?25h");
-      setTimeout(() => {
-        process.stdout.write("\x1B[?25l");
-      }, 500);
-    }, 1000);
+      // Display a blinking cursor
+      setInterval(() => {
+        process.stdout.write("\x1B[?25h");
+        setTimeout(() => {
+          process.stdout.write("\x1B[?25l");
+        }, 500);
+      }, 1000);
 
-    // Listen for user input
-    rl.on("line", (input: string) => {
-      // Tokenize the input with space as the delimiter
-      const tokens = input.split(" ");
-      if (input === "exit" || input === "quit") {
-        console.log("Good bye!");
-        this.saveChatHistory();
-        this.saveConfig();
-        process.exit(0);
-      } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
-        if (tokens.length === 3) {
-          if (this.config.get(tokens[1]) !== undefined) {
-            console.log(
-              `${this.config.get(tokens[1])?.value} will be updated with ${
-                tokens[2]
-              }`
-            );
-          }
-          this.config.set(tokens[1], tokens[2]);
-        } else if (tokens.length === 2) {
-          console.log(this.config.get(tokens[1]));
-        } else if (tokens.length === 1) {
-          this.config.print();
-        } else console.log("Invalid command");
-        rl.prompt();
-        return;
-      }
-
-      if (input.length !== 0) {
-        let mode = this.config.get("mode")?.value;
-        // ESL: English as a Second Language
-        if (this.config.get("mode")?.value === "esl") {
-          this.defaultSettings.prompt =
-            "Rephrase the following question to make it sound more natural and asnwer the question: \n";
-        } else if (this.config.get("mode")?.value === "proofread") {
-          this.defaultSettings.prompt =
-            "Can you proofread the following setnence? Show me the difference between the given sentence and your correction.\n";
+      // Listen for user input
+      rl.on("line", (input: string) => {
+        // Tokenize the input with space as the delimiter
+        const tokens = input.split(" ");
+        if (input === "exit" || input === "quit") {
+          console.log("Good bye!");
+          this.saveChatHistory();
+          this.saveConfig();
+          process.exit(0);
+        } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
+          if (tokens.length === 3) {
+            if (this.config.get(tokens[1]) !== undefined) {
+              console.log(
+                `${this.config.get(tokens[1])?.value} will be updated with ${
+                  tokens[2]
+                }`
+              );
+            }
+            this.config.set(tokens[1], tokens[2]);
+          } else if (tokens.length === 2) {
+            console.log(this.config.get(tokens[1]));
+          } else if (tokens.length === 1) {
+            this.config.print();
+          } else console.log("Invalid command");
+          rl.prompt();
+          reject("rejected");
+          return;
         }
-        this.defaultSettings.prompt += input;
-        this.defaultSettings.max_tokens = 4000;
-        this.runCompletion(this.defaultSettings, rl);
-        //if (mode === undefined) mode = "default";
-        // this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
-      }
-    });
 
-    // Handle CTRL+C to exit the program
-    rl.on("SIGINT", () => {
-      rl.close();
-      console.log("Good bye!");
-      this.saveChatHistory();
-      this.saveConfig();
-      process.exit(0);
+        if (input.length !== 0) {
+          let mode = this.config.get("mode")?.value;
+          // ESL: English as a Second Language
+          if (this.config.get("mode")?.value === "esl") {
+            this.defaultSettings.prompt =
+              "Rephrase the following question to make it sound more natural and asnwer the question: \n";
+          } else if (this.config.get("mode")?.value === "proofread") {
+            this.defaultSettings.prompt =
+              "Can you proofread the following setnence? Show me the difference between the given sentence and your correction.\n";
+          }
+          this.defaultSettings.prompt += input;
+          this.defaultSettings.max_tokens = 4000;
+          this.runCompletion(this.defaultSettings, rl);
+          //if (mode === undefined) mode = "default";
+          // this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
+        }
+      });
+
+      // Handle CTRL+C to exit the program
+      rl.on("SIGINT", () => {
+        rl.close();
+        resolve("Done");
+      });
     });
   }
 

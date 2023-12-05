@@ -164,11 +164,11 @@ export class Loz {
     diff = diff.replace(/.*\n/, "");
 
     const prompt =
-      "Generate a commit message for the following code changes:\n";
+      "Generate a commit message for the following code changes:\n" + diff;
 
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt + diff }],
+      messages: [{ role: "user", content: prompt }],
       stream: false,
       max_tokens: 500,
       temperature: 0,
@@ -195,6 +195,13 @@ export class Loz {
     } catch (error: any) {
       console.log(error);
     }
+
+    const promptAndCompleteText = {
+      mode: "loz commit mode",
+      prompt: prompt,
+      answer: gitCommitMessage,
+    };
+    this.chatHistory.dialogue.push(promptAndCompleteText);
 
     return gitCommitMessage;
   }

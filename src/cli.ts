@@ -39,6 +39,7 @@ const args = yargs
   if (args.prompt !== undefined) {
     if (args.prompt === "commit") {
       await loz.runGitCommit();
+      loz.saveChatHistory();
     } else await loz.handlePipeInput(args.prompt as string);
   } else if (args.git !== undefined) {
     await loz.writeGitCommitMessage();

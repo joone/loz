@@ -150,6 +150,7 @@ export class Loz {
           console.log(error.response.data);
         } else {
           console.log(error.message);
+          return;
         }
       }
       process.stdout.write(completion.choices[0]?.message?.content);
@@ -183,6 +184,7 @@ export class Loz {
         console.log(error.response.data);
       } else {
         console.log(error.message);
+        return;
       }
     }
 
@@ -194,6 +196,7 @@ export class Loz {
       console.log(res);
     } catch (error: any) {
       console.log(error);
+      return;
     }
 
     const promptAndCompleteText = {
@@ -241,6 +244,7 @@ export class Loz {
         } else {
           console.log(error.message);
         }
+        return;
       }
 
       process.stdout.write(

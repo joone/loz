@@ -168,13 +168,17 @@ export class Loz {
     const prompt =
       "Generate a commit message for the following code changes:\n";
 
-    this.defaultSettings.prompt = prompt + diff;
+    /*this.defaultSettings.prompt = prompt + diff;
     this.defaultSettings.stream = false;
     this.defaultSettings.max_tokens = 500;
+    this.temperature: 0,*/
 
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt + diff }],
+      stream: false,
+      max_tokens: 500,
+      temperature: 0,
     };
 
     let completion: any;
@@ -189,11 +193,14 @@ export class Loz {
       }
     }
 
+    const gitCommitMessage = completion.choices[0]?.message?.content;
     try {
-      await this.git.commit(completion.choices[0]?.message?.content);
+      await this.git.commit(gitCommitMessage);
     } catch (error: any) {
       console.log(error);
     }
+
+    return gitCommitMessage;
   }
 
   async writeGitCommitMessage() {

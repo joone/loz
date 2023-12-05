@@ -4,7 +4,7 @@
   "description": "CLI for various knowledge services",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joone/loz.git"
+    "url": "git+https://github.com/joone/loz.git"
   },
   "main": "dist/index.js",
   "scripts": {

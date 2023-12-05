@@ -179,6 +179,7 @@ export class Loz {
     let completion: any;
     try {
       completion = await this.openaiChatCompletionCreate(params);
+      await this.git.showHEAD();
     } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);

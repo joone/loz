@@ -64,4 +64,21 @@ export class Git {
       });
     });
   }
+
+  public async showHEAD(): Promise<string> {
+    return await new Promise((resolve, reject) => {
+      exec("git show HEAD", (error: any, stdout: any, stderr: any) => {
+        if (error) {
+          console.error(`Error: ${error.message}`);
+          reject(error.message);
+          return;
+        }
+        if (stderr) {
+          reject(`Error: ${stderr}`);
+          return;
+        }
+        resolve(stdout);
+      });
+    });
+  }
 }

@@ -168,11 +168,6 @@ export class Loz {
     const prompt =
       "Generate a commit message for the following code changes:\n";
 
-    /*this.defaultSettings.prompt = prompt + diff;
-    this.defaultSettings.stream = false;
-    this.defaultSettings.max_tokens = 500;
-    this.temperature: 0,*/
-
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt + diff }],

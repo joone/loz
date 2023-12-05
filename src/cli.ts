@@ -49,5 +49,6 @@ const args = yargs
     console.log("Good bye!");
     loz.saveChatHistory();
     loz.saveConfig();
+    process.exit(0);
   }
 })();

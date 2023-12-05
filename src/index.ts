@@ -341,10 +341,8 @@ export class Loz {
         // Tokenize the input with space as the delimiter
         const tokens = input.split(" ");
         if (input === "exit" || input === "quit") {
-          console.log("Good bye!");
-          this.saveChatHistory();
-          this.saveConfig();
-          process.exit(0);
+          resolve("exit");
+          return;
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
           if (tokens.length === 3) {
             if (this.config.get(tokens[1]) !== undefined) {

@@ -31,9 +31,7 @@ export class Loz {
   defaultSettings: GPTSettings;
   openai: any;
   chatHistory: ChatHistory = { date: "", dialogue: [] };
-  curPromptAndAnswer: PromptAndAnswer = { mode: "", prompt: "", answer: "" };
   configfPath: string;
-  curCompleteText: string = "";
   config: Config = new Config();
   git: Git = new Git();
 
@@ -249,6 +247,7 @@ export class Loz {
     });
   }
 
+  // Interactive mode
   async runCompletion(settings: any, rl: any) {
     let stream: any;
     const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
@@ -276,12 +275,12 @@ export class Loz {
       process.exit();
     }
     if (DEBUG === true) console.log(stream.data);
-
+    let curCompleteText = "";
     try {
       for await (const data of stream) {
         if (data === null) return;
         const streamData = data.choices[0]?.delta?.content || "";
-        this.curCompleteText += streamData;
+        curCompleteText += streamData;
         process.stdout.write(streamData);
       }
       process.stdout.write("\n");
@@ -289,9 +288,13 @@ export class Loz {
       console.error("An error occurred during OpenAI request: ", error);
     }
 
-    this.curPromptAndAnswer.answer = this.curCompleteText;
-    this.chatHistory.dialogue.push(this.curPromptAndAnswer);
-    this.curCompleteText = "";
+    const promptAndCompleteText = {
+      mode: "interactive",
+      prompt: settings.prompt,
+      answer: curCompleteText,
+    };
+    this.chatHistory.dialogue.push(promptAndCompleteText);
+
     rl.prompt();
   }
 
@@ -362,8 +365,8 @@ export class Loz {
         this.defaultSettings.prompt += input;
         this.defaultSettings.max_tokens = 4000;
         this.runCompletion(this.defaultSettings, rl);
-        if (mode === undefined) mode = "default";
-        this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
+        //if (mode === undefined) mode = "default";
+        // this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
       }
     });
 

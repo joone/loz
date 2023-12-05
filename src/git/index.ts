@@ -16,11 +16,7 @@ export class Git {
           reject(error.message);
           return;
         }
-        if (stderr) {
-          //console.error(`Error: ${stderr}`);
-          reject(`Error: ${stderr}`);
-          return;
-        }
+
         resolve(stdout);
       });
     });
@@ -38,11 +34,6 @@ export class Git {
             reject(error.message);
             return;
           }
-          if (stderr) {
-            //console.error(`Error: ${stderr}`);
-            reject(`Error: ${stderr}`);
-            return;
-          }
           resolve(stdout);
         }
       );
@@ -57,11 +48,7 @@ export class Git {
           reject(error.message);
           return;
         }
-        if (stderr) {
-          //console.error(`Error: ${stderr}`);
-          reject(`Error: ${stderr}`);
-          return;
-        }
+
         resolve(stdout);
       });
     });

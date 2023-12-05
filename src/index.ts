@@ -191,7 +191,9 @@ export class Loz {
     const gitCommitMessage = completion.choices[0]?.message?.content;
     try {
       await this.git.commit(gitCommitMessage);
-      await this.git.showHEAD();
+      const res = await this.git.showHEAD();
+      console.log("Generated commit message:");
+      console.log(res);
     } catch (error: any) {
       console.log(error);
     }

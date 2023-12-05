@@ -27,6 +27,8 @@ export class Git {
   }
 
   public async commit(message: string): Promise<string> {
+    // Add a backslash before each backtick
+    message = message.replace(/`/g, "\\`");
     return await new Promise((resolve, reject) => {
       exec(
         `git commit -m "${message}"`,

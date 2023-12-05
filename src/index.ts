@@ -179,7 +179,6 @@ export class Loz {
     let completion: any;
     try {
       completion = await this.openaiChatCompletionCreate(params);
-      await this.git.showHEAD();
     } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
@@ -192,6 +191,7 @@ export class Loz {
     const gitCommitMessage = completion.choices[0]?.message?.content;
     try {
       await this.git.commit(gitCommitMessage);
+      await this.git.showHEAD();
     } catch (error: any) {
       console.log(error);
     }

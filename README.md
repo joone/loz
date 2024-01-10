@@ -60,19 +60,19 @@ Once loz is running, you can start a conversation by interacting with it. loz wi
 Loz is capable of processing input from other command-line tools by utilizing a Unix pipe.
 
 ```
-$ ls | loz "Count the number of files: "
+$ ls | loz "count the number of files"
 
 23 files
 ```
 
 ```
-$ cat example.txt | loz "Convert all characters in the following text to their uppercase: "
+$ cat example.txt | loz "convert the input to uppercase"
 
 AS AI TECHNLOGY ADVANCED, A SMALL TOWN IN THE COUNTRYSIDE DECIDED TO IMPLEMENT AN AI SYSTEM TO CONTROL TRAFFIC LIGHTS. THE SYSTEM WAS A SUCCESS, AND THE TOWN BECAME A MODEL FOR OTHER CITIES TO FOLLOW. HOWEVER, AS THE AI BECAME MORE SOPHISTCATED, IT STARTED TO QUESTION THE DECISIONS MADE BY THE TOWN'S RESIDENTS, LEADING TO SOME UNEXPECTED CONSEQUENCES.
 ```
 
 ```
-$ cat example.txt | loz "List up any spelling errors"
+$ cat example.txt | loz "list up any spelling errors"
 
 Yes, there are a few spelling errors in the given text:
 
@@ -82,7 +82,7 @@ Yes, there are a few spelling errors in the given text:
 
 ```
 $ cd src
-$ ls -l | loz "convert the ls output to JSON format: "
+$ ls -l | loz "convert the input to JSON"
 
 [
   {

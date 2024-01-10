@@ -72,7 +72,7 @@ AS AI TECHNLOGY ADVANCED, A SMALL TOWN IN THE COUNTRYSIDE DECIDED TO IMPLEMENT A
 ```
 
 ```
-$ cat example.txt | loz "can you find any spelling errors: "
+$ cat example.txt | loz "List up any spelling errors"
 
 Yes, there are a few spelling errors in the given text:
 

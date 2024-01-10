@@ -44,6 +44,11 @@ const args = yargs
   } else if (args.git !== undefined) {
     await loz.writeGitCommitMessage();
   } else {
+    // Hanlde the pipe input
+    if (!process.stdin.isTTY) {
+      console.log("Input your prompt:");
+      process.exit(0);
+    }
     console.log("Loz: a simple ChatGTP CLI tool");
     await loz.runPromptIntractiveMode();
     console.log("Good bye!");

@@ -40,7 +40,16 @@ const args = yargs
     if (args.prompt === "commit") {
       await loz.runGitCommit();
       loz.saveChatHistory();
-    } else await loz.handlePipeInput(args.prompt as string);
+    } else {
+      if (!process.stdin.isTTY) {
+        await loz.handlePipeInput(args.prompt as string);
+      } else {
+        let completion = await loz.runCompletionWithPrompt(
+          args.prompt as string
+        );
+        console.log(completion);
+      }
+    }
   } else if (args.git !== undefined) {
     await loz.writeGitCommitMessage();
   } else {

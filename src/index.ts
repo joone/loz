@@ -118,6 +118,32 @@ export class Loz {
     }
   }
 
+  async runCompletionWithPrompt(prompt: string) {
+    this.defaultSettings.prompt = prompt;
+    this.defaultSettings.max_tokens = 500;
+
+    const params: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: this.defaultSettings.prompt }],
+      max_tokens: this.defaultSettings.max_tokens,
+    };
+
+    let completion: any;
+    try {
+      completion = await this.openaiChatCompletionCreate(params);
+    } catch (error: any) {
+      if (error.response) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+      } else {
+        console.log(error.message);
+        return;
+      }
+    }
+    //console.log(completion.choices[0]?.message?.content);
+    return completion.choices[0]?.message?.content;
+  }
+
   async openaiChatCompletionCreate(
     params: OpenAI.Chat.ChatCompletionCreateParams
   ) {

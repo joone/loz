@@ -51,7 +51,13 @@ const args = yargs
       }
     }
   } else if (args.git !== undefined) {
-    await loz.writeGitCommitMessage();
+    // git diff | loz --git
+    if (!process.stdin.isTTY) {
+      await loz.writeGitCommitMessage();
+    } else {
+      // we should run like this:
+      console.log("Run loz like this: git diff | loz --git");
+    }
   } else {
     // Hanlde the pipe input
     if (!process.stdin.isTTY) {

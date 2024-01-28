@@ -64,9 +64,3 @@ export class OllamaAPI extends LLMService {
     return result.output;
   }
 }
-
-/*let myDog: LLMService = new Dog();
-let myCat: Animal = new Cat();
-
-myDog.makeSound(); // Outputs: Woof
-myCat.makeSound(); // Outputs: Meow*/

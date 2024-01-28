@@ -161,8 +161,14 @@ export class Loz {
       completion = await this.openai.chat.completions.create(params);
     } catch (error: any) {
       if (error.response) {
-        console.log(error.response.status);
-        console.log(error.response.data);
+        if (error.response.status === 401) {
+          console.log("Invalid API key");
+        } else if (error.response.status === 429) {
+          console.log("API request limit reached");
+        } else {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        }
       } else {
         console.log(error.message);
         return "";

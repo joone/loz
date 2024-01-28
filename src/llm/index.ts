@@ -2,6 +2,7 @@ import { LLMSettings } from "../";
 import OpenAI from "openai";
 import { Ollama } from "ollama-node";
 
+const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 abstract class LLMService {
   api: any;
   async completion(params: LLMSettings) {
@@ -57,9 +58,11 @@ export class OllamaAPI extends LLMService {
   }
 
   async completion(params: LLMSettings) {
-    console.log("Ollama completion");
-    console.log("Prompt: " + params.prompt);
-    console.log("Model: " + params.model);
+    if (DEBUG) {
+      console.log("Ollama completion");
+      console.log("Prompt: " + params.prompt);
+      console.log("Model: " + params.model);
+    }
     await this.api.setModel(params.model);
 
     const result = await this.api.generate(params.prompt);

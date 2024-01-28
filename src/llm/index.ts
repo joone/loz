@@ -5,7 +5,7 @@ import { Ollama } from "ollama-node";
 abstract class LLMService {
   api: any;
   async completion(params: LLMSettings) {
-    return "";
+    return { content: "", model: "" };
   }
 }
 
@@ -40,10 +40,13 @@ export class OpenAiAPI extends LLMService {
       } else {
         console.log(error.message);
       }
-      return "";
+      return { content: "", model: "" };
     }
 
-    return completion.choices[0]?.message?.content;
+    return {
+      content: completion.choices[0]?.message?.content,
+      model: gptParams.model,
+    };
   }
 }
 
@@ -61,6 +64,6 @@ export class OllamaAPI extends LLMService {
 
     const result = await this.api.generate(params.prompt);
 
-    return result.output;
+    return { content: result.output, model: params.model };
   }
 }

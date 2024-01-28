@@ -47,7 +47,7 @@ const args = yargs
       } else {
         // $ loz "prompt"
         const completion = await loz.completeUserPrompt(args.prompt as string);
-        console.log(completion);
+        console.log(completion.content);
       }
     }
   } else if (args.git !== undefined) {

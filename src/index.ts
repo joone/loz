@@ -277,7 +277,6 @@ export class Loz {
         console.error("An error occurred during OpenAI request: ", error);
       }
     } else {
-      params.model = "llama2";
       curCompleteText = await this.llmAPI.completion(params);
       process.stdout.write(curCompleteText);
       process.stdout.write("\n");
@@ -357,9 +356,13 @@ export class Loz {
             this.defaultSettings.prompt =
               "Can you proofread the following setnence? Show me the difference between the given sentence and your correction.\n";
           }
-          this.defaultSettings.prompt += input;
-          this.defaultSettings.max_tokens = 4000;
-          this.runCompletion(this.defaultSettings, rl);
+
+          let params: LLMSettings;
+          params = this.defaultSettings;
+          params.model = "llama2";
+          params.prompt = input;
+          params.max_tokens = 4000;
+          this.runCompletion(params, rl);
           //if (mode === undefined) mode = "default";
           // this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
         }

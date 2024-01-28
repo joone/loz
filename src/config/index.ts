@@ -89,6 +89,9 @@ export class Config implements ConfigInterface {
       this.set("mode", "default");
       this.set("api", name);
       rl.close();
+
+      fs.writeFileSync(configFilePath, this.toString());
+
       return false;
     }
     let rawData: any = fs.readFileSync(configFilePath);

@@ -123,14 +123,6 @@ export class Loz {
     }
   }
 
-  async openaiChatCompletionCreate(
-    params: OpenAI.Chat.ChatCompletionCreateParams
-  ) {
-    const completion = await this.openai.chat.completions.create(params);
-
-    return completion;
-  }
-
   // Handle the input from the pipe
   async handlePipeInput(prompt: string) {
     process.stdin.setEncoding("utf8");
@@ -156,7 +148,7 @@ export class Loz {
 
     let completion: any;
     try {
-      completion = await this.openaiChatCompletionCreate(params);
+      completion = await this.openai.chat.completions.create(params);
     } catch (error: any) {
       if (error.response) {
         console.log(error.response.status);
@@ -275,7 +267,7 @@ export class Loz {
       presence_penalty: this.defaultSettings.presence_penalty,
     };
     try {
-      stream = await this.openaiChatCompletionCreate(streaming_params);
+      stream = await this.openai.chat.completions(streaming_params);
     } catch (error: any) {
       console.log(error.message + ":");
       if (error.response) {

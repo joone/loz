@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import OpenAI from "openai";
-import { Ollama } from "ollama-node";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory, PromptAndAnswer } from "./history";
@@ -151,38 +150,6 @@ export class Loz {
     params.prompt = prompt;
     params.model = "llama2";
     return await this.llmAPI.completion(params);
-  }
-
-  async runOpenAIChatCompletion(params: LLMSettings) {
-    const gptParams: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: params.prompt }],
-      stream: false,
-      max_tokens: params.max_tokens,
-      temperature: params.temperature,
-    };
-
-    let completion: any;
-
-    try {
-      completion = await this.openai.chat.completions.create(gptParams);
-    } catch (error: any) {
-      if (error.response) {
-        if (error.response.status === 401) {
-          console.log("Invalid API key");
-        } else if (error.response.status === 429) {
-          console.log("API request limit reached");
-        } else {
-          console.log(error.response.status);
-          console.log(error.response.data);
-        }
-      } else {
-        console.log(error.message);
-      }
-      return "";
-    }
-
-    return completion.choices[0]?.message?.content;
   }
 
   async runGitCommit() {

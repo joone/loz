@@ -42,6 +42,7 @@ const args = yargs
       loz.saveChatHistory();
     } else {
       if (!process.stdin.isTTY) {
+        // $ echo "prompt" | loz "convert the input to uppercase"
         await loz.handlePipeInput(args.prompt as string);
       } else {
         // $ loz "prompt"

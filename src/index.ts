@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import OpenAI from "openai";
 import { Ollama } from "ollama-node";
+import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory, PromptAndAnswer } from "./history";
 import { Config, ConfigItem } from "./config";
@@ -17,7 +18,7 @@ const DEBUG = process.env.DEBUG === "true" ? true : false;
 const HOME_PATH = process.env.HOME || "";
 const LOG_DEV_PATH = "logs";
 
-interface LLMSettings {
+export interface LLMSettings {
   model: string;
   prompt: string;
   temperature: number;
@@ -30,6 +31,7 @@ interface LLMSettings {
 }
 
 export class Loz {
+  llmAPI: any;
   defaultSettings: LLMSettings;
   openai: any;
   chatHistory: ChatHistory = { date: "", dialogue: [] };
@@ -50,7 +52,8 @@ export class Loz {
       presence_penalty: 0.0,
     };
 
-    this.openai = new OpenAI();
+    if (this.checkAPI() === "openai") this.llmAPI = new OpenAiAPI();
+    else this.llmAPI = new OllamaAPI();
 
     // Create a config for the application
     this.configfPath = path.join(HOME_PATH, ".loz");
@@ -132,9 +135,10 @@ export class Loz {
       let params: LLMSettings;
       params = this.defaultSettings;
       params.max_tokens = 500;
+      params.model = "llama2";
       params.prompt = prompt + "\n" + data;
 
-      const completion = await this.runOpenAIChatCompletion(params);
+      const completion = await this.llmAPI.completion(params);
       process.stdout.write(completion);
       process.stdout.write("\n");
     });
@@ -145,7 +149,8 @@ export class Loz {
     params = this.defaultSettings;
     params.max_tokens = 500;
     params.prompt = prompt;
-    return await this.runOpenAIChatCompletion(params);
+    params.model = "llama2";
+    return await this.llmAPI.completion(params);
   }
 
   async runOpenAIChatCompletion(params: LLMSettings) {
@@ -279,49 +284,57 @@ export class Loz {
   }
 
   // Interactive mode
-  async runCompletion(settings: any, rl: any) {
-    let stream: any;
-    const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: settings.prompt }],
-      stream: true,
-      max_tokens: this.defaultSettings.max_tokens,
-      temperature: this.defaultSettings.temperature,
-      top_p: this.defaultSettings.top_p,
-      frequency_penalty: this.defaultSettings.frequency_penalty,
-      presence_penalty: this.defaultSettings.presence_penalty,
-    };
-    try {
-      stream = await this.openai.chat.completions(streaming_params);
-    } catch (error: any) {
-      console.log(error.message + ":");
-      if (error.response) {
-        // console.log(error.response.data);
-        if (error.response.status === 401) {
-          console.log("Invalid API key");
-        } else if (error.response.status === 429) {
-          console.log("API request limit reached");
-        }
-      }
-      process.exit();
-    }
-    if (DEBUG === true) console.log(stream.data);
+  async runCompletion(params: LLMSettings, rl: any) {
     let curCompleteText = "";
-    try {
-      for await (const data of stream) {
-        if (data === null) return;
-        const streamData = data.choices[0]?.delta?.content || "";
-        curCompleteText += streamData;
-        process.stdout.write(streamData);
+    if (this.checkAPI() === "openai") {
+      let stream: any;
+      const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: params.prompt }],
+        stream: true,
+        max_tokens: params.max_tokens,
+        temperature: params.temperature,
+        top_p: params.top_p,
+        frequency_penalty: params.frequency_penalty,
+        presence_penalty: params.presence_penalty,
+      };
+      try {
+        stream = await this.openai.chat.completions(streaming_params);
+      } catch (error: any) {
+        console.log(error.message + ":");
+        if (error.response) {
+          // console.log(error.response.data);
+          if (error.response.status === 401) {
+            console.log("Invalid API key");
+          } else if (error.response.status === 429) {
+            console.log("API request limit reached");
+          }
+        }
+        process.exit();
       }
+      if (DEBUG === true) console.log(stream.data);
+
+      try {
+        for await (const data of stream) {
+          if (data === null) return;
+          const streamData = data.choices[0]?.delta?.content || "";
+          curCompleteText += streamData;
+          process.stdout.write(streamData);
+        }
+        process.stdout.write("\n");
+      } catch (error) {
+        console.error("An error occurred during OpenAI request: ", error);
+      }
+    } else {
+      params.model = "llama2";
+      curCompleteText = await this.llmAPI.completion(params);
+      process.stdout.write(curCompleteText);
       process.stdout.write("\n");
-    } catch (error) {
-      console.error("An error occurred during OpenAI request: ", error);
     }
 
     const promptAndCompleteText = {
       mode: "interactive",
-      prompt: settings.prompt,
+      prompt: params.prompt,
       answer: curCompleteText,
     };
     this.chatHistory.dialogue.push(promptAndCompleteText);

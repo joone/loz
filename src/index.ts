@@ -189,15 +189,7 @@ export class Loz {
     });
   }
 
-  async runGitCommit() {
-    let diff = await this.git.getDiffFromStaged();
-
-    // Remove the first line of the diff
-    diff = diff.replace(/.*\n/, "");
-
-    const prompt =
-      "Generate a commit message for the following code changes:\n" + diff;
-
+  async runOpenAIChatCompletion(prompt: string) {
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
@@ -215,11 +207,28 @@ export class Loz {
         console.log(error.response.data);
       } else {
         console.log(error.message);
-        return;
+        return "";
       }
     }
 
-    const gitCommitMessage = completion.choices[0]?.message?.content;
+    return completion.choices[0]?.message?.content;
+  }
+
+  async runGitCommit() {
+    let diff = await this.git.getDiffFromStaged();
+
+    // Remove the first line of the diff
+    diff = diff.replace(/.*\n/, "");
+
+    const prompt =
+      "Generate a commit message for the following code changes:\n" + diff;
+
+    const gitCommitMessage = await this.runOpenAIChatCompletion(prompt);
+    if (gitCommitMessage === "") {
+      console.log("Failed to generate a commit message");
+      return;
+    }
+
     try {
       await this.git.commit(gitCommitMessage);
       const res = await this.git.showHEAD();

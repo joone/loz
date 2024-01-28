@@ -361,8 +361,6 @@ export class Loz {
           params.prompt = input;
           params.max_tokens = 4000;
           this.runCompletion(params, rl);
-          //if (mode === undefined) mode = "default";
-          // this.curPromptAndAnswer = new PromptAndAnswer(mode, input, "");
         }
       });
 

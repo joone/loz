@@ -162,29 +162,11 @@ export class Loz {
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      this.defaultSettings.prompt = prompt + "\n" + data;
-      this.defaultSettings.stream = false;
-      this.defaultSettings.max_tokens = 500;
+      const completion = await this.runCompletionWithPrompt(
+        prompt + "\n" + data
+      );
 
-      const params: OpenAI.Chat.ChatCompletionCreateParams = {
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: this.defaultSettings.prompt }],
-        max_tokens: this.defaultSettings.max_tokens,
-      };
-
-      let completion: any;
-      try {
-        completion = await this.openaiChatCompletionCreate(params);
-      } catch (error: any) {
-        if (error.response) {
-          console.log(error.response.status);
-          console.log(error.response.data);
-        } else {
-          console.log(error.message);
-          return;
-        }
-      }
-      process.stdout.write(completion.choices[0]?.message?.content);
+      process.stdout.write(completion);
       process.stdout.write("\n");
     });
   }

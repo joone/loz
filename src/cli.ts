@@ -44,7 +44,7 @@ const args = yargs
       if (!process.stdin.isTTY) {
         await loz.handlePipeInput(args.prompt as string);
       } else {
-        let completion = await loz.runCompletionWithPrompt(
+        let completion = await loz.runOpenAIChatCompletion(
           args.prompt as string
         );
         console.log(completion);

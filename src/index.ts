@@ -128,16 +128,21 @@ export class Loz {
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      const completion = await this.runOpenAIChatCompletion(
-        prompt + "\n" + data
-      );
+      const params: OpenAI.Chat.ChatCompletionCreateParams = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt + "\n" + data }],
+        stream: false,
+        max_tokens: 500,
+        temperature: 0,
+      };
 
+      const completion = await this.runOpenAIChatCompletion(params);
       process.stdout.write(completion);
       process.stdout.write("\n");
     });
   }
 
-  async runOpenAIChatCompletion(prompt: string) {
+  async completeUserPrompt(prompt: string) {
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
@@ -145,7 +150,12 @@ export class Loz {
       max_tokens: 500,
       temperature: 0,
     };
+    return await this.runOpenAIChatCompletion(params);
+  }
 
+  async runOpenAIChatCompletion(
+    params: OpenAI.Chat.ChatCompletionCreateParams
+  ) {
     let completion: any;
     try {
       completion = await this.openai.chat.completions.create(params);
@@ -171,7 +181,14 @@ export class Loz {
     const prompt =
       "Generate a commit message for the following code changes:\n" + diff;
 
-    const gitCommitMessage = await this.runOpenAIChatCompletion(prompt);
+    const params: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: prompt }],
+      stream: false,
+      max_tokens: 500,
+      temperature: 0,
+    };
+    const gitCommitMessage = await this.runOpenAIChatCompletion(params);
     if (gitCommitMessage === "") {
       console.log("Failed to generate a commit message");
       return;
@@ -217,9 +234,14 @@ export class Loz {
         .replace(/Date: .*\n/, "");
 
       if (this.checkAPI() === "openai") {
-        const gitCommitMessage = await this.runOpenAIChatCompletion(
-          prompt + commitMessage
-        );
+        const params: OpenAI.Chat.ChatCompletionCreateParams = {
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt + commitMessage }],
+          stream: false,
+          max_tokens: 500,
+          temperature: 0,
+        };
+        const gitCommitMessage = await this.runOpenAIChatCompletion(params);
 
         if (gitCommitMessage === "") {
           console.log("Failed to generate a commit message");

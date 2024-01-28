@@ -16,7 +16,7 @@ const DEBUG = process.env.DEBUG === "true" ? true : false;
 const HOME_PATH = process.env.HOME || "";
 const LOG_DEV_PATH = "logs";
 
-interface GPTSettings {
+interface LLMSettings {
   model: string;
   prompt: string;
   temperature: number;
@@ -29,7 +29,7 @@ interface GPTSettings {
 }
 
 export class Loz {
-  defaultSettings: GPTSettings;
+  defaultSettings: LLMSettings;
   openai: any;
   chatHistory: ChatHistory = { date: "", dialogue: [] };
   configfPath: string;

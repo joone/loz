@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import * as yargs from "yargs";
+import { exec } from "child_process";
 import { Loz } from "./index";
+
+const LOZ_DEBUG = process.env.DEBUG === "true" ? true : false;
 
 const args = yargs
   .wrap(null)
@@ -34,8 +37,32 @@ const args = yargs
   .help()
   .parseSync();
 
+function runShellCommand(command: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        reject(`stderr: ${stderr}`);
+        return;
+      }
+      resolve(stdout);
+    });
+  });
+}
+
 (async () => {
+  /*const result = await runShellCommand("ollama --version");
+  if (LOZ_DEBUG) console.log(result);
+
+  if (result.indexOf("ollama") === -1) {
+    console.log("Please install ollama first");
+  }*/
+
   let loz = new Loz();
+  await loz.init();
   if (args.prompt !== undefined) {
     if (args.prompt === "commit") {
       await loz.runGitCommit();

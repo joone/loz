@@ -50,7 +50,10 @@ export class Loz {
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
     };
+    this.configfPath = "";
+  }
 
+  async init() {
     // Create a config for the application
     this.configfPath = path.join(HOME_PATH, ".loz");
     if (!fs.existsSync(this.configfPath)) {
@@ -63,11 +66,11 @@ export class Loz {
       }
     }
 
-    this.loadingConfigFromJSONFile();
+    await this.loadingConfigFromJSONFile();
 
     let api = this.checkAPI();
-    if (llmAPI !== undefined) {
-      api = llmAPI;
+    if (this.llmAPI !== undefined) {
+      api = this.llmAPI;
     }
 
     if (api === "openai") this.llmAPI = new OpenAiAPI();
@@ -79,11 +82,8 @@ export class Loz {
   }
 
   // load config from JSON file
-  loadingConfigFromJSONFile() {
-    // Check if the config file exists
-    if (this.checkGitRepo() === true) {
-      this.config.loadConfig(this.configfPath);
-    }
+  async loadingConfigFromJSONFile() {
+    await this.config.loadConfig(this.configfPath);
   }
 
   checkAPI() {
@@ -129,10 +129,8 @@ export class Loz {
   }
 
   saveConfig() {
-    if (this.checkGitRepo() === true) {
-      const json = JSON.stringify(this.config, null, 2);
-      fs.writeFileSync(this.configfPath + "/config.json", json);
-    }
+    const json = JSON.stringify(this.config, null, 2);
+    fs.writeFileSync(this.configfPath + "/config.json", json);
   }
 
   // Handle the input from the pipe
@@ -385,6 +383,7 @@ export class Loz {
   // check if the program is running in it's git repository.
   checkGitRepo() {
     const gitRepoPath = path.join(__dirname, "../.git");
+    if (DEBUG) console.log(gitRepoPath);
     if (fs.existsSync(gitRepoPath)) {
       return true;
     }

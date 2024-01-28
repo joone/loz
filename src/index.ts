@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import OpenAI from "openai";
+import { exec } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory, PromptAndAnswer } from "./history";
@@ -12,10 +13,26 @@ const readline = require("readline");
 
 require("dotenv").config();
 
-const DEBUG = process.env.DEBUG === "true" ? true : false;
+const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = process.env.HOME || "";
 const LOG_DEV_PATH = "logs";
+
+function runShellCommand(command: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        reject(`stderr: ${stderr}`);
+        return;
+      }
+      resolve(stdout);
+    });
+  });
+}
 
 export interface LLMSettings {
   model: string;
@@ -73,9 +90,20 @@ export class Loz {
       api = this.llmAPI;
     }
 
-    if (api === "openai") this.llmAPI = new OpenAiAPI();
-    else if (this.checkAPI() === "ollama") this.llmAPI = new OllamaAPI();
-    else {
+    if (api === "openai") {
+      this.checkEnv();
+      this.llmAPI = new OpenAiAPI();
+    } else if (this.checkAPI() === "ollama") {
+      const result = await runShellCommand("ollama --version");
+      if (DEBUG) console.log(result);
+      if (result.indexOf("ollama") === -1) {
+        console.log(
+          "Please install ollama with llama2 and codellama first: see https://ollama.ai/download \n"
+        );
+        process.exit(1);
+      }
+      this.llmAPI = new OllamaAPI();
+    } else {
       console.error("Invalid API");
       process.exit(1);
     }

@@ -2,19 +2,6 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function question(query: string): Promise<string> {
-  return new Promise((resolve) => {
-    rl.question(query, (answer) => {
-      resolve(answer);
-    });
-  });
-}
-
 interface ConfigInterface {
   items: ConfigItemInterface[];
 }
@@ -75,6 +62,18 @@ export class Config implements ConfigInterface {
   async loadConfig(configPath: string) {
     const configFilePath = path.join(configPath, "config.json");
     if (!fs.existsSync(configFilePath)) {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      const question = (query: string): Promise<string> => {
+        return new Promise((resolve) => {
+          rl.question(query, (answer) => {
+            resolve(answer);
+          });
+        });
+      };
       const name = await question(
         "Which LLM servide do you want to use? (ollama, openai) "
       );
@@ -100,7 +99,6 @@ export class Config implements ConfigInterface {
     for (let item of config.items) {
       this.set(item.name, item.value);
     }
-    rl.close();
     return true;
   }
 }

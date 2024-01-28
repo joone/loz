@@ -231,6 +231,7 @@ export class Loz {
   }
 
   async writeGitCommitMessage() {
+    if (DEBUG) console.log("writeGitCommitMessage");
     const prompt =
       "Generate a commit message for the following code changes:\n";
 

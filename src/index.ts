@@ -38,7 +38,7 @@ export class Loz {
   config: Config = new Config();
   git: Git = new Git();
 
-  constructor() {
+  constructor(llmAPI?: string) {
     this.checkEnv();
     this.defaultSettings = {
       model: "gpt-3.5-turbo",
@@ -64,21 +64,30 @@ export class Loz {
     }
 
     this.loadingConfigFromJSONFile();
-    if (this.checkAPI() === "openai") this.llmAPI = new OpenAiAPI();
-    else this.llmAPI = new OllamaAPI();
+
+    let api = this.checkAPI();
+    if (llmAPI !== undefined) {
+      api = llmAPI;
+    }
+
+    if (api === "openai") this.llmAPI = new OpenAiAPI();
+    else if (this.checkAPI() === "ollama") this.llmAPI = new OllamaAPI();
+    else {
+      console.error("Invalid API");
+      process.exit(1);
+    }
   }
 
   // load config from JSON file
-  async loadingConfigFromJSONFile() {
+  loadingConfigFromJSONFile() {
     // Check if the config file exists
     if (this.checkGitRepo() === true) {
       this.config.loadConfig(this.configfPath);
     }
-    //this.config.add(new ConfigItem("mode", "learning_english"));
   }
 
   checkAPI() {
-    console.log("API: " + this.config.get("api")?.value);
+    //console.log("API: " + this.config.get("api")?.value);
     return this.config.get("api")?.value;
   }
 

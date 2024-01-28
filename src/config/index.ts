@@ -60,12 +60,13 @@ export class Config implements ConfigInterface {
 
   loadConfig(configPath: string) {
     const configFilePath = path.join(configPath, "config.json");
-    if (!fs.existsSync(configFilePath)) return;
+    if (!fs.existsSync(configFilePath)) return false;
     let rawData: any = fs.readFileSync(configFilePath);
     let config = JSON.parse(rawData);
 
     for (let item of config.items) {
       this.set(item.name, item.value);
     }
+    return true;
   }
 }

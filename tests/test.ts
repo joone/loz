@@ -14,16 +14,9 @@ describe("Loz.chekcEnv()", () => {
 
 describe("Loz.openaiChatCompletionCreate()", () => {
   it("should return true", async () => {
-    let loz = new Loz();
+    let loz = new Loz("ollama");
 
-    const params: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: "1+1=?" }],
-      max_tokens: 50,
-      temperature: 0,
-    };
-
-    const completion = await loz.openaiChatCompletionCreate(params);
-    expect(completion.choices[0]?.message?.content).to.equal("1+1=2");
+    const completion = await loz.completeUserPrompt("1+1");
+    expect(completion.content).to.equal("2");
   });
 });

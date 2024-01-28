@@ -171,8 +171,8 @@ export class Loz {
         }
       } else {
         console.log(error.message);
-        return "";
       }
+      return "";
     }
 
     return completion.choices[0]?.message?.content;

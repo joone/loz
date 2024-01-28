@@ -340,13 +340,11 @@ export class Loz {
             console.log(this.config.get(tokens[1]));
           } else if (tokens.length === 1) {
             this.config.print();
-          } else console.log("Invalid command");
+          } else {
+            console.log("Invalid command");
+          }
           rl.prompt();
-          reject("rejected");
-          return;
-        }
-
-        if (input.length !== 0) {
+        } else if (input.length !== 0) {
           let mode = this.config.get("mode")?.value;
           // ESL: English as a Second Language
           if (this.config.get("mode")?.value === "esl") {

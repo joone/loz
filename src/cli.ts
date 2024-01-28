@@ -65,7 +65,11 @@ const args = yargs
       process.exit(0);
     }
     console.log("Loz: a simple ChatGTP CLI tool");
-    await loz.runPromptIntractiveMode();
+    try {
+      await loz.runPromptIntractiveMode();
+    } catch (error) {
+      console.log(error);
+    }
     console.log("Good bye!");
     loz.saveChatHistory();
     loz.saveConfig();

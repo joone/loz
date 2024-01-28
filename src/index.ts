@@ -6,6 +6,7 @@ import { Ollama } from "ollama-node";
 import { ChatHistory, PromptAndAnswer } from "./history";
 import { Config, ConfigItem } from "./config";
 import { Git } from "./git";
+import { parseAsync } from "yargs";
 
 const readline = require("readline");
 
@@ -128,13 +129,10 @@ export class Loz {
     process.stdin.setEncoding("utf8");
 
     process.stdin.on("data", async (data: String) => {
-      const params: OpenAI.Chat.ChatCompletionCreateParams = {
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt + "\n" + data }],
-        stream: false,
-        max_tokens: 500,
-        temperature: 0,
-      };
+      let params: LLMSettings;
+      params = this.defaultSettings;
+      params.max_tokens = 500;
+      params.prompt = prompt + "\n" + data;
 
       const completion = await this.runOpenAIChatCompletion(params);
       process.stdout.write(completion);
@@ -143,22 +141,26 @@ export class Loz {
   }
 
   async completeUserPrompt(prompt: string) {
-    const params: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-      stream: false,
-      max_tokens: 500,
-      temperature: 0,
-    };
+    let params: LLMSettings;
+    params = this.defaultSettings;
+    params.max_tokens = 500;
+    params.prompt = prompt;
     return await this.runOpenAIChatCompletion(params);
   }
 
-  async runOpenAIChatCompletion(
-    params: OpenAI.Chat.ChatCompletionCreateParams
-  ) {
+  async runOpenAIChatCompletion(params: LLMSettings) {
+    const gptParams: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: params.prompt }],
+      stream: false,
+      max_tokens: params.max_tokens,
+      temperature: params.temperature,
+    };
+
     let completion: any;
+
     try {
-      completion = await this.openai.chat.completions.create(params);
+      completion = await this.openai.chat.completions.create(gptParams);
     } catch (error: any) {
       if (error.response) {
         if (error.response.status === 401) {
@@ -187,13 +189,11 @@ export class Loz {
     const prompt =
       "Generate a commit message for the following code changes:\n" + diff;
 
-    const params: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-      stream: false,
-      max_tokens: 500,
-      temperature: 0,
-    };
+    let params: LLMSettings;
+    params = this.defaultSettings;
+    params.max_tokens = 500;
+    params.prompt = prompt;
+
     const gitCommitMessage = await this.runOpenAIChatCompletion(params);
     if (gitCommitMessage === "") {
       console.log("Failed to generate a commit message");
@@ -240,13 +240,10 @@ export class Loz {
         .replace(/Date: .*\n/, "");
 
       if (this.checkAPI() === "openai") {
-        const params: OpenAI.Chat.ChatCompletionCreateParams = {
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: prompt + commitMessage }],
-          stream: false,
-          max_tokens: 500,
-          temperature: 0,
-        };
+        let params: LLMSettings;
+        params = this.defaultSettings;
+        params.max_tokens = 500;
+        params.prompt = prompt + commitMessage;
         const gitCommitMessage = await this.runOpenAIChatCompletion(params);
 
         if (gitCommitMessage === "") {

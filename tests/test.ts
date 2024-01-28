@@ -1,5 +1,4 @@
 import { Loz } from "../src/index";
-import OpenAI from "openai";
 import { expect } from "chai";
 import "mocha";
 

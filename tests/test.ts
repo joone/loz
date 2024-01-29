@@ -14,6 +14,7 @@ describe("Loz.chekcEnv()", () => {
 describe("Loz.openaiChatCompletionCreate()", () => {
   it("should return true", async () => {
     let loz = new Loz("ollama");
+    await loz.init();
 
     const completion = await loz.completeUserPrompt("1+1");
     expect(completion.content).to.equal("2");

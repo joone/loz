@@ -74,9 +74,7 @@ export class Config implements ConfigInterface {
           });
         });
       };
-      const name = await question(
-        "Which LLM servide do you want to use? (ollama, openai) "
-      );
+      const name = await question("Choose your LLM service: (ollama, openai) ");
 
       if (name === "ollama") {
         console.log(

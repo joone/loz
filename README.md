@@ -25,7 +25,27 @@ Then install the other required dependencies:
 $ ./install.sh
 ```
 
-Next, configure your OpenAPI credentials. You will need to create a `.env` file in the root of the project and add the following variables:
+## Configuring LLM
+
+Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node) and [Ollama]{https://github.com/ollama/ollama} so you can easily swith two LLM service using the config command in the prompt mode.
+
+### Set up Ollama
+To utilize Ollama on your local system, you'll need to install both llama2 and codellama modes. Here's how you can do it on a Linux system:
+
+```
+$ curl https://ollama.ai/install.sh | sh
+$ ollama run llama2
+$ ollama run codellama
+
+```
+
+For more information, see https://ollama.ai/download
+
+### Set up OpenAI API
+
+Setting up your OpenAI API credentials involves a few simple steps:
+
+First, create a `.env` file in the root of the project and add the following variables:
 
 ```
 OPENAI_API_KEY=YOUR_KEY
@@ -48,6 +68,20 @@ To continue using the API, it is necessary to set up a payment method through th
 https://platform.openai.com/account/billing/payment-methods
 
 ## Usage
+
+### Initial Configuration
+
+Upon your initial launch of Loz, you will have the opportunity to select your preferred LLM service.
+
+```
+$ loz
+Choose your LLM service: (ollama, openai)
+```
+
+You can modify your LLM service preference at any time by using the config command within the prompt mode:
+```
+> config api openai
+```
 
 ### Interactive mode
 

@@ -1,5 +1,6 @@
 # Loz [![NPM](https://img.shields.io/npm/v/chatgpt.svg)](https://www.npmjs.com/package/loz)
 ![alt Loz Demo](https://github.com/joone/loz/blob/main/examples/loz_demo.gif?raw=true)
+
 Loz is a command-line tool that enables your preferred LLM to utilize Unix pipes, integrating AI capabilities with other Unix tools.
 
 ## Getting Started

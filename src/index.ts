@@ -156,11 +156,6 @@ export class Loz {
     fs.writeFileSync(filePath, json);
   }
 
-  saveConfig() {
-    const json = JSON.stringify(this.config, null, 2);
-    fs.writeFileSync(this.configfPath + "/config.json", json);
-  }
-
   // Handle the input from the pipe
   async handlePipeInput(prompt: string) {
     process.stdin.setEncoding("utf8");

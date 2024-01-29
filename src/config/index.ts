@@ -23,10 +23,12 @@ export class ConfigItem implements ConfigItemInterface {
 
 export class Config implements ConfigInterface {
   items: ConfigItemInterface[];
+  configFilePath: string;
 
   constructor() {
     this.items = [];
     this.set("mode", "default");
+    this.configFilePath = "";
   }
 
   add(item: ConfigItemInterface) {
@@ -60,8 +62,8 @@ export class Config implements ConfigInterface {
   }
 
   async loadConfig(configPath: string) {
-    const configFilePath = path.join(configPath, "config.json");
-    if (!fs.existsSync(configFilePath)) {
+    this.configFilePath = path.join(configPath, "config.json");
+    if (!fs.existsSync(this.configFilePath)) {
       const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
@@ -87,16 +89,21 @@ export class Config implements ConfigInterface {
       this.set("api", name);
       rl.close();
 
-      fs.writeFileSync(configFilePath, this.toString());
+      this.save();
 
       return false;
     }
-    let rawData: any = fs.readFileSync(configFilePath);
+    let rawData: any = fs.readFileSync(this.configFilePath);
     let config = JSON.parse(rawData);
 
     for (let item of config.items) {
       this.set(item.name, item.value);
     }
     return true;
+  }
+
+  save() {
+    const json = JSON.stringify(this, null, 2);
+    fs.writeFileSync(this.configFilePath, json);
   }
 }

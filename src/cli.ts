@@ -75,7 +75,7 @@ const args = yargs
     }
     console.log("Good bye!");
     loz.saveChatHistory();
-    loz.saveConfig();
+    loz.config.save();
     process.exit(0);
   }
 })();

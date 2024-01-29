@@ -1,6 +1,5 @@
 # Loz [![NPM](https://img.shields.io/npm/v/chatgpt.svg)](https://www.npmjs.com/package/loz)
-Loz is a command-line interface tool based on [OpenAI API](https://platform.openai.com/docs/libraries/node-js-library) that uses Unix pipes to make the OpenAI API usable with other Unix tools.
-
+Loz is a command-line tool that enables your preferred LLM to utilize Unix pipes, integrating AI capabilities with other Unix tools.
 ![alt Loz Demo](https://github.com/joone/loz/blob/main/examples/loz_demo.gif?raw=true)
 
 ## Getting Started

@@ -50,7 +50,7 @@ First, create a `.env` file in the root of the project and add the following var
 OPENAI_API_KEY=YOUR_KEY
 ```
 
-Or if you install Loz using npm command, add OPENAI_API_KEY=YOUR_KEY in .bashrc
+Or if you install Loz using npm command, add `OPENAI_API_KEY=YOUR_KEY` in .bashrc
 
 ```
 export OPENAI_API_KEY=YOUR_KEY
@@ -141,7 +141,7 @@ $ ls -l | loz "convert the input to JSON"
 
 ### Automatically write a GIT commit message
 
-If you run loz commit in your Git repository, loz will automatically generate a commit message with the staged changes like this:
+If you run `loz commit` in your Git repository, loz will automatically generate a commit message with the staged changes like this:
 
 ```
 $  git add --update
@@ -154,7 +154,7 @@ Or copy script/prepare-commit-msg to .git/hooks
 $ chmod a+x .git/hooks/prepare-commit-msg
 ```
 
-Loz uses the LOZ=true environment variable to generate commit messages by reading the diff of the staged files.
+Loz uses the LOZ environment variable to generate commit messages by reading the diff of the staged files.
 
 ```
 $ LOZ=true git commit

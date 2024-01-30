@@ -351,9 +351,7 @@ export class Loz {
           if (tokens.length === 3) {
             if (this.config.get(tokens[1]) !== undefined) {
               console.log(
-                `${this.config.get(tokens[1])?.value} will be updated with ${
-                  tokens[2]
-                }`
+                `The ${tokens[1]} has been updated to '${tokens[2]}'`
               );
             }
             this.config.set(tokens[1], tokens[2]);

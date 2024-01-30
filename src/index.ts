@@ -56,7 +56,6 @@ export class Loz {
   git: Git = new Git();
 
   constructor(llmAPI?: string) {
-    this.checkEnv();
     this.defaultSettings = {
       model: "gpt-3.5-turbo",
       prompt: "",

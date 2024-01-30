@@ -8,6 +8,10 @@ abstract class LLMService {
   async completion(params: LLMSettings) {
     return { content: "", model: "" };
   }
+
+  async completionStream(params: LLMSettings) {
+    return null;
+  }
 }
 
 export class OpenAiAPI extends LLMService {
@@ -48,6 +52,21 @@ export class OpenAiAPI extends LLMService {
       content: completion.choices[0]?.message?.content,
       model: gptParams.model,
     };
+  }
+
+  async completionStream(params: LLMSettings) {
+    const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: params.prompt }],
+      stream: true,
+      max_tokens: params.max_tokens,
+      temperature: params.temperature,
+      top_p: params.top_p,
+      frequency_penalty: params.frequency_penalty,
+      presence_penalty: params.presence_penalty,
+    };
+    let stream = await this.api.chat.completions.create(streaming_params);
+    return stream;
   }
 }
 

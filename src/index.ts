@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import OpenAI from "openai";
 import { exec } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
@@ -49,7 +48,6 @@ export interface LLMSettings {
 export class Loz {
   llmAPI: any;
   defaultSettings: LLMSettings;
-  openai: any;
   chatHistory: ChatHistory = { date: "", dialogue: [] };
   configfPath: string;
   config: Config = new Config();
@@ -92,6 +90,8 @@ export class Loz {
     if (api === "openai") {
       this.checkEnv();
       this.llmAPI = new OpenAiAPI();
+      // FIXME: have to use llmAPI instead of openai
+      //  this.openai = new OpenAI();
     } else if (this.checkAPI() === "ollama") {
       const result = await runShellCommand("ollama --version");
       if (DEBUG) console.log(result);
@@ -269,18 +269,8 @@ export class Loz {
     let curCompleteText = "";
     if (this.checkAPI() === "openai") {
       let stream: any;
-      const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: params.prompt }],
-        stream: true,
-        max_tokens: params.max_tokens,
-        temperature: params.temperature,
-        top_p: params.top_p,
-        frequency_penalty: params.frequency_penalty,
-        presence_penalty: params.presence_penalty,
-      };
       try {
-        stream = await this.openai.chat.completions(streaming_params);
+        stream = await this.llmAPI.completionStream(params);
       } catch (error: any) {
         console.log(error.message + ":");
         if (error.response) {

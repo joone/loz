@@ -30,7 +30,7 @@ $ ./install.sh
 Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node) and [Ollama](https://github.com/ollama/ollama) so you can switch between these two LLM services easily, using the configuration command in prompt mode.
 
 ### Set up Ollama
-To utilize Ollama on your local system, you'll need to install both llama2 and codellama modes. Here's how you can do it on a Linux system:
+To utilize Ollama on your local system, you'll need to install both llama2 and codellama models. Here's how you can do it on a Linux system:
 
 ```
 $ curl https://ollama.ai/install.sh | sh

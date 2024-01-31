@@ -103,8 +103,9 @@ export class Loz {
       }
       this.llmAPI = new OllamaAPI();
     } else {
-      console.error("Invalid API");
-      process.exit(1);
+      // default to openai
+      this.llmAPI = new OpenAiAPI();
+      this.config.set("api", "openai");
     }
   }
 

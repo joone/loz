@@ -11,7 +11,7 @@ describe("Loz.chekcEnv()", () => {
   });
 });
 
-describe("Loz.openaiChatCompletionCreate()", () => {
+describe("Loz.ollama", () => {
   it("should return true", async () => {
     let loz = new Loz("ollama");
     await loz.init();

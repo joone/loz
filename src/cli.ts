@@ -6,7 +6,7 @@ const LOZ_DEBUG = process.env.DEBUG === "true" ? true : false;
 
 const args = yargs
   .wrap(null)
-  .command("$0 [prompt]", "Loz: a simple ChatGTP CLI tool", (yargs) => {
+  .command("$0 [prompt]", "Loz: a simple CLI for LLM", (yargs) => {
     yargs.positional("prompt", {
       description: "Prompt to answer",
       type: "string",

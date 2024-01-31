@@ -3,10 +3,9 @@ import * as path from "path";
 import { exec } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
-import { ChatHistory, PromptAndAnswer } from "./history";
-import { Config, ConfigItem } from "./config";
+import { ChatHistory } from "./history";
+import { Config } from "./config";
 import { Git } from "./git";
-import { parseAsync } from "yargs";
 
 const readline = require("readline");
 

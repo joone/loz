@@ -312,7 +312,7 @@ export class Loz {
     rl.prompt();
   }
 
-  async runPromptIntractiveMode() {
+  async runPromptInteractiveMode() {
     return new Promise((resolve, reject) => {
       const rl = readline.createInterface({
         input: process.stdin,

@@ -36,46 +36,62 @@ const args = yargs
   .help()
   .parseSync();
 
-(async () => {
-  let loz = new Loz();
-  await loz.init();
-  if (args.prompt !== undefined) {
-    if (args.prompt === "commit") {
-      await loz.runGitCommit();
-      loz.saveChatHistory();
-    } else {
-      if (!process.stdin.isTTY) {
-        // $ echo "prompt" | loz "convert the input to uppercase"
-        await loz.handlePipeInput(args.prompt as string);
-      } else {
-        // $ loz "prompt"
-        const completion = await loz.completeUserPrompt(args.prompt as string);
-        console.log(completion.content);
-      }
-    }
-  } else if (args.git !== undefined) {
-    // git diff | loz --git
-    if (!process.stdin.isTTY) {
-      await loz.writeGitCommitMessage();
-    } else {
-      // we should run like this:
-      console.log("Run loz like this: git diff | loz --git");
-    }
+const loz = new Loz();
+
+async function handleLozCommand() {
+  if (args.prompt) {
+    await handlePrompt(args.prompt);
+  } else if (args.git) {
+    await handleGitCommand();
   } else {
-    // Hanlde the pipe input
-    if (!process.stdin.isTTY) {
-      console.log("Input your prompt:");
-      process.exit(0);
-    }
-    console.log("Loz: a simple CLI for LLM");
-    try {
-      await loz.runPromptIntractiveMode();
-    } catch (error) {
-      console.log(error);
-    }
-    console.log("Good bye!");
+    await handleDefaultCase();
+  }
+}
+
+async function handlePrompt(prompt: any) {
+  if (prompt === "commit") {
+    await loz.runGitCommit();
     loz.saveChatHistory();
-    loz.config.save();
+  } else {
+    await handlePromptInput(prompt);
+  }
+}
+
+async function handlePromptInput(prompt: any) {
+  if (!process.stdin.isTTY) {
+    await loz.handlePipeInput(prompt);
+  } else {
+    const completion = await loz.completeUserPrompt(prompt);
+    console.log(completion.content);
+  }
+}
+
+async function handleGitCommand() {
+  if (!process.stdin.isTTY) {
+    await loz.writeGitCommitMessage();
+  } else {
+    console.log("Run loz like this: git diff | loz --git");
+  }
+}
+
+async function handleDefaultCase() {
+  if (!process.stdin.isTTY) {
+    console.log("Input your prompt:");
     process.exit(0);
   }
+  console.log("Loz: a simple CLI for LLM");
+  try {
+    await loz.runPromptInteractiveMode();
+  } catch (error) {
+    console.log(error);
+  }
+  console.log("Good bye!");
+  loz.saveChatHistory();
+  loz.config.save();
+  process.exit(0);
+}
+
+(async () => {
+  await loz.init();
+  await handleLozCommand();
 })();

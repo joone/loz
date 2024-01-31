@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# find highest tag nuber
+# Find the highest tag nuber
 VERSION=`git describe --abbrev=0 --tags`
 
-# replace . with spaces to split into an array
+# Replace dots with spaces to split into an array
 VERSION_BITS=(${VERSION//./ })
 
-# increset the digit
+# Increment the digit
 VNUM1=${VERSION_BITS[0]}
 VNUM2=${VERSION_BITS[1]}
 VNUM3=${VERSION_BITS[2]}
 VNUM3=$((VNUM3+1))
 
-# add new tag
+# Create a new tag
 NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
 
 if [ "$1" ]; then

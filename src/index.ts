@@ -104,6 +104,7 @@ export class Loz {
       this.llmAPI = new OllamaAPI();
     } else {
       // default to openai
+      this.checkEnv();
       this.llmAPI = new OpenAiAPI();
       this.config.set("api", "openai");
     }

@@ -89,8 +89,6 @@ export class Loz {
     if (api === "openai") {
       this.checkEnv();
       this.llmAPI = new OpenAiAPI();
-      // FIXME: have to use llmAPI instead of openai
-      //  this.openai = new OpenAI();
     } else if (this.checkAPI() === "ollama") {
       const result = await runShellCommand("ollama --version");
       if (DEBUG) console.log(result);

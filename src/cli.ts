@@ -67,7 +67,7 @@ const args = yargs
       console.log("Input your prompt:");
       process.exit(0);
     }
-    console.log("Loz: a simple ChatGTP CLI tool");
+    console.log("Loz: a simple CLI for LLM");
     try {
       await loz.runPromptIntractiveMode();
     } catch (error) {

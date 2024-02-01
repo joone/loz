@@ -3,12 +3,21 @@ import { expect } from "chai";
 import "mocha";
 
 describe("Loz.init", () => {
+  before(() => {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("API_KEY environment variable is not set.");
+    }
+  });
+
   it("should return true", async () => {
     let loz = new Loz();
     const res = await loz.init();
 
     expect(res).to.equal(true);
     expect(loz.checkAPI()).to.equal("openai");
+
+    const completion = await loz.completeUserPrompt("1+1=");
+    expect(completion.content).to.equal("2");
   });
 });
 

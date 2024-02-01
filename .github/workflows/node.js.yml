@@ -26,10 +26,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        TEST_KEY: ${{ secrets.TEST_KEY }}
-    - run: echo $TEST_KEY
     - run: npm ci
     - run: npm run build --if-present
     - run: OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} npm test --  --grep=Loz.init

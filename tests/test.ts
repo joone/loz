@@ -4,6 +4,7 @@ import "mocha";
 
 describe("Loz.init", () => {
   before(() => {
+    console.log("TEST_KEY: " + process.env.TEST_KEY);
     if (!process.env.OPENAI_API_KEY) {
       throw new Error("API_KEY environment variable is not set.");
     }

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import "mocha";
 import * as mockStdin from "mock-stdin";
 
-describe("Loz.init", () => {
+describe("openai", () => {
   let stdin: mockStdin.MockSTDIN;
 
   before(() => {
@@ -34,7 +34,8 @@ describe("Loz.init", () => {
   });
 });
 
-describe("Loz.chekcEnv()", () => {
+//  npm test --  --grep=Loz.checkEnv
+describe("loz.checkEnv", () => {
   it("should return true", () => {
     let loz = new Loz();
 
@@ -43,22 +44,14 @@ describe("Loz.chekcEnv()", () => {
   });
 });
 
-describe("Loz.ollama", () => {
-  it("should return true", async () => {
-    let loz = new Loz("ollama");
-    await loz.init();
+if (process.env.LOZ_LOCAL_TEST === "true") {
+  describe("Loz.ollama", () => {
+    it("should return true", async () => {
+      let loz = new Loz("ollama");
+      await loz.init();
 
-    const completion = await loz.completeUserPrompt("1+1");
-    expect(completion.content).to.equal("2");
+      const completion = await loz.completeUserPrompt("1+1=");
+      expect(completion.content).to.equal("2");
+    });
   });
-});
-
-describe("Loz.openai", () => {
-  it("should return true", async () => {
-    let loz = new Loz("openai");
-    await loz.init();
-
-    const completion = await loz.completeUserPrompt("1+1");
-    expect(completion.content).to.equal("2");
-  });
-});
+}

@@ -3,12 +3,12 @@ import { expect } from "chai";
 import "mocha";
 
 describe("Loz.init", () => {
-  it("should return true", () => {
+  it("should return true", async () => {
     let loz = new Loz();
+    const res = await loz.init();
 
-    loz.init().then((result) => {
-      expect(result).to.equal(true);
-    });
+    expect(res).to.equal(true);
+    expect(loz.checkAPI()).to.equal("openai");
   });
 });
 

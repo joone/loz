@@ -1,16 +1,28 @@
 import { Loz } from "../src/index";
 import { expect } from "chai";
 import "mocha";
+import * as mockStdin from "mock-stdin";
 
 describe("Loz.init", () => {
+  let stdin: mockStdin.MockSTDIN;
+
   before(() => {
-    console.log("TEST_KEY: " + process.env.TEST_KEY);
+    stdin = mockStdin.stdin();
     if (!process.env.OPENAI_API_KEY) {
       throw new Error("API_KEY environment variable is not set.");
     }
   });
 
+  after(() => {
+    stdin.restore();
+  });
+
   it("should return true", async () => {
+    process.nextTick(() => {
+      stdin.send("openai\n");
+      stdin.end();
+    });
+
     let loz = new Loz();
     const res = await loz.init();
 

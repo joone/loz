@@ -2,6 +2,16 @@ import { Loz } from "../src/index";
 import { expect } from "chai";
 import "mocha";
 
+describe("Loz.init", () => {
+  it("should return true", () => {
+    let loz = new Loz();
+
+    loz.init().then((result) => {
+      expect(result).to.equal(true);
+    });
+  });
+});
+
 describe("Loz.chekcEnv()", () => {
   it("should return true", () => {
     let loz = new Loz();

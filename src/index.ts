@@ -105,6 +105,8 @@ export class Loz {
       this.llmAPI = new OpenAiAPI();
       this.config.set("api", "openai");
     }
+
+    return true;
   }
 
   // load config from JSON file

@@ -43,6 +43,20 @@ export class Config implements ConfigInterface {
   }
 
   set(name: string, value: string) {
+    // Update the model if the API is changed
+    if (name === "api") {
+      if (value === "openai")
+        this.set(
+          "model",
+          this.get("openai.model")?.value || DEFAULT_OPENAI_MODEL
+        );
+      else if (value === "ollama")
+        this.set(
+          "model",
+          this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL
+        );
+    }
+
     const item = this.get(name);
     if (item) {
       item.value = value;

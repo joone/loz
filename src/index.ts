@@ -84,9 +84,6 @@ export class Loz {
     await this.loadingConfigFromJSONFile();
 
     let api = this.checkAPI();
-    if (this.llmAPI !== undefined) {
-      api = this.llmAPI;
-    }
 
     if (api === "openai") {
       this.checkEnv();
@@ -200,7 +197,6 @@ export class Loz {
     let params: LLMSettings;
     params = this.defaultSettings;
     params.max_tokens = 500;
-    params.model = "codellama";
     params.prompt = prompt;
 
     const complete = await this.llmAPI.completion(params);

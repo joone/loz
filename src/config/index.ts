@@ -2,6 +2,9 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readline from "readline";
 
+export const DEFAULT_OLLAMA_MODEL = "llama2";
+export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
+
 interface ConfigInterface {
   items: ConfigItemInterface[];
 }
@@ -78,11 +81,15 @@ export class Config implements ConfigInterface {
       };
       const name = await question("Choose your LLM service: (ollama, openai) ");
 
+      this.set("openai.model", DEFAULT_OPENAI_MODEL);
+      this.set("ollama.model", DEFAULT_OLLAMA_MODEL);
       if (name === "ollama") {
+        this.set("model", DEFAULT_OLLAMA_MODEL);
         console.log(
           `\nYou should install ${name} with llama2 and codellama models: see https://ollama.ai/download \n`
         );
       } else if (name === "openai") {
+        this.set("model", DEFAULT_OPENAI_MODEL);
         console.log("set OPENAI_API_KEY in your environment variables");
       }
       this.set("mode", "default");

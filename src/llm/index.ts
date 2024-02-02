@@ -21,7 +21,7 @@ export class OpenAiAPI extends LLMService {
   }
   async completion(params: LLMSettings) {
     const gptParams: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
+      model: params.model,
       messages: [{ role: "user", content: params.prompt }],
       stream: false,
       max_tokens: params.max_tokens,
@@ -56,7 +56,7 @@ export class OpenAiAPI extends LLMService {
 
   async completionStream(params: LLMSettings) {
     const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
-      model: "gpt-3.5-turbo",
+      model: params.model,
       messages: [{ role: "user", content: params.prompt }],
       stream: true,
       max_tokens: params.max_tokens,

@@ -4,8 +4,10 @@ import { exec } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory } from "./history";
-import { Config } from "./config";
+import { Config, DEFAULT_OLLAMA_MODEL, DEFAULT_OPENAI_MODEL } from "./config";
 import { Git } from "./git";
+
+const LOZ_DEBUG = process.env.DEBUG === "true" ? true : false;
 
 const readline = require("readline");
 
@@ -54,7 +56,7 @@ export class Loz {
 
   constructor(llmAPI?: string) {
     this.defaultSettings = {
-      model: "gpt-3.5-turbo",
+      model: DEFAULT_OPENAI_MODEL,
       prompt: "",
       temperature: 0,
       max_tokens: 60,
@@ -89,6 +91,8 @@ export class Loz {
     if (api === "openai") {
       this.checkEnv();
       this.llmAPI = new OpenAiAPI();
+      this.defaultSettings.model =
+        this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
     } else if (this.checkAPI() === "ollama") {
       const result = await runShellCommand("ollama --version");
       if (DEBUG) console.log(result);
@@ -99,11 +103,15 @@ export class Loz {
         process.exit(1);
       }
       this.llmAPI = new OllamaAPI();
+      this.defaultSettings.model =
+        this.config.get("model")?.value || DEFAULT_OLLAMA_MODEL;
     } else {
       // default to openai
       this.checkEnv();
       this.llmAPI = new OpenAiAPI();
       this.config.set("api", "openai");
+      this.defaultSettings.model =
+        this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
     }
 
     return true;
@@ -164,7 +172,6 @@ export class Loz {
       let params: LLMSettings;
       params = this.defaultSettings;
       params.max_tokens = 500;
-      params.model = "llama2";
       params.prompt = prompt + "\n" + data;
 
       const completion = await this.llmAPI.completion(params);
@@ -178,7 +185,6 @@ export class Loz {
     params = this.defaultSettings;
     params.max_tokens = 500;
     params.prompt = prompt;
-    params.model = "llama2";
     return await this.llmAPI.completion(params);
   }
 
@@ -377,7 +383,6 @@ export class Loz {
 
           let params: LLMSettings;
           params = this.defaultSettings;
-          params.model = "llama2";
           params.prompt = input;
           params.max_tokens = 4000;
           this.runCompletion(params, rl);

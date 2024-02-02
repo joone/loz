@@ -55,8 +55,24 @@ export class Config implements ConfigInterface {
           "model",
           this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL
         );
+    } else if (name === "model") {
+      if (value === "llama2" || value === "codellama") {
+        this.set("ollama.model", value);
+        this.setInternal("api", "ollama");
+      } else if (value === "gpt-3.5-turbo") {
+        this.setInternal("api", "openai");
+      }
     }
 
+    const item = this.get(name);
+    if (item) {
+      item.value = value;
+    } else {
+      this.add({ name, value });
+    }
+  }
+
+  private setInternal(name: string, value: string) {
     const item = this.get(name);
     if (item) {
       item.value = value;

@@ -82,6 +82,26 @@ You can modify your LLM service preference at any time by using the `config` com
 > config api openai
 ```
 
+Additionally, you can change the model by entering:
+```
+> config model llama2
+```
+or
+
+```
+> config model codelamma
+```
+
+You can check the current settings by entering:
+
+```
+> config
+  api: ollama
+  model: llama2
+```
+
+Currently, gpt-3.5-turbo, llama2, and codellama are supported.
+
 ### Interactive mode
 
 ```

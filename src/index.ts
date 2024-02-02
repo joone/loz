@@ -249,7 +249,6 @@ export class Loz {
       params = this.defaultSettings;
       params.max_tokens = 500;
       params.prompt = prompt + commitMessage;
-      params.model = "codellama";
 
       const complete = await this.llmAPI.completion(params);
       if (complete.content === "") {

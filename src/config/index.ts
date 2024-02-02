@@ -58,12 +58,16 @@ export class Config implements ConfigInterface {
     }
   }
 
-  print() {
+  printAll() {
     this.items.forEach((item) => {
       console.log(`  ${item.name}: ${item.value}`);
     });
   }
 
+  print() {
+    console.log(`  api: ${this.get("api")?.value}`);
+    console.log(`  model: ${this.get("model")?.value}`);
+  }
   async loadConfig(configPath: string) {
     this.configFilePath = path.join(configPath, "config.json");
     if (!fs.existsSync(this.configFilePath)) {

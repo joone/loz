@@ -2,10 +2,13 @@ import { exec } from "child_process";
 import { expect } from "chai";
 import { describe, it } from "mocha";
 
+const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
+const LOZ_BIN = GITHUB_ACTIONS === true ? "/home/runner/work/loz/bin" : "./bin";
+
 describe("Test loz pipe mode", function () {
   it("should count the number of files", function (done) {
     exec(
-      'ls | node  ./bin "count the number of files"',
+      `ls | node  ${LOZ_BIN} "count the number of files"`,
       (error, stdout, stderr) => {
         if (error) {
           done(error);
@@ -19,7 +22,7 @@ describe("Test loz pipe mode", function () {
 
   it("should convert the input to uppercase", function (done) {
     exec(
-      'echo "hello, world!" | node ./bin "convert the input to uppercase"',
+      `echo "hello, world!" | node ${LOZ_BIN} "convert the input to uppercase"`,
       (error, stdout, stderr) => {
         if (error) {
           done(error);
@@ -33,7 +36,7 @@ describe("Test loz pipe mode", function () {
 
   it("should list any spelling errors", function (done) {
     exec(
-      'echo "helo, world!" | node ./bin "list any spelling errors"',
+      `echo "helo, world!" | node ${LOZ_BIN} "list any spelling errors"`,
       (error, stdout, stderr) => {
         if (error) {
           done(error);

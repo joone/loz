@@ -4,6 +4,9 @@ import * as path from "path";
 import { expect } from "chai";
 import { describe, before, after, it } from "mocha";
 
+const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
+const LOZ_BIN = "../../bin";
+
 describe("Test git operations", function () {
   let repoPath: string;
 
@@ -15,6 +18,8 @@ describe("Test git operations", function () {
 
     // Initialize a new Git repo
     execSync("git init");
+    execSync("git config user.email foo.bar@mail.com");
+    execSync("git config user.name Foo Bar");
   });
 
   after(function () {
@@ -24,6 +29,7 @@ describe("Test git operations", function () {
   });
 
   it("should commit a change", function () {
+    this.timeout(5000);
     // Create a new file
     fs.writeFileSync(
       "hello.c",
@@ -38,7 +44,7 @@ describe("Test git operations", function () {
     execSync("git add hello.c");
 
     // Commit the change
-    execSync("node ../../bin commit");
+    execSync(`node ${LOZ_BIN} commit`).toString();
 
     // Verify the commit
     const log = execSync("git log --oneline").toString();

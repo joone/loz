@@ -3,7 +3,7 @@ import { expect } from "chai";
 import "mocha";
 import * as mockStdin from "mock-stdin";
 
-describe("openai", () => {
+describe("Test OpenAI API", () => {
   let stdin: mockStdin.MockSTDIN;
 
   before(() => {
@@ -34,13 +34,15 @@ describe("openai", () => {
   });
 });
 
-//  npm test --  --grep=Loz.checkEnv
-describe("loz.checkEnv", () => {
-  it("should return true", () => {
-    let loz = new Loz();
+describe("Test Loz class", () => {
+  //  npm test --  --grep=Loz.checkEnv
+  describe("loz.checkEnv", () => {
+    it("should return true", () => {
+      let loz = new Loz();
 
-    const result = loz.checkEnv();
-    expect(result).to.equal(true);
+      const result = loz.checkEnv();
+      expect(result).to.equal(true);
+    });
   });
 });
 

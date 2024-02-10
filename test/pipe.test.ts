@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { describe, it } from "mocha";
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
-const LOZ_BIN = GITHUB_ACTIONS === true ? "/home/runner/work/loz/bin" : "./bin";
+const LOZ_BIN = GITHUB_ACTIONS === true ? "../bin" : "./bin";
 
 describe("Test loz pipe mode", function () {
   it("should count the number of files", function (done) {

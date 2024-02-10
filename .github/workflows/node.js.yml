@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "cicd"]
   pull_request:
     branches: [ "main" ]
 
@@ -29,4 +29,7 @@ jobs:
     - run: sudo apt-get update && sudo apt-get install -y git
     - run: npm ci
     - run: npm run build --if-present
+    - run: ls
+    - run: pwd
+    - run: ls /home/runner/work/loz/loz/bin
     - run: OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} npm test

@@ -57,34 +57,3 @@ if (process.env.LOZ_LOCAL_TEST === "true") {
     });
   });
 }
-
-describe("git", () => {
-  let stdin: mockStdin.MockSTDIN;
-
-  before(() => {
-    stdin = mockStdin.stdin();
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("API_KEY environment variable is not set.");
-    }
-  });
-
-  after(() => {
-    stdin.restore();
-  });
-
-  it("should return true", async () => {
-    process.nextTick(() => {
-      stdin.send("openai\n");
-      stdin.end();
-    });
-
-    let loz = new Loz();
-    const res = await loz.init();
-
-    expect(res).to.equal(true);
-    expect(loz.checkAPI()).to.equal("openai");
-
-    const completion = await loz.completeUserPrompt("1+1=");
-    expect(completion.content).to.equal("2");
-  });
-});

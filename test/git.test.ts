@@ -28,6 +28,7 @@ describe("Test git operations", function () {
     fs.rmdirSync(repoPath, { recursive: true });
   });
 
+  // loz commit
   it("should commit a change", function () {
     this.timeout(5000);
     // Create a new file

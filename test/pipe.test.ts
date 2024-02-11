@@ -6,6 +6,7 @@ const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
 const LOZ_BIN = "../bin";
 
 describe("Test loz pipe mode", function () {
+  // ls | loz "count the number of files
   it("should count the number of files", function (done) {
     exec(
       `ls | node  ${LOZ_BIN} "count the number of files"`,
@@ -20,6 +21,7 @@ describe("Test loz pipe mode", function () {
     );
   });
 
+  // echo "hello, world!" | loz "convert the input to uppercase"
   it("should convert the input to uppercase", function (done) {
     exec(
       `echo "hello, world!" | node ${LOZ_BIN} "convert the input to uppercase"`,
@@ -34,6 +36,7 @@ describe("Test loz pipe mode", function () {
     );
   });
 
+  // echo "helo, world!" | loz "list any spelling errors"
   it("should list any spelling errors", function (done) {
     exec(
       `echo "helo, world!" | node ${LOZ_BIN} "list any spelling errors"`,

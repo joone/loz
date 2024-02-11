@@ -35,7 +35,7 @@ describe("Test git operations", function () {
       "hello.c",
       '\n \
     int main() { \n\
-        printf("Hello, World!"); \n \
+        printf("Hell, World!"); \n \
         return 0; \n \
     }\n'
     );
@@ -44,10 +44,18 @@ describe("Test git operations", function () {
     execSync("git add hello.c");
 
     // Commit the change
-    execSync(`node ${LOZ_BIN} commit`).toString();
+    execSync(`node ${LOZ_BIN} commit`);
 
     // Verify the commit
     const log = execSync("git log --oneline").toString();
     expect(log).to.include("hello.c");
+  });
+
+  // git diff | loz -g
+  it("should generate a commit message", function () {
+    this.timeout(5000);
+    execSync("sed -i 's/Hell/Hello/g' hello.c");
+    const log = execSync(`git diff | node ${LOZ_BIN} -g`).toString();
+    expect(log).to.include("typo");
   });
 });

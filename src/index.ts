@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
+import * as os from "os"
 import { exec } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
@@ -15,7 +16,7 @@ require("dotenv").config();
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 // Get the path to the home directory
-const HOME_PATH = process.env.HOME || "";
+const HOME_PATH = os.homedir() || "";
 const LOG_DEV_PATH = "logs";
 
 function runShellCommand(command: string): Promise<string> {
@@ -50,7 +51,7 @@ export class Loz {
   llmAPI: any;
   defaultSettings: LLMSettings;
   chatHistory: ChatHistory = { date: "", dialogue: [] };
-  configfPath: string;
+  configPath: string;
   config: Config = new Config();
   git: Git = new Git();
 
@@ -65,14 +66,14 @@ export class Loz {
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
     };
-    this.configfPath = "";
+    this.configPath = "";
   }
 
   async init() {
     // Create a config for the application
-    this.configfPath = path.join(HOME_PATH, ".loz");
-    if (!fs.existsSync(this.configfPath)) {
-      fs.mkdirSync(this.configfPath);
+    this.configPath = path.join(HOME_PATH, ".loz");
+    if (!fs.existsSync(this.configPath)) {
+      fs.mkdirSync(this.configPath);
     }
 
     if (this.checkGitRepo() === true) {
@@ -116,7 +117,7 @@ export class Loz {
 
   // load config from JSON file
   async loadingConfigFromJSONFile() {
-    await this.config.loadConfig(this.configfPath);
+    await this.config.loadConfig(this.configPath);
   }
 
   checkAPI() {
@@ -153,7 +154,7 @@ export class Loz {
       ".json";
     const filePath = this.checkGitRepo()
       ? path.join(LOG_DEV_PATH, fileName)
-      : path.join(this.configfPath, fileName);
+      : path.join(this.configPath, fileName);
     this.chatHistory.date = date.toString();
     if (DEBUG) console.log(this.chatHistory);
     const json = JSON.stringify(this.chatHistory, null, 2);

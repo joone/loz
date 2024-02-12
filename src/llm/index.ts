@@ -15,9 +15,9 @@ abstract class LLMService {
 }
 
 export class OpenAiAPI extends LLMService {
-  constructor() {
+  constructor(apiKey: string) {
     super();
-    this.api = new OpenAI();
+    this.api = new OpenAI({ apiKey });
   }
   async completion(params: LLMSettings) {
     const gptParams: OpenAI.Chat.ChatCompletionCreateParams = {

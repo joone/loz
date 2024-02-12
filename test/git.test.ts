@@ -15,7 +15,7 @@ describe("Test git operations", function () {
   before(function () {
     stdin = mockStdin.stdin();
     // scripts/prepare-commit-msg needs loz to be installed globally
-    execSync("npm install -g");
+    if (GITHUB_ACTIONS === true) execSync("npm install -g");
     // Create a new directory for the Git repo
     repoPath = path.join(__dirname, "test_repo");
     if (fs.existsSync(repoPath)) execSync("rm -rf " + repoPath);

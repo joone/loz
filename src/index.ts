@@ -1,16 +1,21 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os"
+import * as readline from "readline";
+import * as readlinePromises from "readline/promises";
 import { exec } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory } from "./history";
-import { Config, DEFAULT_OLLAMA_MODEL, DEFAULT_OPENAI_MODEL } from "./config";
+import {
+  Config,
+  DEFAULT_OLLAMA_MODEL,
+  DEFAULT_OPENAI_MODEL,
+  requestApiKey,
+} from "./config";
 import { Git } from "./git";
 
 const LOZ_DEBUG = process.env.DEBUG === "true" ? true : false;
-
-const readline = require("readline");
 
 require("dotenv").config();
 
@@ -84,33 +89,39 @@ export class Loz {
 
     await this.loadingConfigFromJSONFile();
 
-    let api = this.checkAPI();
+    const api = this.checkAPI() || "openai";
 
-    if (api === "openai") {
-      this.checkEnv();
-      this.llmAPI = new OpenAiAPI();
-      this.defaultSettings.model =
-        this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
-    } else if (this.checkAPI() === "ollama") {
+    if (api === "ollama") {
       const result = await runShellCommand("ollama --version");
       if (DEBUG) console.log(result);
       if (result.indexOf("ollama") === -1) {
         console.log(
-          "Please install ollama with llama2 and codellama first: see https://ollama.ai/download \n"
+          "Please install ollama with llama2 and codellama first: see https://ollama.ai/download \n",
         );
         process.exit(1);
       }
       this.llmAPI = new OllamaAPI();
       this.defaultSettings.model =
         this.config.get("model")?.value || DEFAULT_OLLAMA_MODEL;
-    } else {
-      // default to openai
-      this.checkEnv();
-      this.llmAPI = new OpenAiAPI();
-      this.config.set("api", "openai");
-      this.defaultSettings.model =
-        this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
+      return true;
     }
+
+    let apiKey = this.config.get("openai.apikey")?.value;
+    if (!apiKey) {
+      const rl = readlinePromises.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+      apiKey = await requestApiKey(rl);
+      this.config.set("openai.apikey", apiKey);
+      rl.close();
+    }
+    this.llmAPI = new OpenAiAPI(apiKey);
+    this.config.set("api", "openai");
+    this.defaultSettings.model =
+      this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
+
+    // TODO: show error if api is wrong
 
     return true;
   }
@@ -123,16 +134,6 @@ export class Loz {
   checkAPI() {
     //console.log("API: " + this.config.get("api")?.value);
     return this.config.get("api")?.value;
-  }
-
-  checkEnv() {
-    if (process.env.OPENAI_API_KEY === undefined) {
-      console.error("Please set OPENAI_API_KEY in your environment variables");
-      // system end
-      process.exit(1);
-    }
-
-    return true;
   }
 
   // Save chat history (JSON) to file.

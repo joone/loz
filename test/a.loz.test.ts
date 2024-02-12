@@ -34,18 +34,6 @@ describe("Test OpenAI API", () => {
   });
 });
 
-describe("Test Loz class", () => {
-  //  npm test --  --grep=Loz.checkEnv
-  describe("loz.checkEnv", () => {
-    it("should return true", () => {
-      let loz = new Loz();
-
-      const result = loz.checkEnv();
-      expect(result).to.equal(true);
-    });
-  });
-});
-
 if (process.env.LOZ_LOCAL_TEST === "true") {
   describe("Loz.ollama", () => {
     it("should return true", async () => {

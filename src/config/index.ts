@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as readline from "readline";
+import * as readlinePromises from "readline/promises";
 
 export const DEFAULT_OLLAMA_MODEL = "llama2";
 export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
@@ -23,6 +23,44 @@ export class ConfigItem implements ConfigItemInterface {
     this.value = value;
   }
 }
+
+export const requestApiKey = async (
+  rl: readlinePromises.Interface,
+): Promise<string> => {
+  for (const key of ["LOZ_OPENAI_API_KEY", "OPENAI_API_KEY"]) {
+    const value = process.env[key];
+    if (value) {
+      const useApiKeyFromEnv = await rl.question(
+        `\n${key} found in environment variables. Do you want to use it? (y/n) `,
+      );
+      if (useApiKeyFromEnv.toLowerCase() === "y") {
+        return value;
+      }
+      if (useApiKeyFromEnv.toLowerCase() !== "n") {
+        console.log("Received the wrong answer. Please try again.");
+        return await requestApiKey(rl);
+      }
+    }
+  }
+
+  const apiKey = await rl.question("Enter your OpenAI API key:\n> ");
+  if (!apiKey) {
+    console.log("Received the wrong answer. Please try again.");
+    return await requestApiKey(rl);
+  }
+  return apiKey;
+};
+
+const requestApiName = async (
+  rl: readlinePromises.Interface,
+): Promise<string> => {
+  const res = await rl.question("Choose your LLM service: (ollama, openai) ");
+  if (!["ollama", "openai"].includes(res)) {
+    console.log("Received the wrong answer. Please try again.");
+    return await requestApiName(rl);
+  }
+  return res;
+};
 
 export class Config implements ConfigInterface {
   items: ConfigItemInterface[];
@@ -101,19 +139,12 @@ export class Config implements ConfigInterface {
   async loadConfig(configPath: string) {
     this.configFilePath = path.join(configPath, "config.json");
     if (!fs.existsSync(this.configFilePath)) {
-      const rl = readline.createInterface({
+      const rl = readlinePromises.createInterface({
         input: process.stdin,
         output: process.stdout,
       });
 
-      const question = (query: string): Promise<string> => {
-        return new Promise((resolve) => {
-          rl.question(query, (answer) => {
-            resolve(answer);
-          });
-        });
-      };
-      const name = await question("Choose your LLM service: (ollama, openai) ");
+      const name = await requestApiName(rl);
 
       this.set("openai.model", DEFAULT_OPENAI_MODEL);
       this.set("ollama.model", DEFAULT_OLLAMA_MODEL);
@@ -124,7 +155,8 @@ export class Config implements ConfigInterface {
         );
       } else if (name === "openai") {
         this.set("model", DEFAULT_OPENAI_MODEL);
-        console.log("set OPENAI_API_KEY in your environment variables");
+        const newApiKey = await requestApiKey(rl);
+        this.set("openai.apikey", newApiKey);
       }
       this.set("mode", "default");
       this.set("api", name);

@@ -22,6 +22,10 @@ describe("Test git operations", function () {
     fs.mkdirSync(repoPath);
     process.chdir(repoPath);
 
+    // Set the default branch to main
+    if (GITHUB_ACTIONS === true)
+      execSync("git config --global init.defaultBranch main");
+
     // Initialize a new Git repo
     execSync("git init");
     execSync("git config user.email foo.bar@mail.com");

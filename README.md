@@ -3,6 +3,15 @@
 
 Loz is a command-line tool that enables your preferred LLM to utilize Unix pipes, integrating AI capabilities with other Unix tools.
 
+## What's New
+### v0.2.11 - 2024-02-13
+- **Added**
+  - Store OpenAI API Key in `config.json` (contributed by @honeymaro)
+
+### v0.2.0 - 2024-02-01
+- **Added**
+  - Add support for llama2 and codellama models via ollama integraion.
+
 ## Getting Started
 
 To get started, run the following npm command:

@@ -17,11 +17,19 @@ describe("Test OpenAI API", () => {
     stdin.restore();
   });
 
-  it("should return true", async () => {
+  it("should return true", async function () {
+    this.timeout(5000);
+
     process.nextTick(() => {
       stdin.send("openai\n");
-      stdin.end();
     });
+
+    // Simulate a short delay before sending the next input
+    setTimeout(() => {
+      // Second input, simulate another Enter or actual input
+      stdin.send("y\n");
+      stdin.end(); // Now end the stdin after all inputs have been sent
+    }, 1000);
 
     let loz = new Loz();
     const res = await loz.init();

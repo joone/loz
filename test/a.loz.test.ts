@@ -3,6 +3,8 @@ import { expect } from "chai";
 import "mocha";
 import * as mockStdin from "mock-stdin";
 
+const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
+
 describe("Test OpenAI API", () => {
   let stdin: mockStdin.MockSTDIN;
 
@@ -42,7 +44,7 @@ describe("Test OpenAI API", () => {
   });
 });
 
-if (process.env.LOZ_LOCAL_TEST === "true") {
+if (GITHUB_ACTIONS === false) {
   describe("Loz.ollama", () => {
     it("should return true", async () => {
       let loz = new Loz("ollama");

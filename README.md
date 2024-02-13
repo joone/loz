@@ -10,7 +10,7 @@ Loz is a command-line tool that enables your preferred LLM to utilize Unix pipes
 
 ### v0.2.0 - 2024-02-01
 - **Added**
-  - Add support for llama2 and codellama models via ollama integraion.
+  - Add support for llama2 and codellama models via ollama integration.
 
 ## Getting Started
 

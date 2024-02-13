@@ -32,7 +32,7 @@ describe("Test git operations", function () {
   after(function () {
     // Clean up: remove the Git repo directory after the test
     process.chdir(__dirname);
-    fs.rmdirSync(repoPath, { recursive: true });
+    fs.rmSync(repoPath, { recursive: true });
     stdin.restore();
   });
 

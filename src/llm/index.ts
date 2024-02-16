@@ -20,6 +20,10 @@ export class OpenAiAPI extends LLMService {
     this.api = new OpenAI({ apiKey });
   }
   async completion(params: LLMSettings) {
+    if (DEBUG) {
+      console.log("OpenAI completion");
+      console.log("Model: " + params.model);
+    }
     const gptParams: OpenAI.Chat.ChatCompletionCreateParams = {
       model: params.model,
       messages: [{ role: "user", content: params.prompt }],
@@ -65,6 +69,10 @@ export class OpenAiAPI extends LLMService {
       frequency_penalty: params.frequency_penalty,
       presence_penalty: params.presence_penalty,
     };
+    if (DEBUG) {
+      console.log("OpenAI stream completion");
+      console.log("Model: " + params.model);
+    }
     let stream = await this.api.chat.completions.create(streaming_params);
     return stream;
   }

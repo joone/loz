@@ -25,13 +25,13 @@ export class ConfigItem implements ConfigItemInterface {
 }
 
 export const requestApiKey = async (
-  rl: readlinePromises.Interface,
+  rl: readlinePromises.Interface
 ): Promise<string> => {
   for (const key of ["LOZ_OPENAI_API_KEY", "OPENAI_API_KEY"]) {
     const value = process.env[key];
     if (value) {
       const useApiKeyFromEnv = await rl.question(
-        `\n${key} found in environment variables. Do you want to use it? (y/n) `,
+        `\n${key} found in environment variables. Do you want to use it? (y/n) `
       );
       if (useApiKeyFromEnv.toLowerCase() === "y") {
         return value;
@@ -52,7 +52,7 @@ export const requestApiKey = async (
 };
 
 const requestApiName = async (
-  rl: readlinePromises.Interface,
+  rl: readlinePromises.Interface
 ): Promise<string> => {
   const res = await rl.question("Choose your LLM service: (ollama, openai) ");
   if (!["ollama", "openai"].includes(res)) {
@@ -83,22 +83,23 @@ export class Config implements ConfigInterface {
   set(name: string, value: string) {
     // Update the model if the API is changed
     if (name === "api") {
+      this.setInternal("api", value);
       if (value === "openai")
-        this.set(
+        this.setInternal(
           "model",
           this.get("openai.model")?.value || DEFAULT_OPENAI_MODEL
         );
       else if (value === "ollama")
-        this.set(
+        this.setInternal(
           "model",
           this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL
         );
     } else if (name === "model") {
-      if (value === "llama2" || value === "codellama") {
-        this.set("ollama.model", value);
-        this.setInternal("api", "ollama");
-      } else if (value === "gpt-3.5-turbo") {
+      if (value === "gpt-3.5-turbo") {
         this.setInternal("api", "openai");
+      } else {
+        this.setInternal("ollama.model", value);
+        this.setInternal("api", "ollama");
       }
     }
 

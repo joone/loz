@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as os from "os"
+import * as os from "os";
 import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
 import { exec } from "child_process";
@@ -87,7 +87,12 @@ export class Loz {
       }
     }
 
-    await this.loadingConfigFromJSONFile();
+    await this.initLLMfromConfig();
+  }
+
+  // load config from JSON file
+  async initLLMfromConfig() {
+    await this.config.loadConfig(this.configPath);
 
     const api = this.checkAPI() || "openai";
 
@@ -96,7 +101,7 @@ export class Loz {
       if (DEBUG) console.log(result);
       if (result.indexOf("ollama") === -1) {
         console.log(
-          "Please install ollama with llama2 and codellama first: see https://ollama.ai/download \n",
+          "Please install ollama with llama2 and codellama first: see https://ollama.ai/download \n"
         );
         process.exit(1);
       }
@@ -106,6 +111,7 @@ export class Loz {
       return true;
     }
 
+    // For OpenAI API
     let apiKey = this.config.get("openai.apikey")?.value;
     if (!apiKey) {
       const rl = readlinePromises.createInterface({
@@ -114,21 +120,15 @@ export class Loz {
       });
       apiKey = await requestApiKey(rl);
       this.config.set("openai.apikey", apiKey);
+      this.config.save();
       rl.close();
     }
     this.llmAPI = new OpenAiAPI(apiKey);
-    this.config.set("api", "openai");
+
     this.defaultSettings.model =
       this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
 
     // TODO: show error if api is wrong
-
-    return true;
-  }
-
-  // load config from JSON file
-  async loadingConfigFromJSONFile() {
-    await this.config.loadConfig(this.configPath);
   }
 
   checkAPI() {
@@ -287,7 +287,6 @@ export class Loz {
         }
         process.exit();
       }
-      if (DEBUG === true) console.log(stream.data);
 
       try {
         for await (const data of stream) {
@@ -345,7 +344,7 @@ export class Loz {
       }, 1000);
 
       // Listen for user input
-      rl.on("line", (input: string) => {
+      rl.on("line", async (input: string) => {
         // Tokenize the input with space as the delimiter
         const tokens = input.split(" ");
         if (input === "exit" || input === "quit") {
@@ -359,6 +358,8 @@ export class Loz {
               );
             }
             this.config.set(tokens[1], tokens[2]);
+            this.config.save();
+            await this.initLLMfromConfig();
           } else if (tokens.length === 2) {
             console.log(this.config.get(tokens[1]));
           } else if (tokens.length === 1) {

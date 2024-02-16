@@ -34,9 +34,8 @@ describe("Test OpenAI API", () => {
     }, 1000);
 
     let loz = new Loz();
-    const res = await loz.init();
+    await loz.init();
 
-    expect(res).to.equal(true);
     expect(loz.checkAPI()).to.equal("openai");
 
     const completion = await loz.completeUserPrompt("1+1=");

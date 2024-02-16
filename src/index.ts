@@ -108,7 +108,7 @@ export class Loz {
       this.llmAPI = new OllamaAPI();
       this.defaultSettings.model =
         this.config.get("model")?.value || DEFAULT_OLLAMA_MODEL;
-      return true;
+      return;
     }
 
     // For OpenAI API
@@ -127,8 +127,6 @@ export class Loz {
 
     this.defaultSettings.model =
       this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
-
-    // TODO: show error if api is wrong
   }
 
   checkAPI() {

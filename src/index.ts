@@ -346,8 +346,7 @@ export class Loz {
         // Tokenize the input with space as the delimiter
         const tokens = input.split(" ");
         if (input === "exit" || input === "quit") {
-          resolve("exit");
-          return;
+          resolve("Done");
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
           if (tokens.length === 3) {
             if (this.config.set(tokens[1], tokens[2]) === false) {
@@ -361,7 +360,10 @@ export class Loz {
               );
             }
             this.config.save();
+            rl.close();
+            // Restart the interactive mode.
             await this.initLLMfromConfig();
+            resolve("Run");
           } else if (tokens.length === 2) {
             console.log(this.config.get(tokens[1]));
           } else if (tokens.length === 1) {

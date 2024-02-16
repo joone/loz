@@ -352,12 +352,16 @@ export class Loz {
           return;
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
           if (tokens.length === 3) {
+            if (this.config.set(tokens[1], tokens[2]) === false) {
+              rl.prompt();
+              return;
+            }
+
             if (this.config.get(tokens[1]) !== undefined) {
               console.log(
                 `The ${tokens[1]} has been updated to '${tokens[2]}'`
               );
             }
-            this.config.set(tokens[1], tokens[2]);
             this.config.save();
             await this.initLLMfromConfig();
           } else if (tokens.length === 2) {

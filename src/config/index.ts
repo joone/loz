@@ -94,6 +94,10 @@ export class Config implements ConfigInterface {
           "model",
           this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL
         );
+      else {
+        console.log("Invalid API");
+        return false;
+      }
     } else if (name === "model") {
       if (value === "gpt-3.5-turbo") {
         this.setInternal("api", "openai");
@@ -109,6 +113,7 @@ export class Config implements ConfigInterface {
     } else {
       this.add({ name, value });
     }
+    return true;
   }
 
   private setInternal(name: string, value: string) {

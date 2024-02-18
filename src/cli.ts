@@ -81,15 +81,20 @@ async function handlePromptInput(prompt: any) {
           output: process.stdout,
         });
 
+        let linuxCommand = json.command;
+        if (json.arguments.length > 0) {
+          linuxCommand += " " + json.arguments.join(" ");
+        }
+
         const answer = await rl.question(
-          `Do you want to run the command?: ${json.command} (y/n) `
+          `Do you want to run this command?: ${linuxCommand} (y/n) `
         );
         if (answer.toLowerCase() === "y") {
-          const result = await runCommand(json.command);
+          const result = await runCommand(linuxCommand);
           console.log(result);
         }
         rl.close();
-        //      if (DEBUG) console.log(JSON.stringify(json, null, 2));
+        if (DEBUG) console.log(JSON.stringify(json, null, 2));
         return;
       } catch (error: any) {
         console.log(error);

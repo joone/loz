@@ -47,11 +47,15 @@ async function handlePrompt(prompt: any) {
 
 async function runCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    exec(command, (error: any, stdout: any, stderr: any) => {
+    exec(command, (error: Error | null, stdout: string, stderr: string) => {
       if (error) {
-        console.error(`Error: ${error.message}`);
-        reject(error.message);
+        console.error(`Execution Error: ${error.message}`);
+        reject(new Error(`Error: ${error.message}, Stderr: ${stderr}`));
         return;
+      }
+
+      if (stderr) {
+        console.warn(`Stderr: ${stderr}`);
       }
 
       resolve(stdout);

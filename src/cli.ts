@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import * as yargs from "yargs";
 import { Loz } from "./index";
+import { exec } from "child_process";
+import * as readlinePromises from "readline/promises";
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 
@@ -43,12 +45,54 @@ async function handlePrompt(prompt: any) {
   }
 }
 
+async function runCommand(command: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(command, (error: any, stdout: any, stderr: any) => {
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        reject(error.message);
+        return;
+      }
+
+      resolve(stdout);
+    });
+  });
+}
+
 async function handlePromptInput(prompt: any) {
   if (!process.stdin.isTTY) {
     await loz.handlePipeInput(prompt);
   } else {
-    const completion = await loz.completeUserPrompt(prompt);
-    console.log(completion.content);
+    const internPrompt =
+      "Does it need to run a Linux command? " +
+      "If so, only generate the Linux commands as JSON. The current directory is . :\n";
+    const completion = await loz.completeUserPrompt(internPrompt + prompt);
+    // check if completion is json as string
+    if (completion.content.startsWith("{")) {
+      try {
+        const json = JSON.parse(completion.content);
+        // wait for user input and run the command
+        const rl = readlinePromises.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+
+        const answer = await rl.question(
+          `Do you want to run the command?: ${json.command} (y/n) `
+        );
+        if (answer.toLowerCase() === "y") {
+          const result = await runCommand(json.command);
+          console.log(result);
+        }
+        rl.close();
+        //      if (DEBUG) console.log(JSON.stringify(json, null, 2));
+        return;
+      } catch (error: any) {
+        console.log(error);
+      }
+    } else {
+      console.log(completion.content);
+    }
   }
 }
 

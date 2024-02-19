@@ -82,7 +82,7 @@ async function handlePromptInput(prompt: any) {
         });
 
         let linuxCommand = json.command;
-        if (json.arguments.length > 0) {
+        if (json.arguments && json.arguments.length > 0) {
           linuxCommand += " " + json.arguments.join(" ");
         }
 

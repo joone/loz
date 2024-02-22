@@ -38,6 +38,7 @@ describe("Test loz pipe mode", function () {
 
   // echo "helo, world!" | loz "list any spelling errors"
   it("should list any spelling errors", function (done) {
+    this.timeout(3000);
     exec(
       `echo "helo, world!" | node ${LOZ_BIN} "Find any spelling errors"`,
       (error, stdout, stderr) => {

@@ -68,7 +68,7 @@ async function handlePromptInput(prompt: any) {
 
 async function handleGitCommand() {
   if (!process.stdin.isTTY) {
-    await loz.writeGitCommitMessage();
+    await loz.generateGitCommitMessage();
   } else {
     console.log("Run loz like this: git diff | loz --git");
   }

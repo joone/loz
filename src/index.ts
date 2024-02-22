@@ -236,7 +236,8 @@ export class Loz {
     return complete.content;
   }
 
-  async writeGitCommitMessage() {
+  // git diff | loz --git
+  async generateGitCommitMessage() {
     if (DEBUG) console.log("writeGitCommitMessage");
 
     process.stdin.setEncoding("utf8");

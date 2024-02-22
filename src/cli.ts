@@ -68,8 +68,14 @@ async function handlePromptInput(prompt: any) {
     await loz.handlePipeInput(prompt);
   } else {
     const internPrompt =
-      "Does it need to run a Linux command? " +
-      "If so, only generate the Linux commands as JSON. The current directory is . :\n";
+      "Decide if the following prompt can be translated into Linux commands. " +
+      "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
+      "If no, provide an explanation in plain text.\n\n" +
+      "Input: " +
+      prompt +
+      "\n" +
+      "Response: ";
+
     const completion = await loz.completeUserPrompt(internPrompt + prompt);
     // check if completion is json as string
     if (completion.content.startsWith("{")) {

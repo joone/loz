@@ -102,12 +102,15 @@ async function handlePromptInput(prompt: any) {
           linuxCommand += " " + json.arguments.join(" ");
         }
 
-        const answer = await rl.question(
-          `Do you want to run this command?: ${linuxCommand} (y/n) `
-        );
-        if (answer.toLowerCase() === "y") {
-          const result = await runCommand(linuxCommand);
-          console.log(result);
+        if (DEBUG) {
+          const answer = await rl.question(
+            `Do you want to run this command?: ${linuxCommand} (y/n) `
+          );
+          if (answer.toLowerCase() === "y") {
+            await runCommand(linuxCommand);
+          }
+        } else {
+          await runCommand(linuxCommand);
         }
         rl.close();
         if (DEBUG) console.log(JSON.stringify(json, null, 2));

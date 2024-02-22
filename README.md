@@ -110,8 +110,7 @@ You can check the current settings by entering:
   api: ollama
   model: llama2
 ```
-
-Currently, gpt-3.5-turbo, llama2, and codellama are supported.
+Currently, gpt-3.5-turbo and all models provided by Ollama are supported.
 
 ### Interactive mode
 

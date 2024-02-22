@@ -4,16 +4,15 @@
 Loz is a command-line tool that enables your preferred LLM to utilize Unix pipes, integrating AI capabilities with other Unix tools.
 
 ## What's New
+### v0.2.13 - 2024-02-22
+- **Added**
+  - Enhanced Git Commit Formatting: Commit messages are now structured with a clear separation between the title and body, improving readability and adherence to Git best practices.
 ### v0.2.12 - 2024-02-15
 - **Added**
   - Add support for all models compatible with Ollama
 ### v0.2.11
 - **Added**
   - Store OpenAI API Key in `config.json` (contributed by @honeymaro)
-
-### v0.2.0
-- **Added**
-  - Add support for llama2 and codellama models via ollama integration.
 
 ## Getting Started
 

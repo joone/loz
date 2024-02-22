@@ -2,6 +2,7 @@
 import * as yargs from "yargs";
 import { Loz } from "./index";
 import { exec } from "child_process";
+const { spawn } = require("child_process");
 import * as readlinePromises from "readline/promises";
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
@@ -45,20 +46,33 @@ async function handlePrompt(prompt: any) {
   }
 }
 
-async function runCommand(command: string): Promise<string> {
+// Function to run a command and stream its stdout directly to the terminal
+async function runCommand(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    exec(command, (error: Error | null, stdout: string, stderr: string) => {
-      if (error) {
-        console.error(`Execution Error: ${error.message}`);
-        reject(new Error(`Error: ${error.message}, Stderr: ${stderr}`));
+    const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
+    const child = spawn(cmd, args);
+
+    child.stdout.on("data", (data: any) => {
+      process.stdout.write(data); // Directly write stdout data to the terminal
+    });
+
+    child.stderr.on("data", (data: any) => {
+      process.stderr.write(data); // Directly write stderr data to the terminal
+    });
+
+    child.on("error", (error: any) => {
+      console.error(`Execution Error: ${error.message}`);
+      reject(error); // Reject the promise on spawn error
+    });
+
+    child.on("close", (code: any) => {
+      if (code !== 0) {
+        console.error(`Process exited with code: ${code}`);
+        reject(new Error(`Process exited with code: ${code}`));
         return;
       }
 
-      if (stderr) {
-        console.warn(`Stderr: ${stderr}`);
-      }
-
-      resolve(stdout);
+      resolve(); // Resolve the promise when the process closes successfully
     });
   });
 }

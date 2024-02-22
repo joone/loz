@@ -80,6 +80,7 @@ async function handlePromptInput(prompt: any) {
     // check if completion is json as string
     if (completion.content.startsWith("{")) {
       try {
+        if (DEBUG) console.log(completion.content);
         const json = JSON.parse(completion.content);
         // wait for user input and run the command
         const rl = readlinePromises.createInterface({
@@ -87,7 +88,16 @@ async function handlePromptInput(prompt: any) {
           output: process.stdout,
         });
 
+        if (json.command === undefined) {
+          // Run the prompt again as a normal prompt
+          const completion = await loz.completeUserPrompt(prompt);
+          console.log(completion.content);
+          rl.close();
+          return;
+        }
+
         let linuxCommand = json.command;
+
         if (json.arguments && json.arguments.length > 0) {
           linuxCommand += " " + json.arguments.join(" ");
         }
@@ -106,6 +116,8 @@ async function handlePromptInput(prompt: any) {
         console.log(error);
       }
     } else {
+      // Run the prompt again as a normal prompt
+      const completion = await loz.completeUserPrompt(prompt);
       console.log(completion.content);
     }
   }

@@ -2,7 +2,7 @@
 import * as yargs from "yargs";
 import { Loz } from "./index";
 
-const LOZ_DEBUG = process.env.DEBUG === "true" ? true : false;
+const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 
 const args = yargs
   .wrap(null)

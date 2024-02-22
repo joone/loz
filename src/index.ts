@@ -15,8 +15,6 @@ import {
 } from "./config";
 import { Git } from "./git";
 
-const LOZ_DEBUG = process.env.DEBUG === "true" ? true : false;
-
 require("dotenv").config();
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;

@@ -180,7 +180,8 @@ export class Loz {
       let params: LLMSettings;
       params = this.defaultSettings;
       params.max_tokens = 500;
-      params.prompt = prompt + "\n" + data;
+      params.prompt =
+        "Based on the data provided below, " + prompt + ":\n" + data;
 
       const completion = await this.llmAPI.completion(params);
       process.stdout.write(completion.content);

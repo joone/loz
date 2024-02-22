@@ -39,7 +39,7 @@ describe("Test loz pipe mode", function () {
   // echo "helo, world!" | loz "list any spelling errors"
   it("should list any spelling errors", function (done) {
     exec(
-      `echo "helo, world!" | node ${LOZ_BIN} "list any spelling errors"`,
+      `echo "helo, world!" | node ${LOZ_BIN} "Find any spelling errors"`,
       (error, stdout, stderr) => {
         if (error) {
           done(error);

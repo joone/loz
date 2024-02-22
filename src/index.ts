@@ -40,6 +40,17 @@ function runShellCommand(command: string): Promise<string> {
   });
 }
 
+const promptForGIT =
+  "Generate a Git commit message based on the following code changes. Ensure the message adheres to the following guidelines:\n\n" +
+  "1. Separate the subject from the body with a blank line.\n" +
+  "2. Limit the subject line to 50 characters and capitalize it.\n" +
+  "3. Use the imperative mood in the subject line.\n" +
+  "4. The message should only include the subject and body, focusing on committing message, not the actual commit command.\n" +
+  "5. Wrap the body at 72 characters.\n" +
+  "6. Use the body to explain the 'what' and 'why', not the 'how'.\n" +
+  "7. Do not include the issue number or code diff in the body.\n\n" +
+  "Code Changes:\n";
+
 export interface LLMSettings {
   model: string;
   prompt: string;
@@ -191,8 +202,7 @@ export class Loz {
     // Remove the first line of the diff
     diff = diff.replace(/.*\n/, "");
 
-    const prompt =
-      "Generate a commit message for the following code changes:\n" + diff;
+    const prompt = promptForGIT + diff + "\n" + "Commit Message: ";
 
     let params: LLMSettings;
     params = this.defaultSettings;
@@ -229,8 +239,6 @@ export class Loz {
 
   async writeGitCommitMessage() {
     if (DEBUG) console.log("writeGitCommitMessage");
-    const prompt =
-      "Generate a commit message for the following code changes:\n";
 
     process.stdin.setEncoding("utf8");
 
@@ -240,7 +248,7 @@ export class Loz {
       data = data.replace(/.*\n/, "");
       // Remove Author and Date from commit message
       // because it is not needed for GPT-3.
-      const commitMessage = data
+      const diff = data
         .toString()
         .replace(/Author: .*\n/, "")
         .replace(/Date: .*\n/, "");
@@ -248,7 +256,7 @@ export class Loz {
       let params: LLMSettings;
       params = this.defaultSettings;
       params.max_tokens = 500;
-      params.prompt = prompt + commitMessage;
+      params.prompt = promptForGIT + diff + "\n" + "Commit Message: ";
 
       const complete = await this.llmAPI.completion(params);
       if (complete.content === "") {

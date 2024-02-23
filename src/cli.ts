@@ -6,6 +6,7 @@ const { spawn } = require("child_process");
 import * as readlinePromises from "readline/promises";
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+const isRunningInMocha = process.env.MOCHA_ENV === "test";
 
 const args = yargs
   .wrap(null)
@@ -49,8 +50,8 @@ async function handlePrompt(prompt: any) {
 // Function to run a command and stream its stdout directly to the terminal
 async function runCommand(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
-    const child = spawn(cmd, args);
+    //const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
+    const child = spawn("bash", ["-c", command]);
 
     child.stdout.on("data", (data: any) => {
       process.stdout.write(data); // Directly write stdout data to the terminal
@@ -78,7 +79,7 @@ async function runCommand(command: string): Promise<void> {
 }
 
 async function handlePromptInput(prompt: any) {
-  if (!process.stdin.isTTY) {
+  if (!process.stdin.isTTY && isRunningInMocha === false) {
     await loz.handlePipeInput(prompt);
   } else {
     const internPrompt =

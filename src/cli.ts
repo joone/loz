@@ -103,7 +103,7 @@ async function handlePromptInput(prompt: any) {
           output: process.stdout,
         });
 
-        if (json.command === undefined) {
+        if (json.command === undefined && json.commands === undefined) {
           // Run the prompt again as a normal prompt
           const completion = await loz.completeUserPrompt(prompt);
           console.log(completion.content);
@@ -111,7 +111,8 @@ async function handlePromptInput(prompt: any) {
           return;
         }
 
-        let linuxCommand = json.command;
+        // check if json.command or json.commands
+        let linuxCommand = json.commands ? json.commands : json.command;
 
         if (json.arguments && json.arguments.length > 0) {
           linuxCommand += " " + json.arguments.join(" ");

@@ -43,8 +43,7 @@ describe("Linux Command Test", () => {
     expect(stdout).to.include("VGA compatible controller");
   });
 
-  // find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1
-  it("Detect GPUs on this system", function () {
+  it("Run find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1", function () {
     let stdout = execSync(
       `MOCHA_ENV=test node ${LOZ_BIN} "find the largest file in the current directory"`
     ).toString();

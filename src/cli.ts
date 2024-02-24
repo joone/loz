@@ -31,7 +31,7 @@ async function handleLozCommand() {
   if (args.prompt) {
     await handlePrompt(args.prompt);
   } else if (args.git) {
-    await handleGitCommand();
+    await handleGitCommandFromPipe();
   } else {
     await handleDefaultCase();
   }
@@ -54,15 +54,17 @@ async function handlePromptInput(prompt: any) {
   }
 }
 
-async function handleGitCommand() {
+async function handleGitCommandFromPipe() {
+  // If the stdin is not a TTY, but from a pipe
   if (!process.stdin.isTTY) {
-    await loz.generateGitCommitMessage();
+    await loz.generateGitCommitMessageFromPipe();
   } else {
     console.log("Run loz like this: git diff | loz --git");
   }
 }
 
 async function handleDefaultCase() {
+  // If the stdin is not a TTY, but from a pipe
   if (!process.stdin.isTTY) {
     console.log("Input your prompt:");
     process.exit(0);

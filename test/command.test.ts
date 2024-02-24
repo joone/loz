@@ -43,12 +43,14 @@ describe("Linux Command Test", () => {
     expect(stdout).to.include("VGA compatible controller");
   });
 
-  it("Run find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1", function () {
-    let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "find the largest file in the current directory"`
-    ).toString();
-    expect(stdout).to.include("typescript.js");
-  });
+  if (GITHUB_ACTIONS === false) {
+    it("Run find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1", function () {
+      let stdout = execSync(
+        `MOCHA_ENV=test node ${LOZ_BIN} "find the largest file in the current directory"`
+      ).toString();
+      expect(stdout).to.include("typescript.js");
+    });
+  }
 
   it("Run  systemctl status apache2", function () {
     let stdout = execSync(

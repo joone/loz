@@ -57,5 +57,21 @@ describe("Linux Command Test", () => {
     expect(stdout).to.include("The Apache HTTP Server");
   });
 
-  // Run command to check if Chrome is running on this system
+  // Get the system's current date and time
+  it("Get the system's current date and time", function () {
+    let stdout = execSync(
+      `MOCHA_ENV=test node ${LOZ_BIN} "Get the current date and time on this system"`
+    ).toString();
+    expect(stdout).to.match(
+      /\w{3} \w{3} \d{2} \d{2}:\d{2}:\d{2} (AM|PM) \w{3} \d{4}/
+    );
+  });
+
+  // Check available memory
+  it("Check available memory on this system", function () {
+    let stdout = execSync(
+      `MOCHA_ENV=test node ${LOZ_BIN} "Check available memory on this Linux"`
+    ).toString();
+    expect(stdout).to.match(/Mem:/);
+  });
 });

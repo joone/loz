@@ -48,7 +48,15 @@ async function handlePrompt(prompt: any) {
 
 async function handlePromptInput(prompt: any) {
   if (!process.stdin.isTTY && isRunningInMocha === false) {
-    await loz.handlePipeInput(prompt);
+    // Handle the input from the pipe
+    process.stdin.setEncoding("utf8");
+    process.stdin.on("data", async (data: String) => {
+      const promptUpdated =
+        "Based on the data provided below, " + prompt + ":\n" + data;
+      const completion = await loz.completeUserPrompt(promptUpdated);
+      process.stdout.write(completion.content);
+      process.stdout.write("\n");
+    });
   } else {
     await loz.handlePrompt(prompt);
   }

@@ -200,23 +200,6 @@ export class Loz {
     fs.writeFileSync(filePath, json);
   }
 
-  // Handle the input from the pipe
-  async handlePipeInput(prompt: string) {
-    process.stdin.setEncoding("utf8");
-
-    process.stdin.on("data", async (data: String) => {
-      let params: LLMSettings;
-      params = this.defaultSettings;
-      params.max_tokens = 500;
-      params.prompt =
-        "Based on the data provided below, " + prompt + ":\n" + data;
-
-      const completion = await this.llmAPI.completion(params);
-      process.stdout.write(completion.content);
-      process.stdout.write("\n");
-    });
-  }
-
   async completeUserPrompt(prompt: string) {
     let params: LLMSettings;
     params = this.defaultSettings;

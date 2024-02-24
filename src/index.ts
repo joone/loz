@@ -451,39 +451,40 @@ export class Loz {
 
     const completion = await this.completeUserPrompt(internPrompt + prompt);
 
-    if (completion.content.startsWith("{")) {
-      try {
-        if (DEBUG) console.log(completion.content);
-        const json = JSON.parse(completion.content);
+    if (!completion.content.startsWith("{")) {
+      console.log(completion.content);
+      return;
+    }
 
-        let linuxCommand = json.commands ? json.commands : json.command;
-        if (json.arguments && json.arguments.length > 0) {
-          linuxCommand += " " + json.arguments.join(" ");
-        }
+    try {
+      if (DEBUG) console.log(completion.content);
+      const json = JSON.parse(completion.content);
 
-        if (LOZ_SAFE) {
-          const rl = readlinePromises.createInterface({
-            input: process.stdin,
-            output: process.stdout,
-          });
-          const answer = await rl.question(
-            `Do you want to run this command?: ${linuxCommand} (y/n) `
-          );
-          rl.close();
+      let linuxCommand = json.commands ? json.commands : json.command;
+      if (json.arguments && json.arguments.length > 0) {
+        linuxCommand += " " + json.arguments.join(" ");
+      }
 
-          if (answer.toLowerCase() === "y") {
-            await runCommand(linuxCommand);
-          }
-        } else {
+      if (LOZ_SAFE) {
+        const rl = readlinePromises.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+        const answer = await rl.question(
+          `Do you want to run this command?: ${linuxCommand} (y/n) `
+        );
+        rl.close();
+
+        if (answer.toLowerCase() === "y") {
           await runCommand(linuxCommand);
         }
-
-        if (DEBUG) console.log(JSON.stringify(json, null, 2));
-      } catch (error) {
-        console.error(error);
+      } else {
+        await runCommand(linuxCommand);
       }
-    } else {
-      console.log(completion.content);
+
+      if (DEBUG) console.log(JSON.stringify(json, null, 2));
+    } catch (error) {
+      console.error(error);
     }
   }
 

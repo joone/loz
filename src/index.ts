@@ -4,6 +4,7 @@ import * as os from "os";
 import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
 import { exec } from "child_process";
+const { spawn } = require("child_process");
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory } from "./history";
@@ -18,6 +19,7 @@ import { Git } from "./git";
 require("dotenv").config();
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";
 const LOG_DEV_PATH = "logs";
@@ -34,6 +36,37 @@ function runShellCommand(command: string): Promise<string> {
         return;
       }
       resolve(stdout);
+    });
+  });
+}
+
+// Function to run a command and stream its stdout directly to the terminal
+async function runCommand(command: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    //const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
+    const child = spawn("bash", ["-c", command]);
+
+    child.stdout.on("data", (data: any) => {
+      process.stdout.write(data); // Directly write stdout data to the terminal
+    });
+
+    child.stderr.on("data", (data: any) => {
+      process.stderr.write(data); // Directly write stderr data to the terminal
+    });
+
+    child.on("error", (error: any) => {
+      console.error(`Execution Error: ${error.message}`);
+      reject(error); // Reject the promise on spawn error
+    });
+
+    child.on("close", (code: any) => {
+      if (code !== 0) {
+        console.error(`Process exited with code: ${code}`);
+        reject(new Error(`Process exited with code: ${code}`));
+        return;
+      }
+
+      resolve(); // Resolve the promise when the process closes successfully
     });
   });
 }
@@ -405,6 +438,53 @@ export class Loz {
         resolve("Done");
       });
     });
+  }
+
+  async handlePrompt(prompt: string) {
+    const internPrompt =
+      "Decide if the following prompt can be translated into Linux commands. " +
+      "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
+      "If no, provide an explanation in plain text.\n\n" +
+      "Input: " +
+      prompt +
+      "\nResponse: ";
+
+    const completion = await this.completeUserPrompt(internPrompt + prompt);
+
+    if (completion.content.startsWith("{")) {
+      try {
+        if (DEBUG) console.log(completion.content);
+        const json = JSON.parse(completion.content);
+
+        let linuxCommand = json.commands ? json.commands : json.command;
+        if (json.arguments && json.arguments.length > 0) {
+          linuxCommand += " " + json.arguments.join(" ");
+        }
+
+        if (LOZ_SAFE) {
+          const rl = readlinePromises.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+          });
+          const answer = await rl.question(
+            `Do you want to run this command?: ${linuxCommand} (y/n) `
+          );
+          rl.close();
+
+          if (answer.toLowerCase() === "y") {
+            await runCommand(linuxCommand);
+          }
+        } else {
+          await runCommand(linuxCommand);
+        }
+
+        if (DEBUG) console.log(JSON.stringify(json, null, 2));
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.log(completion.content);
+    }
   }
 
   // check if the program is running in it's git repository.

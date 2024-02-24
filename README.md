@@ -7,7 +7,7 @@ Loz is a command-line tool that enables your preferred LLM to execute system com
 ### v0.3.0 - 2024-02-24
 - **Added**
   - Run Linux commands based on user prompts. Users can now execute Linux commands using natural language. For example, by running `loz "find the largest file in the current directory"`,
-  `Loz` will interpret the instruction and execute the corresponding Linux commands like `find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1` to find the largest file.
+  `Loz` will interpret the instruction and execute the corresponding Linux commands like `find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1` to find the largest file. See more [examples](#examples).
 ### v0.2.13 - 2024-02-22
 - **Added**
   - Enhanced Git Commit Formatting: Commit messages are now structured with a clear separation between the title and body, improving readability and adherence to Git best practices.

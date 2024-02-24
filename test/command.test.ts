@@ -50,12 +50,14 @@ describe("Linux Command Test", () => {
     expect(stdout).to.include("typescript.js");
   });
 
-  it("Run  systemctl status apache2", function () {
-    let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "check if apache2 is runnig on this system"`
-    ).toString();
-    expect(stdout).to.include("The Apache HTTP Server");
-  });
+  if (GITHUB_ACTIONS === false) {
+    it("Run  systemctl status apache2", function () {
+      let stdout = execSync(
+        `MOCHA_ENV=test node ${LOZ_BIN} "check if apache2 is runnig on this system"`
+      ).toString();
+      expect(stdout).to.include("The Apache HTTP Server");
+    });
+  }
 
   // Get the system's current date and time
   it("Get the system's current date and time", function () {

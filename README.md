@@ -122,7 +122,7 @@ $ loz
 Once loz is running, you can start a conversation by interacting with it. loz will respond with a relevant message based on the input.
 
 ### Run Linux Commands with Loz
-Loz empowers users to execute Linux commands using natural language. This feature bridges the gap between intuitive language and technical command execution, making Linux more accessible to a broader audience. Below are some examples demonstrating how `loz` translates natural language into Linux commands:
+Loz empowers users to execute Linux commands using natural language. Below are some examples demonstrating how `loz`'s LLM backend translates natural language into Linux commands:
 
 #### Examples
 - Find the largest file in the current directory:
@@ -142,6 +142,7 @@ Loz empowers users to execute Linux commands using natural language. This featur
   loz "Detect GPUs on this system"
   00:02.0 VGA compatible controller: Intel Corporation Device a780 (rev 04)
   ```
+For your information, this feature has only been tested with the OpenAI API.
 
 #### Caution
 To prevent unintentional system modifications, avoid running commands that can alter or remove system files or configurations, such as `rm`, `mv`, `rmdir`, or `mkfs`.

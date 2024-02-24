@@ -3,8 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
-import { exec } from "child_process";
-const { spawn } = require("child_process");
+import { exec, spawn } from "child_process";
 import { OpenAiAPI, OllamaAPI } from "./llm";
 
 import { ChatHistory } from "./history";

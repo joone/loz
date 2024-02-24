@@ -112,12 +112,10 @@ export class Loz {
       frequency_penalty: 0.0,
       presence_penalty: 0.0,
     };
-    this.configPath = "";
+    this.configPath = path.join(HOME_PATH, ".loz");
   }
 
   async init() {
-    // Create a config for the application
-    this.configPath = path.join(HOME_PATH, ".loz");
     if (!fs.existsSync(this.configPath)) {
       fs.mkdirSync(this.configPath);
     }

@@ -4,15 +4,16 @@
 Loz is a command-line tool that enables your preferred LLM to utilize Unix pipes, integrating AI capabilities with other Unix tools.
 
 ## What's New
+### v0.3.0 - 2024-02-24
+- **Added**
+  - Run Linux commands based on user prompts. Users can now execute Linux commands using natural language. For example, by running `loz "find the largest file in the current directory"`,
+  `Loz` will interpret the instruction and execute the corresponding Linux commands like `find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1` to find the largest file.
 ### v0.2.13 - 2024-02-22
 - **Added**
   - Enhanced Git Commit Formatting: Commit messages are now structured with a clear separation between the title and body, improving readability and adherence to Git best practices.
 ### v0.2.12 - 2024-02-15
 - **Added**
   - Add support for all models compatible with Ollama
-### v0.2.11
-- **Added**
-  - Store OpenAI API Key in `config.json` (contributed by @honeymaro)
 
 ## Getting Started
 
@@ -120,6 +121,44 @@ $ loz
 
 Once loz is running, you can start a conversation by interacting with it. loz will respond with a relevant message based on the input.
 
+### Run Linux Commands with Loz
+Loz empowers users to execute Linux commands using natural language. This feature bridges the gap between intuitive language and technical command execution, making Linux more accessible to a broader audience. Below are some examples demonstrating how `loz` translates natural language into Linux commands:
+
+#### Examples
+- Find the largest file in the current directory:
+  ```
+  loz "find the largest file in the current directory"
+  -rw-rw-r-- 1 foo bar 9020257 Jan 31 19:49 ./node_modules/typescript/lib/typescript.js
+  ```
+
+- Check if Apache2 is running:
+  ```
+  loz "check if apache2 is running on this system"
+  ● apache2.service - The Apache HTTP Server
+  ```
+
+- Detect GPUs in the system:
+  ```
+  loz "Detect GPUs on this system"
+  00:02.0 VGA compatible controller: Intel Corporation Device a780 (rev 04)
+  ```
+
+#### Caution
+To prevent unintentional system modifications, avoid running commands that can alter or remove system files or configurations, such as `rm`, `mv`, `rmdir`, or `mkfs`.
+
+#### Safe Mode
+To enhance security and avoid unintended command execution, loz can be run in Safe Mode. When activated, this mode requires user confirmation before executing any Linux command.
+
+Activate Safe Mode by setting the LOZ_SAFE=true environment variable:
+```
+LOZ_SAFE=true loz "Check available memory on this system"
+```
+Upon execution, loz will prompt:
+```
+Do you want to run this command?: free -h (y/n)
+```
+Respond with 'y' to execute the command or 'n' to cancel. This feature ensures that you have full control over the commands executed, preventing accidental changes or data loss.
+
 ### Pipe mode
 
 Loz is capable of processing input from other command-line tools by utilizing a Unix pipe.
@@ -152,7 +191,7 @@ $ ls -l | loz "convert the input to JSON"
 [
   {
     "permissions": "-rw-r--r--",
-    "owner": "joone",
+    "owner": "foo",
     "group": "staff",
     "size": 792,
     "date": "Mar 1 21:02",
@@ -160,7 +199,7 @@ $ ls -l | loz "convert the input to JSON"
   },
   {
     "permissions": "-rw-r--r--",
-    "owner": "joone",
+    "owner": "foo",
     "group": "staff",
     "size": 4427,
     "date": "Mar 1 20:43",

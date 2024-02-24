@@ -6,6 +6,7 @@ const { spawn } = require("child_process");
 import * as readlinePromises from "readline/promises";
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 const isRunningInMocha = process.env.MOCHA_ENV === "test";
 
 const args = yargs
@@ -118,7 +119,7 @@ async function handlePromptInput(prompt: any) {
           linuxCommand += " " + json.arguments.join(" ");
         }
 
-        if (DEBUG) {
+        if (LOZ_SAFE) {
           const answer = await rl.question(
             `Do you want to run this command?: ${linuxCommand} (y/n) `
           );

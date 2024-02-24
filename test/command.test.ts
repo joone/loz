@@ -62,9 +62,15 @@ describe("Linux Command Test", () => {
     let stdout = execSync(
       `MOCHA_ENV=test node ${LOZ_BIN} "Get the current date and time on this system"`
     ).toString();
-    expect(stdout).to.match(
-      /\w{3} \w{3} \d{2} \d{2}:\d{2}:\d{2} (AM|PM) \w{3} \d{4}/
-    );
+    if (GITHUB_ACTIONS === false) {
+      // Fri Feb 23 10:57:41 PM PST 2024
+      expect(stdout).to.match(
+        /\w{3} \w{3} \d{2} \d{2}:\d{2}:\d{2} (AM|PM) \w{3} \d{4}/
+      );
+    } else {
+      // Sat Feb 24 06:49:11 UTC 2024
+      expect(stdout).to.match(/\w{3} \w{3} \d{2} \d{2}:\d{2}:\d{2} UTC \d{4}/);
+    }
   });
 
   // Check available memory

@@ -456,35 +456,43 @@ export class Loz {
       return;
     }
 
+    if (DEBUG) console.log(completion.content);
+
+    let json;
     try {
-      if (DEBUG) console.log(completion.content);
-      const json = JSON.parse(completion.content);
-
-      let linuxCommand = json.commands ? json.commands : json.command;
-      if (json.arguments && json.arguments.length > 0) {
-        linuxCommand += " " + json.arguments.join(" ");
-      }
-
-      if (LOZ_SAFE) {
-        const rl = readlinePromises.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
-        const answer = await rl.question(
-          `Do you want to run this command?: ${linuxCommand} (y/n) `
-        );
-        rl.close();
-
-        if (answer.toLowerCase() === "y") {
-          await runCommand(linuxCommand);
-        }
-      } else {
-        await runCommand(linuxCommand);
-      }
-
+      json = JSON.parse(completion.content);
       if (DEBUG) console.log(JSON.stringify(json, null, 2));
     } catch (error) {
-      console.error(error);
+      console.error("Error parsing JSON:", error);
+      return;
+    }
+
+    let linuxCommand = json.commands ? json.commands : json.command;
+    if (json.arguments && json.arguments.length > 0) {
+      linuxCommand += " " + json.arguments.join(" ");
+    }
+
+    if (!LOZ_SAFE) {
+      await runCommand(linuxCommand);
+      return;
+    }
+
+    let answer = "n";
+    try {
+      const rl = readlinePromises.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+      answer = await rl.question(
+        `Do you want to run this command?: ${linuxCommand} (y/n) `
+      );
+      rl.close();
+    } catch (error) {
+      console.error("Error during user interaction:", error);
+    }
+
+    if (answer.toLowerCase() === "y") {
+      await runCommand(linuxCommand);
     }
   }
 

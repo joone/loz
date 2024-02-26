@@ -6,7 +6,7 @@ import { describe, before, after, it } from "mocha";
 import * as mockStdin from "mock-stdin";
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
-const LOZ_BIN = "../../bin";
+const LOZ_BIN = "../../dist";
 
 describe("Test git operations", function () {
   let repoPath: string;

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import "mocha";
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
-const LOZ_BIN = "bin";
+const LOZ_BIN = "dist";
 
 describe("Linux Command Test", () => {
   /*  let originalWrite : any;

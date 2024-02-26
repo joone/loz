@@ -1,4 +1,4 @@
-import { Loz } from "../src/index";
+import { Loz } from "../src/loz";
 import { expect } from "chai";
 import "mocha";
 import * as mockStdin from "mock-stdin";

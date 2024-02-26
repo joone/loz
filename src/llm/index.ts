@@ -1,4 +1,4 @@
-import { LLMSettings } from "../";
+import { LLMSettings } from "../loz";
 import OpenAI from "openai";
 import { Ollama } from "ollama-node";
 

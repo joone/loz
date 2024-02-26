@@ -82,4 +82,13 @@ describe("Linux Command Test", () => {
     ).toString();
     expect(stdout).to.match(/Mem:/);
   });
+
+  // grep 'sfsfsfcf' *
+  it("Handle no output", function () {
+    let stdout = execSync(
+      `MOCHA_ENV=test node ${LOZ_BIN} "Find sfsdfef text in files in the current directory"`
+    ).toString();
+    console.log(stdout);
+    expect(stdout).to.match(/No output/);
+  });
 });

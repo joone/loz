@@ -44,13 +44,17 @@ async function runCommand(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
     //const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
     const child = spawn("bash", ["-c", command]);
+    let stdoutData = "";
+    let stderrData = "";
 
     child.stdout.on("data", (data: any) => {
-      process.stdout.write(data); // Directly write stdout data to the terminal
+      stdoutData += data; // Accumulate stdout data
+      process.stdout.write(data); // Write stdout data to the terminal
     });
 
     child.stderr.on("data", (data: any) => {
-      process.stderr.write(data); // Directly write stderr data to the terminal
+      stderrData += data; // Accumulate stderr data
+      process.stderr.write(data); // Write stderr data to the terminal
     });
 
     child.on("error", (error: any) => {
@@ -59,13 +63,19 @@ async function runCommand(command: string): Promise<void> {
     });
 
     child.on("close", (code: any) => {
-      if (code !== 0) {
-        console.error(`Process exited with code: ${code}`);
-        reject(new Error(`Process exited with code: ${code}`));
-        return;
+      if (code === 2) {
+        reject("No output: " + code);
+      } else if (code !== 0) {
+        console.log(`Process exited with code: ${code}`);
+        // Check if both stdout and stderr are empty
+        if (!stdoutData && !stderrData) {
+          reject("No output: " + code);
+        } else {
+          reject(new Error(`Process exited with code: ${code}`));
+        }
+      } else {
+        resolve(); // Resolve the promise when the process closes successfully
       }
-
-      resolve(); // Resolve the promise when the process closes successfully
     });
   });
 }
@@ -426,7 +436,12 @@ export class Loz {
     }
 
     if (!LOZ_SAFE) {
-      await runCommand(linuxCommand);
+      try {
+        await runCommand(linuxCommand);
+      } catch (error: any) {
+        if (error.indexOf("No output") === 0) console.log(error);
+        else console.error("Error running command:", error);
+      }
       return;
     }
 
@@ -445,7 +460,12 @@ export class Loz {
     }
 
     if (answer.toLowerCase() === "y") {
-      await runCommand(linuxCommand);
+      try {
+        await runCommand(linuxCommand);
+      } catch (error: any) {
+        if (error.indexOf("No output") === 0) console.log(error);
+        else console.error("Error running command:", error);
+      }
     }
   }
 

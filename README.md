@@ -101,7 +101,7 @@ Additionally, you can change the model by entering:
 or
 
 ```
-> config model codelamma
+> config model codellama
 ```
 
 You can check the current settings by entering:

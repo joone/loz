@@ -137,7 +137,7 @@ Loz empowers users to execute Linux commands using natural language. Below are s
   ● apache2.service - The Apache HTTP Server
   ```
 
-- Detect GPUs in the system:
+- Detect GPUs on the system:
   ```
   loz "Detect GPUs on this system"
   00:02.0 VGA compatible controller: Intel Corporation Device a780 (rev 04)

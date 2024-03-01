@@ -1,8 +1,19 @@
-import { LLMSettings } from "../loz";
 import OpenAI from "openai";
 import { Ollama } from "ollama-node";
 
 const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+
+export interface LLMSettings {
+  model: string;
+  prompt: string;
+  temperature: number;
+  max_tokens: number;
+  top_p: number;
+  stream: boolean;
+  frequency_penalty: number;
+  presence_penalty: number;
+  stop?: string[];
+}
 abstract class LLMService {
   api: any;
   async completion(params: LLMSettings) {

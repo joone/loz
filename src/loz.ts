@@ -4,7 +4,7 @@ import * as os from "os";
 import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
 import { exec, spawn } from "child_process";
-import { OpenAiAPI, OllamaAPI } from "./llm";
+import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
 
 import { ChatHistory } from "./history";
 import {
@@ -90,18 +90,6 @@ const promptForGIT =
   "6. Use the body to explain the 'what' and 'why', not the 'how'.\n" +
   "7. Do not include the issue number or code diff in the body.\n\n" +
   "Code Changes:\n";
-
-export interface LLMSettings {
-  model: string;
-  prompt: string;
-  temperature: number;
-  max_tokens: number;
-  top_p: number;
-  stream: boolean;
-  frequency_penalty: number;
-  presence_penalty: number;
-  stop?: string[];
-}
 
 export class Loz {
   llmAPI: any;

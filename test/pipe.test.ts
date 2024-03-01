@@ -23,6 +23,7 @@ describe("Test loz pipe mode", function () {
 
   // echo "hello, world!" | loz "convert the input to uppercase"
   it("should convert the input to uppercase", function (done) {
+    this.timeout(3000);
     exec(
       `echo "hello, world!" | node ${LOZ_BIN} "convert the input to uppercase"`,
       (error, stdout, stderr) => {

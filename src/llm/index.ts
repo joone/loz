@@ -17,10 +17,7 @@ export interface LLMSettings {
 abstract class LLMService {
   api: any;
   abstract completion(params: LLMSettings): any;
-
-  async completionStream(params: LLMSettings) {
-    return null;
-  }
+  abstract completionStream(params: LLMSettings): any;
 }
 
 export class OpenAiAPI extends LLMService {
@@ -104,5 +101,9 @@ export class OllamaAPI extends LLMService {
     const result = await this.api.generate(params.prompt);
 
     return { content: result.output, model: params.model };
+  }
+
+  async completionStream(params: LLMSettings) {
+    return {};
   }
 }

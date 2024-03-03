@@ -1,5 +1,3 @@
-import e = require("express");
-import { resolve } from "path";
 import * as readline from "readline";
 
 interface PromptInterface {

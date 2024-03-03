@@ -324,7 +324,7 @@ export class Loz {
         }
         cli.prompt();
       });
-      cli.start();
+      cli.start(true);
     });
   }
 

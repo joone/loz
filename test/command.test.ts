@@ -71,7 +71,9 @@ describe("Linux Command Test", () => {
       );
     } else {
       // Sat Feb 24 06:49:11 UTC 2024
-      expect(stdout).to.match(/\w{3} \w{3} \d{2} \d{2}:\d{2}:\d{2} UTC \d{4}/);
+      expect(stdout).to.match(
+        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} UTC \d{4}/
+      );
     }
   });
 

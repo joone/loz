@@ -16,9 +16,7 @@ export interface LLMSettings {
 }
 abstract class LLMService {
   api: any;
-  async completion(params: LLMSettings) {
-    return { content: "", model: "" };
-  }
+  abstract completion(params: LLMSettings): any;
 
   async completionStream(params: LLMSettings) {
     return null;

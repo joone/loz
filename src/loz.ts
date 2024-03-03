@@ -313,30 +313,7 @@ export class Loz {
           cli.exit();
           resolve("Done");
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
-          if (tokens.length === 3) {
-            if (this.config.set(tokens[1], tokens[2]) === false) {
-              cli.prompt();
-              return;
-            }
-
-            if (this.config.get(tokens[1]) !== undefined) {
-              console.log(
-                `The ${tokens[1]} has been updated to '${tokens[2]}'`
-              );
-            }
-            this.config.save();
-            cli.exit();
-            // Restart the interactive mode.
-            await this.initLLMfromConfig();
-            resolve("Run");
-          } else if (tokens.length === 2) {
-            console.log(this.config.get(tokens[1]));
-          } else if (tokens.length === 1) {
-            this.config.print();
-          } else {
-            console.log("Invalid command");
-          }
-          cli.prompt();
+          await this.handleConfigCommand(tokens, cli);
         } else if (input.length !== 0) {
           let params: LLMSettings;
           params = this.defaultSettings;
@@ -346,8 +323,32 @@ export class Loz {
           cli.prompt();
         }
       });
-      await cli.start();
+      cli.start();
     });
+  }
+
+  async handleConfigCommand(tokens: string[], cli: CommandLinePrompt) {
+    if (tokens.length === 3) {
+      if (this.config.set(tokens[1], tokens[2]) === false) {
+        cli.prompt();
+        return;
+      }
+
+      if (this.config.get(tokens[1]) !== undefined) {
+        console.log(`The ${tokens[1]} has been updated to '${tokens[2]}'`);
+      }
+      this.config.save();
+      cli.exit();
+      // Restart the interactive mode.
+      await this.initLLMfromConfig();
+    } else if (tokens.length === 2) {
+      console.log(this.config.get(tokens[1]));
+    } else if (tokens.length === 1) {
+      this.config.print();
+    } else {
+      console.log("Invalid command");
+    }
+    cli.prompt();
   }
 
   async handlePrompt(prompt: string) {

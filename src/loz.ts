@@ -72,7 +72,7 @@ export class Loz {
   }
 
   // load config from JSON file
-  async initLLMfromConfig() {
+  private async initLLMfromConfig() {
     await this.config.loadConfig(this.configPath);
 
     const api = this.checkAPI() || "openai";
@@ -110,7 +110,7 @@ export class Loz {
       this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
   }
 
-  checkAPI() {
+  private checkAPI() {
     //console.log("API: " + this.config.get("api")?.value);
     return this.config.get("api")?.value;
   }
@@ -203,7 +203,7 @@ export class Loz {
   }
 
   // Interactive mode
-  async runCompletion(params: LLMSettings) {
+  private async runCompletion(params: LLMSettings) {
     let curCompleteText = "";
     if (this.checkAPI() === "openai") {
       let stream: any;
@@ -271,7 +271,7 @@ export class Loz {
     });
   }
 
-  async handleConfigCommand(tokens: string[]) {
+  private async handleConfigCommand(tokens: string[]) {
     if (tokens.length === 3) {
       if (this.config.set(tokens[1], tokens[2]) === false) {
         return;
@@ -359,7 +359,7 @@ export class Loz {
   }
 
   // check if the program is running in it's git repository.
-  checkGitRepo() {
+  private checkGitRepo() {
     const gitRepoPath = path.join(__dirname, "../.git");
     if (DEBUG) console.log(gitRepoPath);
     if (fs.existsSync(gitRepoPath)) {

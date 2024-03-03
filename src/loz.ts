@@ -41,7 +41,7 @@ function runShellCommand(command: string): Promise<string> {
 }
 
 // Function to run a command and stream its stdout directly to the terminal
-async function runCommand(command: string): Promise<void> {
+function runCommand(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
     //const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
     const child = spawn("bash", ["-c", command]);

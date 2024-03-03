@@ -365,16 +365,6 @@ export class Loz {
           }
           rl.prompt();
         } else if (input.length !== 0) {
-          let mode = this.config.get("mode")?.value;
-          // ESL: English as a Second Language
-          if (this.config.get("mode")?.value === "esl") {
-            this.defaultSettings.prompt =
-              "Rephrase the following question to make it sound more natural and asnwer the question: \n";
-          } else if (this.config.get("mode")?.value === "proofread") {
-            this.defaultSettings.prompt =
-              "Can you proofread the following setnence? Show me the difference between the given sentence and your correction.\n";
-          }
-
           let params: LLMSettings;
           params = this.defaultSettings;
           params.prompt = input;

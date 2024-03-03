@@ -312,25 +312,25 @@ export class Loz {
         if (input === "exit" || input === "quit") {
           cli.exit();
           resolve("Done");
+          return;
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
-          await this.handleConfigCommand(tokens, cli);
+          await this.handleConfigCommand(tokens);
         } else if (input.length !== 0) {
           let params: LLMSettings;
           params = this.defaultSettings;
           params.prompt = input;
           params.max_tokens = 4000;
           await this.runCompletion(params);
-          cli.prompt();
         }
+        cli.prompt();
       });
       cli.start();
     });
   }
 
-  async handleConfigCommand(tokens: string[], cli: CommandLinePrompt) {
+  async handleConfigCommand(tokens: string[]) {
     if (tokens.length === 3) {
       if (this.config.set(tokens[1], tokens[2]) === false) {
-        cli.prompt();
         return;
       }
 
@@ -338,7 +338,6 @@ export class Loz {
         console.log(`The ${tokens[1]} has been updated to '${tokens[2]}'`);
       }
       this.config.save();
-      cli.exit();
       // Restart the interactive mode.
       await this.initLLMfromConfig();
     } else if (tokens.length === 2) {
@@ -348,7 +347,6 @@ export class Loz {
     } else {
       console.log("Invalid command");
     }
-    cli.prompt();
   }
 
   async handlePrompt(prompt: string) {

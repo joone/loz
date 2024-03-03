@@ -5,6 +5,7 @@ import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
 import { exec, spawn } from "child_process";
 import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
+import { CommandLinePrompt } from "./prompt";
 
 import { ChatHistory } from "./history";
 import {
@@ -259,7 +260,7 @@ export class Loz {
   }
 
   // Interactive mode
-  async runCompletion(params: LLMSettings, rl: any) {
+  async runCompletion(params: LLMSettings) {
     let curCompleteText = "";
     if (this.checkAPI() === "openai") {
       let stream: any;
@@ -302,47 +303,19 @@ export class Loz {
       answer: curCompleteText,
     };
     this.chatHistory.dialogue.push(promptAndCompleteText);
-
-    rl.prompt();
   }
 
-  async runPromptInteractiveMode() {
+  runPromptInteractiveMode() {
     return new Promise((resolve, reject) => {
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      });
-
-      // Output the current mode.
-      this.config.print();
-
-      // Set the prompt to display before each input
-      rl.setPrompt("> ");
-
-      // Show the cursor and prompt the user for input
-      rl.prompt();
-
-      // Set the terminal to raw mode to allow for cursor manipulation
-      process.stdin.setRawMode(true);
-
-      // Display a blinking cursor
-      setInterval(() => {
-        process.stdout.write("\x1B[?25h");
-        setTimeout(() => {
-          process.stdout.write("\x1B[?25l");
-        }, 500);
-      }, 1000);
-
-      // Listen for user input
-      rl.on("line", async (input: string) => {
-        // Tokenize the input with space as the delimiter
+      let cli = new CommandLinePrompt(async (input: string) => {
         const tokens = input.split(" ");
         if (input === "exit" || input === "quit") {
+          cli.exit();
           resolve("Done");
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
           if (tokens.length === 3) {
             if (this.config.set(tokens[1], tokens[2]) === false) {
-              rl.prompt();
+              cli.prompt();
               return;
             }
 
@@ -352,7 +325,7 @@ export class Loz {
               );
             }
             this.config.save();
-            rl.close();
+            cli.exit();
             // Restart the interactive mode.
             await this.initLLMfromConfig();
             resolve("Run");
@@ -363,21 +336,17 @@ export class Loz {
           } else {
             console.log("Invalid command");
           }
-          rl.prompt();
+          cli.prompt();
         } else if (input.length !== 0) {
           let params: LLMSettings;
           params = this.defaultSettings;
           params.prompt = input;
           params.max_tokens = 4000;
-          this.runCompletion(params, rl);
+          await this.runCompletion(params);
+          cli.prompt();
         }
       });
-
-      // Handle CTRL+C to exit the program
-      rl.on("SIGINT", () => {
-        rl.close();
-        resolve("Done");
-      });
+      await cli.start();
     });
   }
 

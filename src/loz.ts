@@ -22,7 +22,7 @@ const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";
-const LOG_DEV_PATH = "logs";
+const LOG_DEV_PATH = ".loz_logs";
 
 const promptForGIT =
   "Generate a Git commit message based on the following code changes. Ensure the message adheres to the following guidelines:\n\n" +

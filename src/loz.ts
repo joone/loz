@@ -199,7 +199,17 @@ export class Loz {
     params.max_tokens = 500;
     params.prompt = promptForGIT + diff + "\n" + "Commit Message: ";
 
-    return await this.llmAPI.completion(params);
+    const completion = await this.llmAPI.completion(params);
+
+    const promptAndCompleteText = {
+      mode: "loz --git",
+      model: completion.model,
+      prompt: params.prompt,
+      answer: completion.content,
+    };
+    this.chatHistory.dialogue.push(promptAndCompleteText);
+
+    return completion;
   }
 
   // Interactive mode

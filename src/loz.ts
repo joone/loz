@@ -324,6 +324,14 @@ export class Loz {
       linuxCommand += " " + json.arguments.join(" ");
     }
 
+    // Add the command to the chat history
+    const promptAndCompleteText = {
+      mode: "command generation mode",
+      prompt: internPrompt,
+      answer: completion,
+    };
+    this.chatHistory.dialogue.push(promptAndCompleteText);
+
     if (!LOZ_SAFE) {
       try {
         await runCommand(linuxCommand);

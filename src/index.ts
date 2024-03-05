@@ -100,10 +100,7 @@ async function handleDefaultCase() {
   }
   console.log("Loz: a simple CLI for LLM");
   try {
-    while (true) {
-      const res = await loz.runPromptInteractiveMode();
-      if (res === "Done") break;
-    }
+    await loz.runPromptInteractiveMode();
   } catch (error) {
     console.log(error);
   }

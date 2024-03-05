@@ -7,6 +7,7 @@ interface PromptInterface {
 export class CommandLinePrompt implements PromptInterface {
   private rl: readline.Interface;
   private callback: (input: string) => Promise<void>;
+  private timer: any;
 
   prompt() {
     this.rl.prompt();
@@ -33,7 +34,7 @@ export class CommandLinePrompt implements PromptInterface {
 
     // Display a blinking cursor
     if (blinking) {
-      setInterval(() => {
+      this.timer = setInterval(() => {
         process.stdout.write("\x1B[?25h");
         setTimeout(() => {
           process.stdout.write("\x1B[?25l");
@@ -43,18 +44,19 @@ export class CommandLinePrompt implements PromptInterface {
 
     // Listen for user input
     this.rl.on("line", async (input) => {
-      await this.callback(input);
       this.rl.prompt();
+      await this.callback(input);
     });
 
     // Handle CTRL+C to exit the program
     this.rl.on("SIGINT", () => {
+      clearInterval(this.timer);
       this.rl.close();
     });
   }
 
   exit(): void {
+    clearInterval(this.timer);
     this.rl.close();
-    //  resolve();
   }
 }

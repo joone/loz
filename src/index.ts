@@ -106,7 +106,6 @@ async function handleDefaultCase() {
   }
   console.log("Good bye!");
   loz.saveChatHistory();
-  process.exit(0);
 }
 
 (async () => {

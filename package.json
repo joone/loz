@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "test": "mocha -r ts-node/register test/**/*.ts",
+    "test": "mocha -r ts-node/register src/**/*test.ts test/**/*test.ts",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "style": "npx prettier --write ."
   },

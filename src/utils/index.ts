@@ -1,4 +1,18 @@
 import { exec, spawn } from "child_process";
+import * as path from "path";
+import * as fs from "fs";
+
+export const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+
+// check if the program is running in it's git repository.
+export function checkGitRepo() {
+  const gitRepoPath = path.join(__dirname, "../.git");
+  if (DEBUG) console.log(gitRepoPath);
+  if (fs.existsSync(gitRepoPath)) {
+    return true;
+  }
+  return false;
+}
 
 export function runShellCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {

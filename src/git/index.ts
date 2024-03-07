@@ -24,12 +24,12 @@ export class Git {
   }
 
   public commit(message: string): Promise<string> {
-    // Add a backslash before each backtick
-    message = message.replace(/`/g, "\\`");
-    message = message.replace(/"/g, "");
+    // Sanitize the message to avoid command injection
+    const sanitizedMessage = message.replace(/`/g, "\\`").replace(/"/g, '\\"');
+
     return new Promise((resolve, reject) => {
       exec(
-        `git commit -m "${message}"`,
+        `git commit -m "${sanitizedMessage}"`,
         (error: Error | null, stdout: string, stderr: string) => {
           if (error) {
             console.error(`Error: ${error.message}`);

@@ -6,7 +6,7 @@ export const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 
 // check if the program is running in it's git repository.
 export function checkGitRepo() {
-  const gitRepoPath = path.join(__dirname, "../.git");
+  const gitRepoPath = path.join(process.cwd(), ".git");
   if (DEBUG) console.log(gitRepoPath);
   if (fs.existsSync(gitRepoPath)) {
     return true;

@@ -63,7 +63,7 @@ export class Loz {
       fs.mkdirSync(this.configPath);
     }
 
-    if (this.checkGitRepo() === true) {
+    if (checkGitRepo() === true) {
       if (!fs.existsSync(LOG_DEV_PATH)) {
         fs.mkdirSync(LOG_DEV_PATH);
       }
@@ -359,16 +359,6 @@ export class Loz {
         else console.error("Error running command:", error);
       }
     }
-  }
-
-  // check if the program is running in it's git repository.
-  private checkGitRepo() {
-    const gitRepoPath = path.join(__dirname, "../.git");
-    if (DEBUG) console.log(gitRepoPath);
-    if (fs.existsSync(gitRepoPath)) {
-      return true;
-    }
-    return false;
   }
 
   close() {

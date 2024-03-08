@@ -7,7 +7,7 @@ import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand, checkGitRepo } from "./utils";
-import { DEBUG } from "./constant";
+import { DEBUG, LOG_DEV_PATH } from "./constant";
 import {
   Config,
   DEFAULT_OLLAMA_MODEL,
@@ -21,7 +21,6 @@ require("dotenv").config();
 const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";
-const LOG_DEV_PATH = ".loz_logs";
 
 const promptForGIT =
   "Generate a Git commit message based on the following code changes. Ensure the message adheres to the following guidelines:\n\n" +

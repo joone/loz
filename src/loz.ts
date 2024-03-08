@@ -156,8 +156,9 @@ export class Loz {
       return;
     }
 
-    const promptAndCompleteText = {
+    const promptAndCompleteText: PromptAndAnswer = {
       mode: "loz commit mode",
+      model: complete.model,
       prompt: prompt,
       answer: complete.content,
     };
@@ -176,7 +177,7 @@ export class Loz {
 
     const completion = await this.llmAPI.completion(params);
 
-    const promptAndCompleteText = {
+    const promptAndCompleteText: PromptAndAnswer = {
       mode: "loz --git",
       model: completion.model,
       prompt: params.prompt,
@@ -225,8 +226,9 @@ export class Loz {
       process.stdout.write("\n");
     }
 
-    const promptAndCompleteText = {
+    const promptAndCompleteText: PromptAndAnswer = {
       mode: "interactive",
+      model: params.model,
       prompt: params.prompt,
       answer: curCompleteText,
     };
@@ -293,8 +295,9 @@ export class Loz {
       console.log(completion.content);
       const promptAndCompleteText = {
         mode: "regular mode",
+        model: completion.model,
         prompt: internPrompt,
-        answer: completion,
+        answer: completion.content,
       };
       this.chatHistoryManager.addChat(promptAndCompleteText);
       return;
@@ -319,6 +322,7 @@ export class Loz {
     // Add the command to the chat history
     const promptAndCompleteText = {
       mode: "command generation mode",
+      model: completion.model,
       prompt: internPrompt,
       answer: completion,
     };

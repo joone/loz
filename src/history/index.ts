@@ -6,6 +6,7 @@ import { DEBUG } from "../utils";
 
 interface PromptAndAnswerInterface {
   mode: string;
+  model: string;
   prompt: string;
   answer: string;
 }
@@ -17,11 +18,13 @@ export interface ChatHistory {
 
 export class PromptAndAnswer implements PromptAndAnswerInterface {
   mode: string;
+  model: string;
   prompt: string;
   answer: string;
 
-  constructor(mode: string, prompt: string, answer: string) {
+  constructor(mode: string, model: string, prompt: string, answer: string) {
     this.mode = mode;
+    this.model = model;
     this.prompt = prompt;
     this.answer = answer;
   }

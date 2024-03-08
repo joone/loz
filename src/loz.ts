@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
 import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";

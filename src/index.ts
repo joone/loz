@@ -36,7 +36,7 @@ async function handleLozCommand() {
     if (args.prompt !== undefined) {
       await handlePrompt(args.prompt);
     } else {
-      await handleDefaultCase();
+      await handleInteractiveMode();
     }
   } else {
     // Input from a pipe
@@ -99,12 +99,7 @@ async function handleCodeDiffFromPipe() {
   });
 }
 
-async function handleDefaultCase() {
-  // If the stdin is not a TTY, but from a pipe
-  if (!process.stdin.isTTY) {
-    console.log("Input your prompt:");
-    process.exit(0);
-  }
+async function handleInteractiveMode() {
   console.log("Loz: a simple CLI for LLM");
   try {
     await loz.runPromptInteractiveMode();

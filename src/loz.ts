@@ -120,7 +120,17 @@ export class Loz {
     params = this.defaultSettings;
     params.max_tokens = 500;
     params.prompt = prompt;
-    return await this.llmAPI.completion(params);
+    const completion = await this.llmAPI.completion(params);
+
+    const promptAndCompleteText: PromptAndAnswer = {
+      mode: "",
+      model: completion.model,
+      prompt: prompt,
+      answer: completion.content,
+    };
+    this.chatHistoryManager.addChat(promptAndCompleteText);
+
+    return completion;
   }
 
   async runGitCommit() {

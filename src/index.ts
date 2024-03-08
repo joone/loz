@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 import * as yargs from "yargs";
 import { Loz } from "./loz";
-import { exec } from "child_process";
-import * as readlinePromises from "readline/promises";
-
 import { DEBUG } from "./constant";
 
 const isRunningInMocha = process.env.MOCHA_ENV === "test";

@@ -41,7 +41,7 @@ async function handleLozCommand() {
   } else {
     // Input from a pipe
     if (args.git) {
-      await handleGitCommandFromPipe();
+      await handleCodeDiffFromPipe();
     } else {
       //console.log("Run loz like this: git diff | loz --git");
       if (args.prompt !== undefined) {
@@ -74,7 +74,7 @@ async function handleInputFromPipe(prompt: any) {
   });
 }
 
-async function handleGitCommandFromPipe() {
+async function handleCodeDiffFromPipe() {
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", async (data: String) => {
     // Remove the first line from data

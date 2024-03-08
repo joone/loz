@@ -288,8 +288,15 @@ export class Loz {
 
     const completion = await this.completeUserPrompt(internPrompt + prompt);
 
+    // If the completion is not a JSON object, but a plain text.
     if (!completion.content.startsWith("{")) {
       console.log(completion.content);
+      const promptAndCompleteText = {
+        mode: "regular mode",
+        prompt: internPrompt,
+        answer: completion,
+      };
+      this.chatHistoryManager.addChat(promptAndCompleteText);
       return;
     }
 

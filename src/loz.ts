@@ -58,10 +58,6 @@ export class Loz {
   }
 
   async init() {
-    if (!fs.existsSync(this.configPath)) {
-      fs.mkdirSync(this.configPath);
-    }
-
     if (checkGitRepo() === true) {
       if (!fs.existsSync(LOG_DEV_PATH)) {
         fs.mkdirSync(LOG_DEV_PATH);
@@ -73,6 +69,10 @@ export class Loz {
 
   // load config from JSON file
   private async initLLMfromConfig() {
+    if (!fs.existsSync(this.configPath)) {
+      fs.mkdirSync(this.configPath);
+    }
+
     await this.config.loadConfig(this.configPath);
 
     const api = this.checkAPI() || "openai";

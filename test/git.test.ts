@@ -57,7 +57,7 @@ describe("Test git operations", function () {
     execSync("git add hello.c");
 
     // Commit the change
-    execSync(`node ${LOZ_BIN} commit`);
+    execSync(`MOCHA_ENV=test node ${LOZ_BIN} commit`);
 
     // Verify the commit
     const log = execSync("git log --oneline").toString();

@@ -2,9 +2,8 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import { DEBUG, checkGitRepo } from "../utils";
+import { DEBUG } from "../utils";
 
-const LOG_DEV_PATH = ".loz_logs";
 interface PromptAndAnswerInterface {
   mode: string;
   prompt: string;
@@ -61,9 +60,7 @@ export class ChatHistoryManager {
       "-" +
       date.getSeconds() +
       ".json";
-    const filePath = checkGitRepo()
-      ? path.join(LOG_DEV_PATH, fileName)
-      : path.join(this.configPath, fileName);
+    const filePath = path.join(this.configPath, fileName);
     this.chatHistory.date = date.toString();
     const json = JSON.stringify(this.chatHistory, null, 2);
     if (DEBUG) console.log("Saving chat history to " + filePath);

@@ -6,9 +6,7 @@ import * as readlinePromises from "readline/promises";
 import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
-import { runCommand, runShellCommand } from "./utils";
-
-import { ChatHistory } from "./history";
+import { runCommand, runShellCommand, checkGitRepo } from "./utils";
 import {
   Config,
   DEFAULT_OLLAMA_MODEL,
@@ -56,7 +54,9 @@ export class Loz {
       presence_penalty: 0.0,
     };
     this.configPath = path.join(HOME_PATH, ".loz");
-    this.chatHistoryManager = new ChatHistoryManager(this.configPath);
+
+    const dirPath = checkGitRepo() ? LOG_DEV_PATH : this.configPath;
+    this.chatHistoryManager = new ChatHistoryManager(dirPath);
   }
 
   async init() {

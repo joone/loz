@@ -1,8 +1,7 @@
 import { exec, spawn } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
-
-export const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+import { DEBUG } from "../constant";
 
 // check if the program is running in it's git repository.
 export function checkGitRepo() {

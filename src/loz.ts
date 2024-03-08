@@ -7,6 +7,7 @@ import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand, checkGitRepo } from "./utils";
+import { DEBUG } from "./constant";
 import {
   Config,
   DEFAULT_OLLAMA_MODEL,
@@ -17,7 +18,6 @@ import { Git } from "./git";
 
 require("dotenv").config();
 
-const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
 const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";

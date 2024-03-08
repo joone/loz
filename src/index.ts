@@ -4,7 +4,8 @@ import { Loz } from "./loz";
 import { exec } from "child_process";
 import * as readlinePromises from "readline/promises";
 
-const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+import { DEBUG } from "./constant";
+
 const isRunningInMocha = process.env.MOCHA_ENV === "test";
 
 const args = yargs

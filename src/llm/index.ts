@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 import { Ollama } from "ollama-node";
-
-const DEBUG = process.env.LOZ_DEBUG === "true" ? true : false;
+import { DEBUG } from "../constant";
 
 export interface LLMSettings {
   model: string;

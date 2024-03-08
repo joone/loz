@@ -5,6 +5,7 @@ import * as readline from "readline";
 import * as readlinePromises from "readline/promises";
 import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
+import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand } from "./utils";
 
 import { ChatHistory } from "./history";
@@ -38,7 +39,7 @@ const promptForGIT =
 export class Loz {
   llmAPI: any;
   defaultSettings: LLMSettings;
-  chatHistory: ChatHistory = { date: "", dialogue: [] };
+  chatHistoryManager: ChatHistoryManager;
   configPath: string;
   config: Config = new Config();
   git: Git = new Git();
@@ -55,6 +56,7 @@ export class Loz {
       presence_penalty: 0.0,
     };
     this.configPath = path.join(HOME_PATH, ".loz");
+    this.chatHistoryManager = new ChatHistoryManager(this.configPath);
   }
 
   async init() {
@@ -115,33 +117,6 @@ export class Loz {
     return this.config.get("api")?.value;
   }
 
-  // Save chat history (JSON) to file.
-  async saveChatHistory() {
-    const date = new Date();
-
-    const fileName =
-      date.getFullYear() +
-      "-" +
-      (date.getMonth() + 1) +
-      "-" +
-      date.getDate() +
-      "-" +
-      date.getHours() +
-      "-" +
-      date.getMinutes() +
-      "-" +
-      date.getSeconds() +
-      ".json";
-    const filePath = this.checkGitRepo()
-      ? path.join(LOG_DEV_PATH, fileName)
-      : path.join(this.configPath, fileName);
-    this.chatHistory.date = date.toString();
-    if (DEBUG) console.log(this.chatHistory);
-    const json = JSON.stringify(this.chatHistory, null, 2);
-
-    fs.writeFileSync(filePath, json);
-  }
-
   async completeUserPrompt(prompt: string) {
     let params: LLMSettings;
     params = this.defaultSettings;
@@ -186,7 +161,7 @@ export class Loz {
       prompt: prompt,
       answer: complete.content,
     };
-    this.chatHistory.dialogue.push(promptAndCompleteText);
+    this.chatHistoryManager.addChat(promptAndCompleteText);
 
     return complete.content;
   }
@@ -207,7 +182,7 @@ export class Loz {
       prompt: params.prompt,
       answer: completion.content,
     };
-    this.chatHistory.dialogue.push(promptAndCompleteText);
+    this.chatHistoryManager.addChat(promptAndCompleteText);
 
     return completion;
   }
@@ -255,7 +230,7 @@ export class Loz {
       prompt: params.prompt,
       answer: curCompleteText,
     };
-    this.chatHistory.dialogue.push(promptAndCompleteText);
+    this.chatHistoryManager.addChat(promptAndCompleteText);
   }
 
   runPromptInteractiveMode() {
@@ -340,7 +315,7 @@ export class Loz {
       prompt: internPrompt,
       answer: completion,
     };
-    this.chatHistory.dialogue.push(promptAndCompleteText);
+    this.chatHistoryManager.addChat(promptAndCompleteText);
 
     if (!LOZ_SAFE) {
       try {
@@ -384,5 +359,9 @@ export class Loz {
       return true;
     }
     return false;
+  }
+
+  close() {
+    this.chatHistoryManager.saveChatHistory();
   }
 }

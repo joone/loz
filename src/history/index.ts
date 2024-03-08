@@ -1,3 +1,4 @@
+// npx mocha -r ts-node/register src/history/test.ts
 import * as fs from "fs";
 import * as path from "path";
 
@@ -64,9 +65,8 @@ export class ChatHistoryManager {
       ? path.join(LOG_DEV_PATH, fileName)
       : path.join(this.configPath, fileName);
     this.chatHistory.date = date.toString();
-    if (DEBUG) console.log(this.chatHistory);
     const json = JSON.stringify(this.chatHistory, null, 2);
-
+    if (DEBUG) console.log("Saving chat history to " + filePath);
     fs.writeFileSync(filePath, json);
   }
 }

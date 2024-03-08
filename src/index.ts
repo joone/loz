@@ -59,16 +59,15 @@ async function handlePrompt(prompt: any) {
   loz.close();
 }
 
-async function handleInputFromPipe(prompt: any) {
-  // Handle the input from the pipe
-  process.stdin.setEncoding("utf8");
-  process.stdin.on("data", async (data: String) => {
-    const promptUpdated =
-      "Based on the data provided below, " + prompt + ":\n" + data;
-    const completion = await loz.completeUserPrompt(promptUpdated);
-    process.stdout.write(completion.content);
-    process.stdout.write("\n");
-  });
+async function handleInteractiveMode() {
+  console.log("Loz: a simple CLI for LLM");
+  try {
+    await loz.runPromptInteractiveMode();
+  } catch (error) {
+    console.log(error);
+  }
+  console.log("Good bye!");
+  loz.close();
 }
 
 async function handleCodeDiffFromPipe() {
@@ -96,15 +95,16 @@ async function handleCodeDiffFromPipe() {
   });
 }
 
-async function handleInteractiveMode() {
-  console.log("Loz: a simple CLI for LLM");
-  try {
-    await loz.runPromptInteractiveMode();
-  } catch (error) {
-    console.log(error);
-  }
-  console.log("Good bye!");
-  loz.close();
+async function handleInputFromPipe(prompt: any) {
+  // Handle the input from the pipe
+  process.stdin.setEncoding("utf8");
+  process.stdin.on("data", async (data: String) => {
+    const promptUpdated =
+      "Based on the data provided below, " + prompt + ":\n" + data;
+    const completion = await loz.completeUserPrompt(promptUpdated);
+    process.stdout.write(completion.content);
+    process.stdout.write("\n");
+  });
 }
 
 (async () => {

@@ -45,7 +45,7 @@ async function handleLozCommand() {
     } else {
       //console.log("Run loz like this: git diff | loz --git");
       if (args.prompt !== undefined) {
-        await handlePromptInput(args.prompt);
+        await handleInputFromPipe(args.prompt);
       } else {
         console.log("Input your prompt:");
       }
@@ -62,7 +62,7 @@ async function handlePrompt(prompt: any) {
   loz.close();
 }
 
-async function handlePromptInput(prompt: any) {
+async function handleInputFromPipe(prompt: any) {
   // Handle the input from the pipe
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", async (data: String) => {

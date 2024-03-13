@@ -57,7 +57,7 @@ export class Loz {
     this.chatHistoryManager = new ChatHistoryManager(dirPath);
   }
 
-  async init() {
+  public async init() {
     if (checkGitRepo() === true) {
       if (!fs.existsSync(LOG_DEV_PATH)) {
         fs.mkdirSync(LOG_DEV_PATH);
@@ -115,7 +115,7 @@ export class Loz {
     return this.config.get("api")?.value;
   }
 
-  async completeUserPrompt(prompt: string) {
+  public async completeUserPrompt(prompt: string) {
     let params: LLMSettings;
     params = this.defaultSettings;
     params.max_tokens = 500;
@@ -133,7 +133,7 @@ export class Loz {
     return completion;
   }
 
-  async runGitCommit() {
+  public async runGitCommit() {
     let diff = await this.git.getDiffFromStaged();
 
     // Remove the first line of the diff
@@ -176,7 +176,7 @@ export class Loz {
   }
 
   // git diff | loz --git
-  async generateGitCommitMessage(diff: string) {
+  public async generateGitCommitMessage(diff: string) {
     if (DEBUG) console.log("writeGitCommitMessage");
     let params: LLMSettings;
     params = this.defaultSettings;
@@ -243,7 +243,7 @@ export class Loz {
     this.chatHistoryManager.addChat(promptAndCompleteText);
   }
 
-  runPromptInteractiveMode() {
+  public runPromptInteractiveMode() {
     return new Promise((resolve, reject) => {
       let cli = new CommandLinePrompt(async (input: string) => {
         const tokens = input.split(" ");
@@ -287,8 +287,8 @@ export class Loz {
     }
   }
 
-  async handlePrompt(prompt: string) {
-    const internPrompt =
+  public async handlePrompt(prompt: string) {
+    const systemPrompt =
       "Decide if the following prompt can be translated into Linux commands. " +
       "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
       "If no, provide an explanation in plain text.\n\n" +
@@ -296,7 +296,7 @@ export class Loz {
       prompt +
       "\nResponse: ";
 
-    const completion = await this.completeUserPrompt(internPrompt + prompt);
+    const completion = await this.completeUserPrompt(systemPrompt + prompt);
 
     // If the completion is not a JSON object, but a plain text.
     if (!completion.content.startsWith("{")) {
@@ -304,7 +304,7 @@ export class Loz {
       const promptAndCompleteText = {
         mode: "regular mode",
         model: completion.model,
-        prompt: internPrompt,
+        prompt: systemPrompt,
         answer: completion.content,
       };
       this.chatHistoryManager.addChat(promptAndCompleteText);
@@ -331,7 +331,7 @@ export class Loz {
     const promptAndCompleteText = {
       mode: "command generation mode",
       model: completion.model,
-      prompt: internPrompt,
+      prompt: systemPrompt,
       answer: completion,
     };
     this.chatHistoryManager.addChat(promptAndCompleteText);
@@ -370,7 +370,7 @@ export class Loz {
     }
   }
 
-  close() {
+  public close() {
     this.chatHistoryManager.saveChatHistory();
   }
 }

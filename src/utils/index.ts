@@ -4,7 +4,7 @@ import * as fs from "fs";
 import { DEBUG } from "../constant";
 
 // check if the program is running in it's git repository.
-export function checkGitRepo() {
+export function checkGitRepo(): boolean {
   const gitRepoPath = path.join(process.cwd(), ".git");
   if (DEBUG) console.log(gitRepoPath);
   if (fs.existsSync(gitRepoPath)) {

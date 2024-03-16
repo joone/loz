@@ -24,7 +24,10 @@ export class OpenAiAPI extends LLMService {
     super();
     this.api = new OpenAI({ apiKey });
   }
-  async completion(params: LLMSettings) {
+
+  public async completion(
+    params: LLMSettings
+  ): Promise<{ content: string; model: string }> {
     if (DEBUG) {
       console.log("OpenAI completion");
       console.log("Model: " + params.model);
@@ -63,7 +66,7 @@ export class OpenAiAPI extends LLMService {
     };
   }
 
-  async completionStream(params: LLMSettings) {
+  public async completionStream(params: LLMSettings): Promise<any> {
     const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
       model: params.model,
       messages: [{ role: "user", content: params.prompt }],
@@ -89,7 +92,9 @@ export class OllamaAPI extends LLMService {
     this.api = new Ollama();
   }
 
-  async completion(params: LLMSettings) {
+  public async completion(
+    params: LLMSettings
+  ): Promise<{ content: string; model: string }> {
     if (DEBUG) {
       console.log("Ollama completion");
       console.log("Prompt: " + params.prompt);
@@ -102,7 +107,7 @@ export class OllamaAPI extends LLMService {
     return { content: result.output, model: params.model };
   }
 
-  async completionStream(params: LLMSettings) {
+  public async completionStream(params: LLMSettings): Promise<any> {
     return {};
   }
 }

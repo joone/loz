@@ -72,15 +72,15 @@ export class Config implements ConfigInterface {
     this.configFilePath = "";
   }
 
-  add(item: ConfigItemInterface) {
+  public add(item: ConfigItemInterface): void {
     this.items.push(item);
   }
 
-  get(name: string) {
+  public get(name: string): ConfigItemInterface | undefined {
     return this.items.find((item) => item.name === name);
   }
 
-  set(name: string, value: string) {
+  public set(name: string, value: string): boolean {
     // Update the model if the API is changed
     if (name === "api") {
       this.setInternal("api", value);
@@ -116,7 +116,7 @@ export class Config implements ConfigInterface {
     return true;
   }
 
-  private setInternal(name: string, value: string) {
+  private setInternal(name: string, value: string): void {
     const item = this.get(name);
     if (item) {
       item.value = value;
@@ -125,24 +125,25 @@ export class Config implements ConfigInterface {
     }
   }
 
-  remove(name: string) {
+  public remove(name: string): void {
     const item = this.get(name);
     if (item) {
       this.items = this.items.filter((item) => item.name !== name);
     }
   }
 
-  printAll() {
+  public printAll(): void {
     this.items.forEach((item) => {
       console.log(`  ${item.name}: ${item.value}`);
     });
   }
 
-  print() {
+  public print(): void {
     console.log(`  api: ${this.get("api")?.value}`);
     console.log(`  model: ${this.get("model")?.value}`);
   }
-  async loadConfig(configPath: string) {
+
+  public async loadConfig(configPath: string): Promise<boolean> {
     this.configFilePath = path.join(configPath, "config.json");
     if (!fs.existsSync(this.configFilePath)) {
       const rl = readlinePromises.createInterface({
@@ -181,7 +182,7 @@ export class Config implements ConfigInterface {
     return true;
   }
 
-  save() {
+  public save(): void {
     const json = JSON.stringify(this, null, 2);
     fs.writeFileSync(this.configFilePath, json);
   }

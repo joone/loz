@@ -42,12 +42,12 @@ export class ChatHistoryManager {
     };
   }
 
-  addChat(chat: PromptAndAnswer) {
+  public addChat(chat: PromptAndAnswer): void {
     this.chatHistory.dialogue.push(chat);
   }
 
   // Save chat history (JSON) to file.
-  async saveChatHistory() {
+  public async saveChatHistory(): Promise<void> {
     const date = new Date();
 
     const fileName =

@@ -58,8 +58,9 @@ export class CommandLinePrompt implements PromptInterface {
   public exit(): void {
     clearInterval(this.timer);
     // Show the cursor
-    process.stdout.write("\x1B[?25h"); // Show the cursor
-    process.stdout.write("\x1B[?12h"); // Try to enable cursor blinking
+    process.stdout.write("\x1B[?25h");
+    // Try to enable cursor blinking
+    process.stdout.write("\x1B[?12h");
     // Reset the terminal to the normal mode
     process.stdin.setRawMode(false);
     this.rl.close();

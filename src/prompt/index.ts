@@ -9,10 +9,6 @@ export class CommandLinePrompt implements PromptInterface {
   private callback: (input: string) => Promise<void>;
   private timer: any;
 
-  public prompt(): void {
-    this.rl.prompt();
-  }
-
   constructor(callback: (input: string) => Promise<void>) {
     // ...
     this.callback = callback;
@@ -20,6 +16,10 @@ export class CommandLinePrompt implements PromptInterface {
       input: process.stdin,
       output: process.stdout,
     });
+  }
+
+  public prompt(): void {
+    this.rl.prompt();
   }
 
   public async start(blinking?: boolean): Promise<void> {

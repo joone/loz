@@ -9,7 +9,7 @@ export class CommandLinePrompt implements PromptInterface {
   private callback: (input: string) => Promise<void>;
   private timer: any;
 
-  prompt() {
+  public prompt(): void {
     this.rl.prompt();
   }
 
@@ -22,7 +22,7 @@ export class CommandLinePrompt implements PromptInterface {
     });
   }
 
-  async start(blinking?: boolean) {
+  public async start(blinking?: boolean): Promise<void> {
     // Set the prompt to display before each input
     this.rl.setPrompt("> ");
 
@@ -55,7 +55,7 @@ export class CommandLinePrompt implements PromptInterface {
     });
   }
 
-  exit(): void {
+  public exit(): void {
     clearInterval(this.timer);
     // Show the cursor
     process.stdout.write("\x1B[?25h"); // Show the cursor

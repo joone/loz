@@ -57,7 +57,7 @@ export class Loz {
     this.chatHistoryManager = new ChatHistoryManager(dirPath);
   }
 
-  public async init() {
+  public async init(): Promise<void> {
     if (checkGitRepo() === true) {
       if (!fs.existsSync(LOG_DEV_PATH)) {
         fs.mkdirSync(LOG_DEV_PATH);
@@ -68,7 +68,7 @@ export class Loz {
   }
 
   // load config from JSON file
-  private async initLLMfromConfig() {
+  private async initLLMfromConfig(): Promise<void> {
     if (!fs.existsSync(this.configPath)) {
       fs.mkdirSync(this.configPath);
     }
@@ -110,12 +110,12 @@ export class Loz {
       this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
   }
 
-  private checkAPI() {
+  private checkAPI(): string | undefined {
     //console.log("API: " + this.config.get("api")?.value);
     return this.config.get("api")?.value;
   }
 
-  public async completeUserPrompt(prompt: string) {
+  public async completeUserPrompt(prompt: string): Promise<any> {
     let params: LLMSettings;
     params = this.defaultSettings;
     params.max_tokens = 500;
@@ -133,7 +133,7 @@ export class Loz {
     return completion;
   }
 
-  public async runGitCommit() {
+  public async runGitCommit(): Promise<string | undefined> {
     let diff = await this.git.getDiffFromStaged();
 
     // Remove the first line of the diff
@@ -149,7 +149,7 @@ export class Loz {
     const complete = await this.llmAPI.completion(params);
     if (complete.content === "") {
       console.log("Failed to generate a commit message");
-      return;
+      return undefined;
     }
 
     try {
@@ -161,7 +161,7 @@ export class Loz {
       console.log(commitHEAD);
     } catch (error: any) {
       console.log(error);
-      return;
+      return undefined;
     }
 
     const promptAndCompleteText: PromptAndAnswer = {
@@ -176,7 +176,7 @@ export class Loz {
   }
 
   // git diff | loz --git
-  public async generateGitCommitMessage(diff: string) {
+  public async generateGitCommitMessage(diff: string): Promise<any> {
     if (DEBUG) console.log("writeGitCommitMessage");
     let params: LLMSettings;
     params = this.defaultSettings;
@@ -197,7 +197,7 @@ export class Loz {
   }
 
   // Interactive mode
-  private async runCompletion(params: LLMSettings) {
+  private async runCompletion(params: LLMSettings): Promise<void> {
     let curCompleteText = "";
     if (this.checkAPI() === "openai") {
       let stream: any;
@@ -243,7 +243,7 @@ export class Loz {
     this.chatHistoryManager.addChat(promptAndCompleteText);
   }
 
-  public runPromptInteractiveMode() {
+  public runPromptInteractiveMode(): Promise<any> {
     return new Promise((resolve, reject) => {
       let cli = new CommandLinePrompt(async (input: string) => {
         const tokens = input.split(" ");
@@ -266,7 +266,7 @@ export class Loz {
     });
   }
 
-  private async handleConfigCommand(tokens: string[]) {
+  private async handleConfigCommand(tokens: string[]): Promise<void> {
     if (tokens.length === 3) {
       if (this.config.set(tokens[1], tokens[2]) === false) {
         return;
@@ -287,7 +287,7 @@ export class Loz {
     }
   }
 
-  public async handlePrompt(prompt: string) {
+  public async handlePrompt(prompt: string): Promise<void> {
     const systemPrompt =
       "Decide if the following prompt can be translated into Linux commands. " +
       "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
@@ -370,7 +370,7 @@ export class Loz {
     }
   }
 
-  public close() {
+  public close(): void {
     this.chatHistoryManager.saveChatHistory();
   }
 }

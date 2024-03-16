@@ -25,7 +25,7 @@ const args = yargs
 
 const loz = new Loz();
 
-async function handleLozCommand() {
+async function handleLozCommand(): Promise<void> {
   // If the stdin is a TTY
   // when runnig unit tests for running Linux commands, stdin is not a TTY
   // so we need isRunningInMocha to check if we are running unit tests.
@@ -50,7 +50,7 @@ async function handleLozCommand() {
   }
 }
 
-async function handlePrompt(prompt: any) {
+async function handlePrompt(prompt: any): Promise<void> {
   if (prompt === "commit") {
     await loz.runGitCommit();
   } else {
@@ -58,7 +58,7 @@ async function handlePrompt(prompt: any) {
   }
 }
 
-async function handleInteractiveMode() {
+async function handleInteractiveMode(): Promise<void> {
   console.log("Loz: a simple CLI for LLM");
   try {
     await loz.runPromptInteractiveMode();
@@ -68,7 +68,7 @@ async function handleInteractiveMode() {
   console.log("Good bye!");
 }
 
-async function handleCodeDiffFromPipe() {
+async function handleCodeDiffFromPipe(): Promise<void> {
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", async (data: String) => {
     // Remove the first line from data
@@ -92,7 +92,7 @@ async function handleCodeDiffFromPipe() {
   });
 }
 
-async function handleInputFromPipe(prompt: any) {
+async function handleInputFromPipe(prompt: any): Promise<void> {
   // Handle the input from the pipe
   process.stdin.setEncoding("utf8");
   process.stdin.on("data", async (data: String) => {

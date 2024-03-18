@@ -81,7 +81,7 @@ export class OpenAiAPI extends LLMService {
       console.log("OpenAI stream completion");
       console.log("Model: " + params.model);
     }
-    let stream = await this.api.chat.completions.create(streaming_params);
+    const stream = await this.api.chat.completions.create(streaming_params);
     return stream;
   }
 }

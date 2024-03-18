@@ -173,10 +173,10 @@ export class Config implements ConfigInterface {
 
       return false;
     }
-    let rawData: any = fs.readFileSync(this.configFilePath);
-    let config = JSON.parse(rawData);
+    const rawData: any = fs.readFileSync(this.configFilePath);
+    const config = JSON.parse(rawData);
 
-    for (let item of config.items) {
+    for (const item of config.items) {
       this.set(item.name, item.value);
     }
     return true;

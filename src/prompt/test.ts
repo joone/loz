@@ -30,7 +30,7 @@ describe("Test prompt", () => {
       stdin.send("loz\n");
     });
 
-    let cli = new CommandLinePrompt(async (input: string) => {
+    const cli = new CommandLinePrompt(async (input: string) => {
       expect(input).to.equal("loz");
       return Promise.resolve();
     });
@@ -45,7 +45,7 @@ describe("Test prompt", () => {
       stdin.send("exit\n");
     });
 
-    let cli = new CommandLinePrompt(async (input: string) => {
+    const cli = new CommandLinePrompt(async (input: string) => {
       expect(input).to.equal("exit");
       return Promise.resolve();
     });

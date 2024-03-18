@@ -116,8 +116,7 @@ export class Loz {
   }
 
   public async completeUserPrompt(prompt: string): Promise<any> {
-    let params: LLMSettings;
-    params = this.defaultSettings;
+    const params = this.defaultSettings;
     params.max_tokens = 500;
     params.prompt = prompt;
     const completion = await this.llmAPI.completion(params);
@@ -141,8 +140,7 @@ export class Loz {
 
     const prompt = promptForGIT + diff + "\n" + "Commit Message: ";
 
-    let params: LLMSettings;
-    params = this.defaultSettings;
+    const params = this.defaultSettings;
     params.max_tokens = 500;
     params.prompt = prompt;
 
@@ -178,8 +176,7 @@ export class Loz {
   // git diff | loz --git
   public async generateGitCommitMessage(diff: string): Promise<any> {
     if (DEBUG) console.log("writeGitCommitMessage");
-    let params: LLMSettings;
-    params = this.defaultSettings;
+    const params = this.defaultSettings;
     params.max_tokens = 500;
     params.prompt = promptForGIT + diff + "\n" + "Commit Message: ";
 
@@ -245,7 +242,7 @@ export class Loz {
 
   public runPromptInteractiveMode(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let cli = new CommandLinePrompt(async (input: string) => {
+      const cli = new CommandLinePrompt(async (input: string) => {
         const tokens = input.split(" ");
         if (input === "exit" || input === "quit") {
           cli.exit();
@@ -254,8 +251,7 @@ export class Loz {
         } else if (input.indexOf("config") === 0 && tokens.length <= 3) {
           await this.handleConfigCommand(tokens);
         } else if (input.length !== 0) {
-          let params: LLMSettings;
-          params = this.defaultSettings;
+          const params = this.defaultSettings;
           params.prompt = input;
           params.max_tokens = 4000;
           await this.runCompletion(params);

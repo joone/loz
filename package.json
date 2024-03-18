@@ -18,7 +18,7 @@
   "license": "BSD3",
   "devDependencies": {
     "@types/chai": "^4.2.9",
-    "@types/mocha": "^7.0.1",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.17",
     "@types/yargs": "^17.0.32",
     "@typescript-eslint/eslint-plugin": "^2.20.0",

@@ -19,6 +19,10 @@ const args = yargs
       describe:
         "Generate a Git commit message that summarizes the changes made in the diff",
     },
+    attribution: {
+      alias: "a",
+      describe: "Append the model name at the end of the Git commit message.",
+    },
   })
   .help()
   .parseSync();
@@ -39,6 +43,8 @@ async function handleLozCommand(): Promise<void> {
     // Input from a pipe
     if (args.git) {
       await handleCodeDiffFromPipe();
+    } else if (args.attribution) {
+      loz.attribution = true;
     } else {
       //console.log("Run loz like this: git diff | loz --git");
       if (args.prompt !== undefined) {

@@ -18,7 +18,7 @@ export class Git {
             return;
           }
           resolve(stdout);
-        }
+        },
       );
     });
   }
@@ -42,7 +42,7 @@ export class Git {
             return;
           }
           resolve(stdout);
-        }
+        },
       );
     });
   }
@@ -63,7 +63,7 @@ export class Git {
             return;
           }
           resolve(stdout);
-        }
+        },
       );
     });
   }
@@ -84,7 +84,7 @@ export class Git {
             return;
           }
           resolve(stdout);
-        }
+        },
       );
     });
   }

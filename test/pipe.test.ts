@@ -17,7 +17,7 @@ describe("Test loz pipe mode", function () {
           expect(stdout).to.include("files");
           done();
         }
-      }
+      },
     );
   });
 
@@ -33,7 +33,7 @@ describe("Test loz pipe mode", function () {
           expect(stdout.trim()).to.equal("HELLO, WORLD!");
           done();
         }
-      }
+      },
     );
   });
 
@@ -49,7 +49,7 @@ describe("Test loz pipe mode", function () {
           expect(stdout.trim()).to.include("helo");
           done();
         }
-      }
+      },
     );
   });
 });

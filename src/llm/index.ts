@@ -26,7 +26,7 @@ export class OpenAiAPI extends LLMService {
   }
 
   public async completion(
-    params: LLMSettings
+    params: LLMSettings,
   ): Promise<{ content: string; model: string }> {
     if (DEBUG) {
       console.log("OpenAI completion");
@@ -93,7 +93,7 @@ export class OllamaAPI extends LLMService {
   }
 
   public async completion(
-    params: LLMSettings
+    params: LLMSettings,
   ): Promise<{ content: string; model: string }> {
     if (DEBUG) {
       console.log("Ollama completion");

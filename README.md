@@ -1,17 +1,24 @@
 # Loz [![NPM](https://img.shields.io/npm/v/chatgpt.svg)](https://www.npmjs.com/package/loz)
+
 ![alt Loz Demo](https://github.com/joone/loz/blob/main/examples/loz_demo.gif?raw=true)
 
 Loz is a command-line tool that enables your preferred LLM to execute system commands and utilize Unix pipes, integrating AI capabilities with other Unix tools.
 
 ## What's New
+
 ### v0.3.0 - 2024-02-24
+
 - **Added**
   - Run Linux commands based on user prompts. Users can now execute Linux commands using natural language. For example, by running `loz "find the largest file in the current directory"`,
-  `Loz` will interpret the instruction and execute the corresponding Linux commands like `find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1` to find the largest file. See more [examples](#examples).
+    `Loz` will interpret the instruction and execute the corresponding Linux commands like `find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1` to find the largest file. See more [examples](#examples).
+
 ### v0.2.13 - 2024-02-22
+
 - **Added**
   - Enhanced Git Commit Formatting: Commit messages are now structured with a clear separation between the title and body, improving readability and adherence to Git best practices.
+
 ### v0.2.12 - 2024-02-15
+
 - **Added**
   - Add support for all models compatible with Ollama
 
@@ -42,6 +49,7 @@ $ ./install.sh
 Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node) and [Ollama](https://github.com/ollama/ollama) so you can switch between these LLM services easily, using the `config` command in the interactive mode.
 
 ### Set up Ollama
+
 To utilize Ollama on your local system, you'll need to install both llama2 and codellama models. Here's how you can do it on a Linux system:
 
 ```
@@ -90,14 +98,17 @@ Choose your LLM service: (ollama, openai)
 ```
 
 You can modify your LLM service preference at any time by using the `config` command in the interactive mode:
+
 ```
 > config api openai
 ```
 
 Additionally, you can change the model by entering:
+
 ```
 > config model llama2
 ```
+
 or
 
 ```
@@ -111,6 +122,7 @@ You can check the current settings by entering:
   api: ollama
   model: llama2
 ```
+
 Currently, gpt-3.5-turbo and all models provided by Ollama are supported.
 
 ### Interactive mode
@@ -122,16 +134,20 @@ $ loz
 Once loz is running, you can start a conversation by interacting with it. loz will respond with a relevant message based on the input.
 
 ### Run Linux Commands with Loz
+
 Loz empowers users to execute Linux commands using natural language. Below are some examples demonstrating how `loz`'s LLM backend translates natural language into Linux commands:
 
 #### Examples
+
 - Find the largest file in the current directory:
+
   ```
   loz "find the largest file in the current directory"
   -rw-rw-r-- 1 foo bar 9020257 Jan 31 19:49 ./node_modules/typescript/lib/typescript.js
   ```
 
 - Check if Apache2 is running:
+
   ```
   loz "check if apache2 is running on this system"
   ● apache2.service - The Apache HTTP Server
@@ -142,22 +158,28 @@ Loz empowers users to execute Linux commands using natural language. Below are s
   loz "Detect GPUs on this system"
   00:02.0 VGA compatible controller: Intel Corporation Device a780 (rev 04)
   ```
-For your information, this feature has only been tested with the OpenAI API.
+  For your information, this feature has only been tested with the OpenAI API.
 
 #### Caution
+
 To prevent unintentional system modifications, avoid running commands that can alter or remove system files or configurations, such as `rm`, `mv`, `rmdir`, or `mkfs`.
 
 #### Safe Mode
+
 To enhance security and avoid unintended command execution, loz can be run in Safe Mode. When activated, this mode requires user confirmation before executing any Linux command.
 
 Activate Safe Mode by setting the LOZ_SAFE=true environment variable:
+
 ```
 LOZ_SAFE=true loz "Check available memory on this system"
 ```
+
 Upon execution, loz will prompt:
+
 ```
 Do you want to run this command?: free -h (y/n)
 ```
+
 Respond with 'y' to execute the command or 'n' to cancel. This feature ensures that you have full control over the commands executed, preventing accidental changes or data loss.
 
 ### Pipe mode

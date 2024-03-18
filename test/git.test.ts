@@ -50,7 +50,7 @@ describe("Test git operations", function () {
     int main() { \n\
         printf("Hell, World!");\n \
         return 0; \n \
-    }\n'
+    }\n',
     );
 
     // Stage the new file

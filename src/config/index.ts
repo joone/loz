@@ -25,13 +25,13 @@ export class ConfigItem implements ConfigItemInterface {
 }
 
 export const requestApiKey = async (
-  rl: readlinePromises.Interface
+  rl: readlinePromises.Interface,
 ): Promise<string> => {
   for (const key of ["LOZ_OPENAI_API_KEY", "OPENAI_API_KEY"]) {
     const value = process.env[key];
     if (value) {
       const useApiKeyFromEnv = await rl.question(
-        `\n${key} found in environment variables. Do you want to use it? (y/n) `
+        `\n${key} found in environment variables. Do you want to use it? (y/n) `,
       );
       if (useApiKeyFromEnv.toLowerCase() === "y") {
         return value;
@@ -52,7 +52,7 @@ export const requestApiKey = async (
 };
 
 const requestApiName = async (
-  rl: readlinePromises.Interface
+  rl: readlinePromises.Interface,
 ): Promise<string> => {
   const res = await rl.question("Choose your LLM service: (ollama, openai) ");
   if (!["ollama", "openai"].includes(res)) {
@@ -87,12 +87,12 @@ export class Config implements ConfigInterface {
       if (value === "openai")
         this.setInternal(
           "model",
-          this.get("openai.model")?.value || DEFAULT_OPENAI_MODEL
+          this.get("openai.model")?.value || DEFAULT_OPENAI_MODEL,
         );
       else if (value === "ollama")
         this.setInternal(
           "model",
-          this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL
+          this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL,
         );
       else {
         console.log("Invalid API");
@@ -158,7 +158,7 @@ export class Config implements ConfigInterface {
       if (name === "ollama") {
         this.set("model", DEFAULT_OLLAMA_MODEL);
         console.log(
-          `\nYou should install ${name} with llama2 and codellama models: see https://ollama.ai/download \n`
+          `\nYou should install ${name} with llama2 and codellama models: see https://ollama.ai/download \n`,
         );
       } else if (name === "openai") {
         this.set("model", DEFAULT_OPENAI_MODEL);

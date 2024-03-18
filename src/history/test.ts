@@ -40,7 +40,7 @@ describe("ChatHistoryManager", () => {
 
       // Read the file and check its content
       const savedData = JSON.parse(
-        fs.readFileSync(path.join(testConfigPath, files[0]), "utf8")
+        fs.readFileSync(path.join(testConfigPath, files[0]), "utf8"),
       );
       expect(savedData.dialogue.length).to.equal(1);
       expect(savedData.dialogue[0]).to.deep.equal({

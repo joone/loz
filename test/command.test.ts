@@ -38,7 +38,7 @@ describe("Linux Command Test", () => {
   // lspci | grep -i vga
   it("Detect GPUs on this system", function () {
     let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "Detect GPUs on this system"`
+      `MOCHA_ENV=test node ${LOZ_BIN} "Detect GPUs on this system"`,
     ).toString();
     expect(stdout).to.include("VGA compatible controller");
   });
@@ -46,14 +46,14 @@ describe("Linux Command Test", () => {
   if (GITHUB_ACTIONS === false) {
     it("Run find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1", function () {
       let stdout = execSync(
-        `MOCHA_ENV=test node ${LOZ_BIN} "find the largest file in the current directory"`
+        `MOCHA_ENV=test node ${LOZ_BIN} "find the largest file in the current directory"`,
       ).toString();
       expect(stdout).to.include("typescript.js");
     });
 
     it("Run  systemctl status apache2", function () {
       let stdout = execSync(
-        `MOCHA_ENV=test node ${LOZ_BIN} "check if apache2 is runnig on this system"`
+        `MOCHA_ENV=test node ${LOZ_BIN} "check if apache2 is runnig on this system"`,
       ).toString();
       expect(stdout).to.include("The Apache HTTP Server");
     });
@@ -62,17 +62,17 @@ describe("Linux Command Test", () => {
   // Get the system's current date and time
   it("Get the system's current date and time", function () {
     let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "Get the current date and time on this system"`
+      `MOCHA_ENV=test node ${LOZ_BIN} "Get the current date and time on this system"`,
     ).toString();
     if (GITHUB_ACTIONS === false) {
       // Fri Feb 23 10:57:41 PM PST 2024
       expect(stdout).to.match(
-        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} (AM|PM) \w{3} \d{4}/
+        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} (AM|PM) \w{3} \d{4}/,
       );
     } else {
       // Sat Feb 24 06:49:11 UTC 2024
       expect(stdout).to.match(
-        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} UTC \d{4}/
+        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} UTC \d{4}/,
       );
     }
   });
@@ -80,7 +80,7 @@ describe("Linux Command Test", () => {
   // Check available memory
   it("Check available memory on this system", function () {
     let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "Check available memory on this Linux"`
+      `MOCHA_ENV=test node ${LOZ_BIN} "Check available memory on this Linux"`,
     ).toString();
     expect(stdout).to.match(/Mem:/);
   });
@@ -88,7 +88,7 @@ describe("Linux Command Test", () => {
   // grep 'sfsfsfcf' *
   it("Handle no output", function () {
     let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "Find sfsdfef text in files in the current directory"`
+      `MOCHA_ENV=test node ${LOZ_BIN} "Find sfsdfef text in files in the current directory"`,
     ).toString();
     expect(stdout).to.match(/No output/);
   });

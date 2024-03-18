@@ -53,6 +53,8 @@ if (GITHUB_ACTIONS === false) {
       expect((loz as any).checkAPI()).to.equal("ollama");
       const completion = await loz.completeUserPrompt("1+1=");
       expect(completion.content).contains("2");
+
+      await loz.setAPI("openai");
     });
   });
 }

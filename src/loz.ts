@@ -15,8 +15,6 @@ import {
 } from "./config";
 import { Git } from "./git";
 
-require("dotenv").config();
-
 const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";

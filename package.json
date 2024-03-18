@@ -32,7 +32,6 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "dotenv": "^16.0.3",
     "ollama-node": "^0.1.27",
     "openai": "^4.20.1",
     "yargs": "^17.7.2"

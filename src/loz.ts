@@ -40,7 +40,7 @@ export class Loz {
   config: Config = new Config();
   git: Git = new Git();
 
-  constructor(llmAPI?: string) {
+  constructor() {
     this.defaultSettings = {
       model: DEFAULT_OPENAI_MODEL,
       prompt: "",
@@ -281,6 +281,19 @@ export class Loz {
     } else {
       console.log("Invalid command");
     }
+  }
+
+  public async setAPI(api: string, model?: string): Promise<void> {
+    if (api === "ollama" || api === "openai") {
+      this.config.set("api", api);
+    }
+
+    if (model) {
+      this.config.set("model", model);
+    }
+
+    this.config.save();
+    await this.initLLMfromConfig();
   }
 
   public async handlePrompt(prompt: string): Promise<void> {

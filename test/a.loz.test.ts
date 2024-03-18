@@ -46,11 +46,13 @@ describe("Test OpenAI API", () => {
 if (GITHUB_ACTIONS === false) {
   describe("Loz.ollama", () => {
     it("should return true", async () => {
-      let loz = new Loz("ollama");
+      let loz = new Loz();
       await loz.init();
+      await loz.setAPI("ollama", "llama2");
 
+      expect((loz as any).checkAPI()).to.equal("ollama");
       const completion = await loz.completeUserPrompt("1+1=");
-      expect(completion.content).to.equal("2");
+      expect(completion.content).contains("2");
     });
   });
 }

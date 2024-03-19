@@ -30,6 +30,8 @@ const args = yargs
 const loz = new Loz();
 
 async function handleLozCommand(): Promise<void> {
+  if (args.attribution) loz.attribution = true;
+
   // If the stdin is a TTY
   // when runnig unit tests for running Linux commands, stdin is not a TTY
   // so we need isRunningInMocha to check if we are running unit tests.
@@ -43,8 +45,6 @@ async function handleLozCommand(): Promise<void> {
     // Input from a pipe
     if (args.git) {
       await handleCodeDiffFromPipe();
-    } else if (args.attribution) {
-      loz.attribution = true;
     } else {
       //console.log("Run loz like this: git diff | loz --git");
       if (args.prompt !== undefined) {

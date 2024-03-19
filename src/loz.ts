@@ -110,7 +110,7 @@ export class Loz {
 
     // Check if the attribution is enabled
     const attributionValue = this.config.get("attribution")?.value;
-    if (!attributionValue) {
+    if (attributionValue === "false") {
       this.config.set("attribution", "false");
       this.attribution = false;
     } else {

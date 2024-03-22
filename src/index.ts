@@ -33,6 +33,8 @@ const args = yargs
   .help()
   .parseSync();
 
+if (LOZ_SAFE) args.safe = true;
+
 const loz = new Loz();
 
 async function handleLozCommand(): Promise<void> {
@@ -122,7 +124,6 @@ async function handleInputFromPipe(prompt: any): Promise<void> {
 
 (async () => {
   await loz.init();
-  if (LOZ_SAFE) args.safe = true;
   if (args.safe) loz.enableSafe();
   await handleLozCommand();
   loz.close();

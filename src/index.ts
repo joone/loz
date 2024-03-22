@@ -2,6 +2,7 @@
 import * as yargs from "yargs";
 import { Loz } from "./loz";
 import { DEBUG } from "./constant";
+const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 
 const isRunningInMocha = process.env.MOCHA_ENV === "test";
 
@@ -22,6 +23,11 @@ const args = yargs
     attribution: {
       alias: "a",
       describe: "Append the model name at the end of the Git commit message.",
+    },
+    safe: {
+      alias: "s",
+      describe:
+        "Safe mode requires user confirmation before executing any Linux command.",
     },
   })
   .help()
@@ -116,6 +122,8 @@ async function handleInputFromPipe(prompt: any): Promise<void> {
 
 (async () => {
   await loz.init();
+  if (LOZ_SAFE) args.safe = true;
+  if (args.safe) loz.enableSafe();
   await handleLozCommand();
   loz.close();
 })();

@@ -15,7 +15,6 @@ import {
 } from "./config";
 import { Git } from "./git";
 
-const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";
 
@@ -38,6 +37,7 @@ export class Loz {
   config: Config = new Config();
   git: Git = new Git();
   attribution: boolean = false;
+  safeMode: boolean = false;
 
   constructor() {
     this.defaultSettings = {
@@ -64,6 +64,10 @@ export class Loz {
     }
 
     await this.initLLMfromConfig();
+  }
+
+  public enableSafe(): void {
+    this.safeMode = true;
   }
 
   // load config from JSON file
@@ -362,7 +366,7 @@ export class Loz {
     };
     this.chatHistoryManager.addChat(promptAndCompleteText);
 
-    if (!LOZ_SAFE) {
+    if (this.safeMode === false) {
       try {
         await runCommand(linuxCommand);
       } catch (error: any) {

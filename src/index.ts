@@ -45,7 +45,7 @@ async function handleLozCommand(): Promise<void> {
   // so we need isRunningInMocha to check if we are running unit tests.
   if (process.stdin.isTTY || isRunningInMocha === true) {
     if (args.prompt !== undefined) {
-      await handlePrompt(args.prompt);
+      await handlePrompt(args.prompt, args._[0]?.toString());
     } else {
       await handleInteractiveMode();
     }
@@ -64,9 +64,9 @@ async function handleLozCommand(): Promise<void> {
   }
 }
 
-async function handlePrompt(prompt: any): Promise<void> {
+async function handlePrompt(prompt: any, context?: string): Promise<void> {
   if (prompt === "commit") {
-    await loz.runGitCommit();
+    await loz.runGitCommit(context);
   } else {
     await loz.handlePrompt(prompt);
   }

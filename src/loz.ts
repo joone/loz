@@ -148,13 +148,27 @@ export class Loz {
     return completion;
   }
 
-  public async runGitCommit(): Promise<string | undefined> {
+  // loz commit
+  public async runGitCommit(context?: string): Promise<string | undefined> {
     let diff = await this.git.getDiffFromStaged();
 
     // Remove the first line of the diff
     diff = diff.replace(/.*\n/, "");
 
-    const prompt = promptForGIT + diff + "\n" + "Commit Message: ";
+    let prompt: string;
+    if (context) {
+      prompt = promptForGIT.replace("code changes", "context and code changes");
+      prompt =
+        prompt.replace(
+          "Code Changes:",
+          "Context:\n" + context + "\n\nCode Changes:",
+        ) +
+        diff +
+        "\n" +
+        "Commit Message: ";
+    } else {
+      prompt = promptForGIT + diff + "\n" + "Commit Message: ";
+    }
 
     const params = this.defaultSettings;
     params.max_tokens = 500;

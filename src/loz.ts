@@ -19,7 +19,8 @@ import { Git } from "./git";
 const HOME_PATH = os.homedir() || "";
 
 const promptForGIT =
-  "Generate a Git commit message based on the following code changes. Ensure the message adheres to the following guidelines:\n\n" +
+  "Generate a Git commit message based on the following code changes.\n" +
+  "Ensure the message adheres to the following guidelines:\n\n" +
   "1. Separate the subject from the body with a blank line.\n" +
   "2. Limit the subject line to 50 characters and capitalize it.\n" +
   "3. Use the imperative mood in the subject line.\n" +
@@ -157,11 +158,10 @@ export class Loz {
 
     let prompt: string;
     if (context) {
-      prompt = promptForGIT.replace("code changes", "context and code changes");
       prompt =
-        prompt.replace(
-          "Code Changes:",
-          "Context:\n" + context + "\n\nCode Changes:",
+        promptForGIT.replace(
+          "code changes.",
+          "context and code changes:\n" + "Context: " + context + ".\n",
         ) +
         diff +
         "\n" +

@@ -37,7 +37,7 @@ if (LOZ_SAFE) args.safe = true;
 
 const loz = new Loz();
 
-async function handleLozCommand(): Promise<void> {
+async function handleLozCommand(): Promise<boolean> {
   if (args.attribution) loz.attribution = true;
 
   // If the stdin is a TTY
@@ -45,7 +45,7 @@ async function handleLozCommand(): Promise<void> {
   // so we need isRunningInMocha to check if we are running unit tests.
   if (process.stdin.isTTY || isRunningInMocha === true) {
     if (args.prompt !== undefined) {
-      await handlePrompt(args.prompt, args._[0]?.toString());
+      return await handlePrompt(args.prompt, args._[0]?.toString());
     } else {
       await handleInteractiveMode();
     }
@@ -62,14 +62,17 @@ async function handleLozCommand(): Promise<void> {
       }
     }
   }
+  return true;
 }
 
-async function handlePrompt(prompt: any, context?: string): Promise<void> {
+async function handlePrompt(prompt: any, context?: string): Promise<boolean> {
   if (prompt === "commit") {
-    await loz.runGitCommit(context);
+    if ((await loz.runGitCommit(context)) === undefined) return false;
   } else {
     await loz.handlePrompt(prompt);
   }
+
+  return true;
 }
 
 async function handleInteractiveMode(): Promise<void> {
@@ -125,6 +128,5 @@ async function handleInputFromPipe(prompt: any): Promise<void> {
 (async () => {
   await loz.init();
   if (args.safe) loz.enableSafe();
-  await handleLozCommand();
-  loz.close();
+  if ((await handleLozCommand()) === true) loz.saveHistory();
 })();

@@ -413,7 +413,7 @@ export class Loz {
     }
   }
 
-  public close(): void {
+  public saveHistory(): void {
     this.chatHistoryManager.saveChatHistory();
   }
 }

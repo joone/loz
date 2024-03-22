@@ -188,14 +188,13 @@ export class Loz {
       } else {
         await this.git.commit(complete.content);
       }
-
-      const commitHEAD = await this.git.showHEAD();
-      console.log("\n# Generated commit message: \n");
-      console.log(commitHEAD);
     } catch (error: any) {
-      console.log(error);
+      console.error("Error running git commit:", error);
       return undefined;
     }
+    const commitHEAD = await this.git.showHEAD();
+    console.log("\n# Generated commit message: \n");
+    console.log(commitHEAD);
 
     const promptAndCompleteText: PromptAndAnswer = {
       mode: "loz commit mode",

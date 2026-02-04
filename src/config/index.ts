@@ -65,7 +65,7 @@ export const requestCopilotApiKey = async (
         return value;
       }
       if (useApiKeyFromEnv.toLowerCase() !== "n") {
-        console.log("Received the wrong answer. Please try again.");
+        console.log("Invalid input. Please enter 'y' or 'n'.");
         return await requestCopilotApiKey(rl);
       }
     }
@@ -75,7 +75,7 @@ export const requestCopilotApiKey = async (
     "Enter your Azure OpenAI (Copilot) API key:\n> ",
   );
   if (!apiKey) {
-    console.log("Received the wrong answer. Please try again.");
+    console.log("API key cannot be empty. Please try again.");
     return await requestCopilotApiKey(rl);
   }
   return apiKey;
@@ -98,7 +98,7 @@ export const requestCopilotEndpoint = async (
     "Enter your Azure OpenAI endpoint URL (e.g., https://your-resource.openai.azure.com/openai/deployments/your-deployment):\n> ",
   );
   if (!endpointInput) {
-    console.log("Received the wrong answer. Please try again.");
+    console.log("Endpoint URL cannot be empty. Please try again.");
     return await requestCopilotEndpoint(rl);
   }
   return endpointInput;

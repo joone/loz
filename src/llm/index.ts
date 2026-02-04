@@ -111,3 +111,75 @@ export class OllamaAPI extends LLMService {
     return {};
   }
 }
+
+export class CopilotAPI extends LLMService {
+  constructor(apiKey: string, baseURL: string) {
+    super();
+    this.api = new OpenAI({
+      apiKey,
+      baseURL,
+      defaultQuery: { "api-version": "2024-02-15-preview" },
+      defaultHeaders: { "api-key": apiKey },
+    });
+  }
+
+  public async completion(
+    params: LLMSettings,
+  ): Promise<{ content: string; model: string }> {
+    if (DEBUG) {
+      console.log("Copilot (Azure OpenAI) completion");
+      console.log("Model: " + params.model);
+    }
+    const gptParams: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: params.model,
+      messages: [{ role: "user", content: params.prompt }],
+      stream: false,
+      max_tokens: params.max_tokens,
+      temperature: params.temperature,
+    };
+
+    let completion: any;
+
+    try {
+      completion = await this.api.chat.completions.create(gptParams);
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          console.log("Invalid API key");
+        } else if (error.response.status === 429) {
+          console.log("API request limit reached");
+        } else {
+          console.log(error.response.status);
+          console.log(error.response.data);
+        }
+      } else {
+        console.log(error.message);
+      }
+      return { content: "", model: "" };
+    }
+
+    return {
+      content: completion.choices[0]?.message?.content,
+      model: gptParams.model,
+    };
+  }
+
+  public async completionStream(params: LLMSettings): Promise<any> {
+    const streaming_params: OpenAI.Chat.ChatCompletionCreateParams = {
+      model: params.model,
+      messages: [{ role: "user", content: params.prompt }],
+      stream: true,
+      max_tokens: params.max_tokens,
+      temperature: params.temperature,
+      top_p: params.top_p,
+      frequency_penalty: params.frequency_penalty,
+      presence_penalty: params.presence_penalty,
+    };
+    if (DEBUG) {
+      console.log("Copilot (Azure OpenAI) stream completion");
+      console.log("Model: " + params.model);
+    }
+    const stream = await this.api.chat.completions.create(streaming_params);
+    return stream;
+  }
+}

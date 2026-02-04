@@ -128,7 +128,7 @@ Upon your initial launch of Loz, you will have the opportunity to select your pr
 
 ```
 $ loz
-Choose your LLM service: (ollama, openai, copilot)
+Choose your LLM service: (ollama, openai, Copilot)
 ```
 
 You can modify your LLM service preference at any time by using the `config` command in the interactive mode:
@@ -152,7 +152,13 @@ Additionally, you can change the model by entering:
 or
 
 ```
-> config model gpt-4
+> config model codellama
+```
+
+or for OpenAI/Copilot:
+
+```
+> config model gpt-3.5-turbo
 ```
 
 You can check the current settings by entering:

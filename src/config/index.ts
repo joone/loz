@@ -108,13 +108,13 @@ const requestApiName = async (
   rl: readlinePromises.Interface,
 ): Promise<string> => {
   const res = await rl.question(
-    "Choose your LLM service: (ollama, openai, copilot) ",
+    "Choose your LLM service: (ollama, openai, Copilot) ",
   );
-  if (!["ollama", "openai", "copilot"].includes(res)) {
+  if (!["ollama", "openai", "copilot"].includes(res.toLowerCase())) {
     console.log("Received the wrong answer. Please try again.");
     return await requestApiName(rl);
   }
-  return res;
+  return res.toLowerCase();
 };
 
 export class Config implements ConfigInterface {

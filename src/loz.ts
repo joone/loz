@@ -127,18 +127,7 @@ export class Loz {
       this.defaultSettings.model =
         this.config.get("model")?.value || DEFAULT_COPILOT_MODEL;
 
-      // Check if the attribution is enabled
-      const attributionValue = this.config.get("attribution")?.value;
-      if (attributionValue === "false") {
-        this.config.set("attribution", "false");
-        this.attribution = false;
-      } else {
-        if (attributionValue === "true") {
-          this.attribution = true;
-        } else {
-          this.attribution = false;
-        }
-      }
+      this.initAttribution();
       return;
     }
 
@@ -159,6 +148,15 @@ export class Loz {
     this.defaultSettings.model =
       this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
 
+    this.initAttribution();
+  }
+
+  private checkAPI(): string | undefined {
+    //console.log("API: " + this.config.get("api")?.value);
+    return this.config.get("api")?.value;
+  }
+
+  private initAttribution(): void {
     // Check if the attribution is enabled
     const attributionValue = this.config.get("attribution")?.value;
     if (attributionValue === "false") {
@@ -171,11 +169,6 @@ export class Loz {
         this.attribution = false;
       }
     }
-  }
-
-  private checkAPI(): string | undefined {
-    //console.log("API: " + this.config.get("api")?.value);
-    return this.config.get("api")?.value;
   }
 
   public async completeUserPrompt(prompt: string): Promise<any> {

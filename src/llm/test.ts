@@ -1,6 +1,7 @@
 // npx mocha -r ts-node/register src/llm/test.ts
 import { expect } from "chai";
 import { OllamaAPI, OpenAiAPI, CopilotAPI, LLMSettings } from ".";
+import { DEFAULT_COPILOT_MODEL } from "../config";
 import "mocha";
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
@@ -52,7 +53,7 @@ describe("Test LLM API", () => {
         process.env.COPILOT_ENDPOINT,
       );
       const settings: LLMSettings = {
-        model: "gpt-4",
+        model: process.env.COPILOT_MODEL || DEFAULT_COPILOT_MODEL,
         prompt: "1+1=",
         temperature: 0,
         max_tokens: 60,

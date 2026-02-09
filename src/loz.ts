@@ -462,18 +462,20 @@ export class Loz {
     this.chatHistoryManager.addChat(promptAndCompleteText);
 
     // Always prompt for Y/N before running any command(s)
-    let answer = "n";
-    try {
-      const rl = readlinePromises.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      });
-      answer = await rl.question(
-        `Do you want to run this command?:\n${commands.join("\n")}\n(y/n) `,
-      );
-      rl.close();
-    } catch (error) {
-      console.error("Error during user interaction:", error);
+    let answer = "y";
+    if (this.safeMode) {
+      try {
+        const rl = readlinePromises.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        });
+        answer = await rl.question(
+          `Do you want to run this command?:\n${commands.join("\n")}\n(y/n) `,
+        );
+        rl.close();
+      } catch (error) {
+        console.error("Error during user interaction:", error);
+      }
     }
 
     // Warn if the command is not compatible with the user's shell

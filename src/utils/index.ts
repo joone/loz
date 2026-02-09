@@ -73,7 +73,14 @@ export function runCommand(command: string): Promise<void> {
     });
 
     child.on("close", (code: any) => {
-      if (code === 2) {
+      if (code === 127) {
+        // 127: command not found
+        const match = /command not found: ([^\n]+)/.exec(stderrData) || /bash: line \d+: ([^:]+): command not found/.exec(stderrData);
+        let missingCmd = command;
+        if (match && match[1]) missingCmd = match[1].trim();
+        console.error(`Command not found: ${missingCmd}. You may need to install it (e.g., sudo apt install ${missingCmd}).`);
+        reject(new Error(`Command not found: ${missingCmd}`));
+      } else if (code === 2) {
         reject("No output: " + code);
       } else if (code !== 0) {
         console.log(`Process exited with code: ${code}`);

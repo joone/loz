@@ -418,6 +418,8 @@ export class Loz {
     // Strip Markdown code block markers from LLM response before JSON parsing
 
     let content = completion.content.trim();
+    if (DEBUG) console.log(`[DEBUG] LLM response content: ${content}`);
+
     // Debug: print the content after stripping code block markers
     if (DEBUG) {
       console.log("[DEBUG] LLM response content before JSON.parse:", content);
@@ -433,7 +435,8 @@ export class Loz {
     try {
       json = JSON.parse(content);
     } catch (error) {
-      console.error("Error parsing JSON. Expected format: { \"commands\": [ ... ] }\nGot:\n" + content);
+      // If not JSON, treat as plain text and show to user, do not run anything
+      console.log(content);
       return;
     }
 
@@ -448,7 +451,8 @@ export class Loz {
     } else if (Array.isArray(json) && json.every(cmd => typeof cmd === "string")) {
       commands = json;
     } else {
-      console.error("Invalid response format. Expected: { \"commands\": [ ... ] }, { \"command\": \"...\" }, or [\"...\"]\nGot:\n" + content);
+      // If not a recognized command format, show as text and do not run
+      console.log(content);
       return;
     }
 
@@ -488,8 +492,13 @@ export class Loz {
         try {
           await runCommand(cmd);
         } catch (error: any) {
-          if (typeof error === "string" && error.indexOf("No output") === 0) console.log(error);
-          else console.error("Error running command:", error);
+          if (typeof error === "string" && error.indexOf("No output") === 0) {
+            console.log(error);
+          } else if (error && error.message) {
+            console.error(error.message);
+          } else {
+            console.error(error);
+          }
         }
       }
     }

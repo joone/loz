@@ -4,7 +4,7 @@ import { Ollama } from "ollama-node";
 
 (async () => {
   const ollama = new Ollama();
-  await ollama.setModel("llama2");
+  await ollama.setModel("gpt-oss:20b");
 
   // callback to print each word
   const print = (word: string) => {

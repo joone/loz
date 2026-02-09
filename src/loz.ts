@@ -89,7 +89,7 @@ export class Loz {
       if (DEBUG) console.log(result);
       if (result.indexOf("ollama") === -1) {
         console.log(
-          "Please install ollama with llama2 and codellama first: see https://ollama.ai/download \n",
+          "Please install ollama first: see https://ollama.ai/download \n",
         );
         process.exit(1);
       }

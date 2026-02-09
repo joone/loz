@@ -219,7 +219,7 @@ export class Config implements ConfigInterface {
       if (name === "ollama") {
         this.set("model", DEFAULT_OLLAMA_MODEL);
         console.log(
-          `\nYou should install ${name} with llama2 and codellama models: see https://ollama.ai/download \n`,
+          `\nYou should install ${name} with gpt-oss:20b models: see https://ollama.ai/download \n`,
         );
       } else if (name === "openai") {
         this.set("model", DEFAULT_OPENAI_MODEL);

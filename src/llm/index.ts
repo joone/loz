@@ -100,7 +100,40 @@ export class OllamaAPI extends LLMService {
       console.log("Prompt: " + params.prompt);
       console.log("Model: " + params.model);
     }
-    await this.api.setModel(params.model);
+    
+    try {
+      await this.api.setModel(params.model);
+    } catch (error: any) {
+      if (error.message && error.message.includes("not found")) {
+        console.error(`\nError: Model '${params.model}' not found.\n`);
+        
+        try {
+          const { models } = await this.api.listModels();
+          if (models && models.length > 0) {
+            console.log("Available models:");
+            models.forEach((model: string) => console.log(`  - ${model}`));
+            console.log(
+              `\nTo install '${params.model}', run: ollama run ${params.model}`,
+            );
+          } else {
+            console.log("No models are currently installed.");
+            console.log(
+              `\nTo install '${params.model}', run: ollama run ${params.model}`,
+            );
+          }
+        } catch (listError) {
+          console.log(
+            `\nTo install '${params.model}', run: ollama run ${params.model}`,
+          );
+        }
+        
+        console.log(
+          "\nFor more information, see https://ollama.ai/download\n",
+        );
+        process.exit(1);
+      }
+      throw error;
+    }
 
     const result = await this.api.generate(params.prompt);
 

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as readlinePromises from "readline/promises";
 
-export const DEFAULT_OLLAMA_MODEL = "llama2";
+export const DEFAULT_OLLAMA_MODEL = "gpt-oss:20b";
 export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
 export const DEFAULT_COPILOT_MODEL = "gpt-4";
 

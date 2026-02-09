@@ -122,6 +122,7 @@ export class OllamaAPI extends LLMService {
             );
           }
         } catch (listError) {
+          console.log("Unable to retrieve available models.");
           console.log(
             `\nTo install '${params.model}', run: ollama run ${params.model}`,
           );

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import * as readlinePromises from "readline/promises";
-import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
+import { OpenAiAPI, OllamaAPI, CopilotAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand, checkGitRepo } from "./utils";
@@ -11,7 +11,10 @@ import {
   Config,
   DEFAULT_OLLAMA_MODEL,
   DEFAULT_OPENAI_MODEL,
+  DEFAULT_COPILOT_MODEL,
   requestApiKey,
+  requestCopilotApiKey,
+  requestCopilotEndpoint,
 } from "./config";
 import { Git } from "./git";
 
@@ -96,6 +99,38 @@ export class Loz {
       return;
     }
 
+    if (api === "copilot") {
+      // For Copilot (Azure OpenAI) API
+      let apiKey = this.config.get("copilot.apikey")?.value;
+      let endpoint = this.config.get("copilot.endpoint")?.value;
+
+      const rl = readlinePromises.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      if (!apiKey) {
+        apiKey = await requestCopilotApiKey(rl);
+        this.config.set("copilot.apikey", apiKey);
+        this.config.save();
+      }
+
+      if (!endpoint) {
+        endpoint = await requestCopilotEndpoint(rl);
+        this.config.set("copilot.endpoint", endpoint);
+        this.config.save();
+      }
+
+      rl.close();
+
+      this.llmAPI = new CopilotAPI(apiKey, endpoint);
+      this.defaultSettings.model =
+        this.config.get("model")?.value || DEFAULT_COPILOT_MODEL;
+
+      this.initAttribution();
+      return;
+    }
+
     // For OpenAI API
     let apiKey = this.config.get("openai.apikey")?.value;
     if (!apiKey) {
@@ -113,6 +148,15 @@ export class Loz {
     this.defaultSettings.model =
       this.config.get("model")?.value || DEFAULT_OPENAI_MODEL;
 
+    this.initAttribution();
+  }
+
+  private checkAPI(): string | undefined {
+    //console.log("API: " + this.config.get("api")?.value);
+    return this.config.get("api")?.value;
+  }
+
+  private initAttribution(): void {
     // Check if the attribution is enabled
     const attributionValue = this.config.get("attribution")?.value;
     if (attributionValue === "false") {
@@ -125,11 +169,6 @@ export class Loz {
         this.attribution = false;
       }
     }
-  }
-
-  private checkAPI(): string | undefined {
-    //console.log("API: " + this.config.get("api")?.value);
-    return this.config.get("api")?.value;
   }
 
   public async completeUserPrompt(prompt: string): Promise<any> {
@@ -230,7 +269,7 @@ export class Loz {
   // Interactive mode
   private async runCompletion(params: LLMSettings): Promise<void> {
     let curCompleteText = "";
-    if (this.checkAPI() === "openai") {
+    if (this.checkAPI() === "openai" || this.checkAPI() === "copilot") {
       let stream: any;
       try {
         stream = await this.llmAPI.completionStream(params);
@@ -318,7 +357,7 @@ export class Loz {
   }
 
   public async setAPI(api: string, model?: string): Promise<void> {
-    if (api === "ollama" || api === "openai") {
+    if (api === "ollama" || api === "openai" || api === "copilot") {
       this.config.set("api", api);
     }
 

@@ -47,7 +47,7 @@ $ ./install.sh
 
 ## Configuring LLM
 
-Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node) and [Ollama](https://github.com/ollama/ollama) so you can switch between these LLM services easily, using the `config` command in the interactive mode.
+Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node), [Microsoft Copilot (Azure OpenAI)](https://azure.microsoft.com/en-us/products/ai-services/openai-service), and [Ollama](https://github.com/ollama/ollama) so you can switch between these LLM services easily, using the `config` command in the interactive mode.
 
 ### Set up Ollama
 
@@ -87,6 +87,39 @@ API request limit reached
 To continue using the API, it is necessary to set up a payment method through the following link:
 https://platform.openai.com/account/billing/payment-methods
 
+### Set up Microsoft Copilot (Azure OpenAI) API
+
+To use Microsoft Copilot with Loz, you'll need an Azure OpenAI resource. Follow these steps:
+
+1. Create an Azure OpenAI resource in the [Azure Portal](https://portal.azure.com/)
+2. Deploy a model (e.g., GPT-4 or GPT-3.5-Turbo) in your Azure OpenAI resource
+3. Obtain your API key and endpoint URL from the Azure Portal
+
+**Configuration via environment variables:**
+
+You can set the following environment variables in your `.bashrc` or `.env` file:
+
+```bash
+export COPILOT_API_KEY=YOUR_AZURE_OPENAI_API_KEY
+export COPILOT_ENDPOINT=https://your-resource.openai.azure.com/openai/deployments/your-deployment
+```
+
+**Configuration via interactive setup:**
+
+When you first run `loz`, select `copilot` as your LLM service. You'll be prompted to enter:
+- Your Azure OpenAI API key
+- Your Azure OpenAI endpoint URL (format: `https://your-resource.openai.azure.com/openai/deployments/your-deployment`)
+
+**Switching to Copilot API:**
+
+You can switch to using Copilot API at any time using the config command in interactive mode:
+
+```
+> config api copilot
+```
+
+For more information about Azure OpenAI Service, visit: https://azure.microsoft.com/en-us/products/ai-services/openai-service
+
 ## Usage
 
 ### Initial Configuration
@@ -95,13 +128,19 @@ Upon your initial launch of Loz, you will have the opportunity to select your pr
 
 ```
 $ loz
-Choose your LLM service: (ollama, openai)
+Choose your LLM service: (ollama, openai, Copilot)
 ```
 
 You can modify your LLM service preference at any time by using the `config` command in the interactive mode:
 
 ```
 > config api openai
+```
+
+or
+
+```
+> config api copilot
 ```
 
 Additionally, you can change the model by entering:
@@ -116,6 +155,12 @@ or
 > config model codellama
 ```
 
+or for OpenAI/Copilot:
+
+```
+> config model gpt-3.5-turbo
+```
+
 You can check the current settings by entering:
 
 ```
@@ -124,7 +169,7 @@ You can check the current settings by entering:
   model: llama2
 ```
 
-Currently, gpt-3.5-turbo and all models provided by Ollama are supported.
+Currently, OpenAI models (gpt-3.5-turbo, gpt-4), Azure OpenAI models (accessible through Copilot API), and all models provided by Ollama are supported.
 
 ### Interactive mode
 

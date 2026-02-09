@@ -395,7 +395,8 @@ export class Loz {
       systemPrompt =
         `IMPORTANT: You are running on Windows using ${shellType}. ` +
         `Decide if the following prompt can be translated into Windows ${shellType} commands ONLY. ` +
-        `If yes, generate ONLY the corresponding Windows ${shellType} commands in JSON format, assuming the current directory is '.' (use Windows path syntax, e.g., C:\\Users). ` +
+        `If yes, generate ONLY the corresponding Windows ${shellType} commands in the following strict JSON format: { "commands": ["command1", "command2", ...] } (use Windows path syntax, e.g., C:\\Users). ` +
+        `For example: { "commands": ["dir", "cd C:\\Users"] } ` +
         `DO NOT return Linux or bash commands. ` +
         `If no, provide an explanation in plain text.\n\n` +
         `Input: ` +
@@ -404,7 +405,8 @@ export class Loz {
     } else {
       systemPrompt =
         "Decide if the following prompt can be translated into Linux commands. " +
-        "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
+        "If yes, generate only the corresponding Linux commands in the following strict JSON format: { \"commands\": [\"command1\", \"command2\", ...] }, assuming the current directory is '.'. " +
+        "For example: { \"commands\": [\"ls\", \"cd /tmp\"] } " +
         "If no, provide an explanation in plain text.\n\n" +
         "Input: " +
         prompt +
@@ -414,43 +416,40 @@ export class Loz {
     const completion = await this.completeUserPrompt(systemPrompt + prompt);
 
     // Strip Markdown code block markers from LLM response before JSON parsing
+
     let content = completion.content.trim();
+    // Debug: print the content after stripping code block markers
+    if (DEBUG) {
+      console.log("[DEBUG] LLM response content before JSON.parse:", content);
+    }
+    // Robustly strip Markdown code block markers (e.g., ```json ... ```)
     if (content.startsWith('```')) {
-      content = content.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
-    }
-    // If the completion is not a JSON object, but a plain text.
-    if (!content.startsWith("{")) {
-      console.log(completion.content);
-      const promptAndCompleteText = {
-        mode: "regular mode",
-        model: completion.model,
-        prompt: systemPrompt,
-        answer: completion.content,
-      };
-      this.chatHistoryManager.addChat(promptAndCompleteText);
-      return;
+      // Remove the first line (``` or ```json) and the last line (```)
+      content = content.replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '').trim();
     }
 
-    if (DEBUG) console.log(content);
-
+    // Enforce strict JSON format: { "commands": [ ... ] }
     let json;
     try {
       json = JSON.parse(content);
-      if (DEBUG) console.log(JSON.stringify(json, null, 2));
     } catch (error) {
-      console.error("Error parsing JSON:", error);
+      console.error("Error parsing JSON. Expected format: { \"commands\": [ ... ] }\nGot:\n" + content);
       return;
     }
 
-    // Handle multiple commands and arguments
     let commands = [];
-    if (json.commands && Array.isArray(json.commands)) {
+    // Handle strict format: { "commands": [ ... ] }
+    if (json && Array.isArray(json.commands)) {
       commands = json.commands;
-    } else if (json.command) {
+    // Handle legacy format: { "command": "..." }
+    } else if (json && typeof json.command === "string") {
       commands = [json.command];
-    }
-    if (json.arguments && json.arguments.length > 0 && commands.length > 0) {
-      commands[0] += " " + json.arguments.join(" ");
+    // Handle array format: [ "...", ... ]
+    } else if (Array.isArray(json) && json.every(cmd => typeof cmd === "string")) {
+      commands = json;
+    } else {
+      console.error("Invalid response format. Expected: { \"commands\": [ ... ] }, { \"command\": \"...\" }, or [\"...\"]\nGot:\n" + content);
+      return;
     }
 
     // Add the command to the chat history
@@ -464,11 +463,6 @@ export class Loz {
 
     // Always prompt for Y/N before running any command(s)
     let answer = "n";
-    if (!process.stdin.isTTY) {
-      console.warn("Warning: Cannot prompt for Y/N because stdin is not a TTY (interactive terminal). Run this command in a regular terminal to enable confirmation prompts.");
-      // Optionally, skip execution or run anyway. Here, we skip execution for safety.
-      return;
-    }
     try {
       const rl = readlinePromises.createInterface({
         input: process.stdin,

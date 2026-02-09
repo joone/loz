@@ -1,10 +1,26 @@
+
+## What's New
+
+### v0.4.0 - 2026-02-08
+- **Added**
+  - Cross-platform command execution: Loz now detects your OS and shell (Linux, macOS, Windows PowerShell, or cmd) and generates/executed commands accordingly.
+  - Always prompts for Y/N confirmation before running any command, for improved safety.
+  - Handles LLM responses in Markdown code blocks (triple backticks) and parses commands correctly.
+  - Improved error and warning messages for non-interactive terminals and shell mismatches.
+  - Enhanced Windows support: runs PowerShell/cmd commands natively, not just bash.
+- **Fixed**
+  - Commands are now executed on Windows, Linux, and WSL as expected.
+  - Fixed issues with command parsing and JSON extraction from LLM output.
+  - Improved logging and user feedback for command execution and shell compatibility.
+
 # Loz [![NPM](https://img.shields.io/npm/v/chatgpt.svg)](https://www.npmjs.com/package/loz)
 
 ![alt Loz Demo](https://github.com/joone/loz/blob/main/examples/loz_demo.gif?raw=true)
 
 Loz is a command-line tool that enables your preferred LLM to execute system commands and utilize Unix pipes, integrating AI capabilities with other Unix tools.
 
-## What's New
+
+## Previous Releases
 
 ### v0.3.1 - 2024-03-18
 - **Added**

@@ -413,8 +413,13 @@ export class Loz {
   
     const completion = await this.completeUserPrompt(systemPrompt + prompt);
 
+    // Strip Markdown code block markers from LLM response before JSON parsing
+    let content = completion.content.trim();
+    if (content.startsWith('```')) {
+      content = content.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
+    }
     // If the completion is not a JSON object, but a plain text.
-    if (!completion.content.startsWith("{")) {
+    if (!content.startsWith("{")) {
       console.log(completion.content);
       const promptAndCompleteText = {
         mode: "regular mode",
@@ -426,11 +431,11 @@ export class Loz {
       return;
     }
 
-    if (DEBUG) console.log(completion.content);
+    if (DEBUG) console.log(content);
 
     let json;
     try {
-      json = JSON.parse(completion.content);
+      json = JSON.parse(content);
       if (DEBUG) console.log(JSON.stringify(json, null, 2));
     } catch (error) {
       console.error("Error parsing JSON:", error);
@@ -459,6 +464,11 @@ export class Loz {
 
     // Always prompt for Y/N before running any command(s)
     let answer = "n";
+    if (!process.stdin.isTTY) {
+      console.warn("Warning: Cannot prompt for Y/N because stdin is not a TTY (interactive terminal). Run this command in a regular terminal to enable confirmation prompts.");
+      // Optionally, skip execution or run anyway. Here, we skip execution for safety.
+      return;
+    }
     try {
       const rl = readlinePromises.createInterface({
         input: process.stdin,

@@ -32,24 +32,44 @@ export function runShellCommand(command: string): Promise<string> {
 // Function to run a command and stream its stdout directly to the terminal
 export function runCommand(command: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    //const [cmd, ...args] = command.split(/\s+/); // Split the command and its arguments
-    const child = spawn("bash", ["-c", command]);
+    let child;
+    const isWindows = process.platform === "win32";
+    // Try to detect PowerShell vs cmd
+    let shellType = "bash";
+    if (isWindows) {
+      const comspec = (process.env.ComSpec || "").toLowerCase();
+      const shellEnv = (process.env.SHELL || "").toLowerCase();
+      if (comspec.includes("powershell") || shellEnv.includes("powershell") || shellEnv.includes("pwsh")) {
+        shellType = "powershell";
+      } else {
+        shellType = "cmd";
+      }
+    }
+
+    if (isWindows && shellType === "cmd") {
+      child = spawn("cmd.exe", ["/c", command], { shell: false });
+    } else if (isWindows && shellType === "powershell") {
+      child = spawn("powershell.exe", ["-Command", command], { shell: false });
+    } else {
+      child = spawn("bash", ["-c", command]);
+    }
+
     let stdoutData = "";
     let stderrData = "";
 
     child.stdout.on("data", (data: any) => {
-      stdoutData += data; // Accumulate stdout data
-      process.stdout.write(data); // Write stdout data to the terminal
+      stdoutData += data;
+      process.stdout.write(data);
     });
 
     child.stderr.on("data", (data: any) => {
-      stderrData += data; // Accumulate stderr data
-      process.stderr.write(data); // Write stderr data to the terminal
+      stderrData += data;
+      process.stderr.write(data);
     });
 
     child.on("error", (error: any) => {
       console.error(`Execution Error: ${error.message}`);
-      reject(error); // Reject the promise on spawn error
+      reject(error);
     });
 
     child.on("close", (code: any) => {
@@ -57,14 +77,13 @@ export function runCommand(command: string): Promise<void> {
         reject("No output: " + code);
       } else if (code !== 0) {
         console.log(`Process exited with code: ${code}`);
-        // Check if both stdout and stderr are empty
         if (!stdoutData && !stderrData) {
           reject("No output: " + code);
         } else {
           reject(new Error(`Process exited with code: ${code}`));
         }
       } else {
-        resolve(); // Resolve the promise when the process closes successfully
+        resolve();
       }
     });
   });

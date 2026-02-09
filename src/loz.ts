@@ -393,12 +393,14 @@ export class Loz {
     let systemPrompt = "";
     if (isWindows) {
       systemPrompt =
-        `Decide if the following prompt can be translated into Windows ${shellType} commands. ` +
-        `If yes, generate only the corresponding Windows ${shellType} commands in JSON format, assuming the current directory is '.' (use Windows path syntax). ` +
-        "If no, provide an explanation in plain text.\n\n" +
-        "Input: " +
+        `IMPORTANT: You are running on Windows using ${shellType}. ` +
+        `Decide if the following prompt can be translated into Windows ${shellType} commands ONLY. ` +
+        `If yes, generate ONLY the corresponding Windows ${shellType} commands in JSON format, assuming the current directory is '.' (use Windows path syntax, e.g., C:\\Users). ` +
+        `DO NOT return Linux or bash commands. ` +
+        `If no, provide an explanation in plain text.\n\n` +
+        `Input: ` +
         prompt +
-        "\nResponse: ";
+        `\nResponse: `;
     } else {
       systemPrompt =
         "Decide if the following prompt can be translated into Linux commands. " +
@@ -435,11 +437,17 @@ export class Loz {
       return;
     }
 
-    let command = json.commands ? json.commands : json.command;
-    if (json.arguments && json.arguments.length > 0) {
-      command += " " + json.arguments.join(" ");
+    // Handle multiple commands and arguments
+    let commands = [];
+    if (json.commands && Array.isArray(json.commands)) {
+      commands = json.commands;
+    } else if (json.command) {
+      commands = [json.command];
     }
-    
+    if (json.arguments && json.arguments.length > 0 && commands.length > 0) {
+      commands[0] += " " + json.arguments.join(" ");
+    }
+
     // Add the command to the chat history
     const promptAndCompleteText = {
       mode: "command generation mode",
@@ -449,16 +457,7 @@ export class Loz {
     };
     this.chatHistoryManager.addChat(promptAndCompleteText);
 
-    if (this.safeMode === false) {
-      try {
-        await runCommand(command);
-      } catch (error: any) {
-        if (error.indexOf("No output") === 0) console.log(error);
-        else console.error("Error running command:", error);
-      }
-      return;
-    }
-
+    // Always prompt for Y/N before running any command(s)
     let answer = "n";
     try {
       const rl = readlinePromises.createInterface({
@@ -466,19 +465,26 @@ export class Loz {
         output: process.stdout,
       });
       answer = await rl.question(
-        `Do you want to run this command?:\n${command}\n (y/n) `,
+        `Do you want to run this command?:\n${commands.join("\n")}\n(y/n) `,
       );
       rl.close();
     } catch (error) {
       console.error("Error during user interaction:", error);
     }
 
+    // Warn if the command is not compatible with the user's shell
+    if (isWindows && commands.some((cmd: string) => /ls |grep |find \\./i.test(cmd))) {
+      console.warn("Warning: The generated command appears to be for Linux/bash and may not work in your Windows shell. Please rephrase your prompt or specify 'for PowerShell' or 'for cmd'.");
+    }
+
     if (answer.toLowerCase() === "y") {
-      try {
-        await runCommand(command);
-      } catch (error: any) {
-        if (error.indexOf("No output") === 0) console.log(error);
-        else console.error("Error running command:", error);
+      for (const cmd of commands) {
+        try {
+          await runCommand(cmd);
+        } catch (error: any) {
+          if (typeof error === "string" && error.indexOf("No output") === 0) console.log(error);
+          else console.error("Error running command:", error);
+        }
       }
     }
   }

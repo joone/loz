@@ -370,14 +370,45 @@ export class Loz {
   }
 
   public async handlePrompt(prompt: string): Promise<void> {
-    const systemPrompt =
-      "Decide if the following prompt can be translated into Linux commands. " +
-      "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
-      "If no, provide an explanation in plain text.\n\n" +
-      "Input: " +
-      prompt +
-      "\nResponse: ";
 
+    // Improved OS and shell detection for VS Code/Windows
+    const isWindows = process.platform === "win32";
+    let shellType = "bash";
+    if (isWindows) {
+      const comspec = (process.env.ComSpec || "").toLowerCase();
+      const shellEnv = (process.env.SHELL || "").toLowerCase();
+      const termProgram = (process.env.TERM_PROGRAM || "").toLowerCase();
+      if (comspec.includes("powershell") || shellEnv.includes("powershell") || shellEnv.includes("pwsh")) {
+        shellType = "powershell";
+      } else if (comspec.includes("cmd")) {
+        shellType = "cmd";
+      } else if (termProgram.includes("vscode")) {
+        // VS Code default shell on Windows is often PowerShell
+        shellType = "powershell";
+      } else {
+        shellType = "powershell"; // Default to PowerShell on Windows
+      }
+    }
+
+    let systemPrompt = "";
+    if (isWindows) {
+      systemPrompt =
+        `Decide if the following prompt can be translated into Windows ${shellType} commands. ` +
+        `If yes, generate only the corresponding Windows ${shellType} commands in JSON format, assuming the current directory is '.' (use Windows path syntax). ` +
+        "If no, provide an explanation in plain text.\n\n" +
+        "Input: " +
+        prompt +
+        "\nResponse: ";
+    } else {
+      systemPrompt =
+        "Decide if the following prompt can be translated into Linux commands. " +
+        "If yes, generate only the corresponding Linux commands in JSON format, assuming the current directory is '.'. " +
+        "If no, provide an explanation in plain text.\n\n" +
+        "Input: " +
+        prompt +
+        "\nResponse: ";
+    }
+  
     const completion = await this.completeUserPrompt(systemPrompt + prompt);
 
     // If the completion is not a JSON object, but a plain text.
@@ -404,11 +435,11 @@ export class Loz {
       return;
     }
 
-    let linuxCommand = json.commands ? json.commands : json.command;
+    let command = json.commands ? json.commands : json.command;
     if (json.arguments && json.arguments.length > 0) {
-      linuxCommand += " " + json.arguments.join(" ");
+      command += " " + json.arguments.join(" ");
     }
-
+    
     // Add the command to the chat history
     const promptAndCompleteText = {
       mode: "command generation mode",
@@ -420,7 +451,7 @@ export class Loz {
 
     if (this.safeMode === false) {
       try {
-        await runCommand(linuxCommand);
+        await runCommand(command);
       } catch (error: any) {
         if (error.indexOf("No output") === 0) console.log(error);
         else console.error("Error running command:", error);
@@ -435,7 +466,7 @@ export class Loz {
         output: process.stdout,
       });
       answer = await rl.question(
-        `Do you want to run this command?: ${linuxCommand} (y/n) `,
+        `Do you want to run this command?:\n${command}\n (y/n) `,
       );
       rl.close();
     } catch (error) {
@@ -444,7 +475,7 @@ export class Loz {
 
     if (answer.toLowerCase() === "y") {
       try {
-        await runCommand(linuxCommand);
+        await runCommand(command);
       } catch (error: any) {
         if (error.indexOf("No output") === 0) console.log(error);
         else console.error("Error running command:", error);

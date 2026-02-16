@@ -4,7 +4,6 @@ import * as readlinePromises from "readline/promises";
 
 export const DEFAULT_OLLAMA_MODEL = "gpt-oss:20b";
 export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
-export const DEFAULT_COPILOT_MODEL = "gpt-4";
 
 interface ConfigInterface {
   items: ConfigItemInterface[];
@@ -52,65 +51,13 @@ export const requestApiKey = async (
   return apiKey;
 };
 
-export const requestCopilotApiKey = async (
-  rl: readlinePromises.Interface,
-): Promise<string> => {
-  for (const key of ["LOZ_COPILOT_API_KEY", "COPILOT_API_KEY"]) {
-    const value = process.env[key];
-    if (value) {
-      const useApiKeyFromEnv = await rl.question(
-        `\n${key} found in environment variables. Do you want to use it? (y/n) `,
-      );
-      if (useApiKeyFromEnv.toLowerCase() === "y") {
-        return value;
-      }
-      if (useApiKeyFromEnv.toLowerCase() !== "n") {
-        console.log("Invalid input. Please enter 'y' or 'n'.");
-        return await requestCopilotApiKey(rl);
-      }
-    }
-  }
-
-  const apiKey = await rl.question(
-    "Enter your Azure OpenAI (Copilot) API key:\n> ",
-  );
-  if (!apiKey) {
-    console.log("API key cannot be empty. Please try again.");
-    return await requestCopilotApiKey(rl);
-  }
-  return apiKey;
-};
-
-export const requestCopilotEndpoint = async (
-  rl: readlinePromises.Interface,
-): Promise<string> => {
-  const endpoint = process.env.COPILOT_ENDPOINT;
-  if (endpoint) {
-    const useEndpointFromEnv = await rl.question(
-      `\nCOPILOT_ENDPOINT found in environment variables. Do you want to use it? (y/n) `,
-    );
-    if (useEndpointFromEnv.toLowerCase() === "y") {
-      return endpoint;
-    }
-  }
-
-  const endpointInput = await rl.question(
-    "Enter your Azure OpenAI endpoint URL (e.g., https://your-resource.openai.azure.com/openai/deployments/your-deployment):\n> ",
-  );
-  if (!endpointInput) {
-    console.log("Endpoint URL cannot be empty. Please try again.");
-    return await requestCopilotEndpoint(rl);
-  }
-  return endpointInput;
-};
-
 const requestApiName = async (
   rl: readlinePromises.Interface,
 ): Promise<string> => {
   const res = await rl.question(
-    "Choose your LLM service: (ollama, openai, Copilot) ",
+    "Choose your LLM service: (ollama, openai) ",
   );
-  if (!["ollama", "openai", "copilot"].includes(res.toLowerCase())) {
+  if (!["ollama", "openai"].includes(res.toLowerCase())) {
     console.log("Received the wrong answer. Please try again.");
     return await requestApiName(rl);
   }
@@ -148,11 +95,6 @@ export class Config implements ConfigInterface {
         this.setInternal(
           "model",
           this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL,
-        );
-      else if (value === "copilot")
-        this.setInternal(
-          "model",
-          this.get("copilot.model")?.value || DEFAULT_COPILOT_MODEL,
         );
       else {
         console.log("Invalid API");
@@ -215,7 +157,6 @@ export class Config implements ConfigInterface {
 
       this.set("openai.model", DEFAULT_OPENAI_MODEL);
       this.set("ollama.model", DEFAULT_OLLAMA_MODEL);
-      this.set("copilot.model", DEFAULT_COPILOT_MODEL);
       if (name === "ollama") {
         this.set("model", DEFAULT_OLLAMA_MODEL);
         console.log(
@@ -225,12 +166,6 @@ export class Config implements ConfigInterface {
         this.set("model", DEFAULT_OPENAI_MODEL);
         const newApiKey = await requestApiKey(rl);
         this.set("openai.apikey", newApiKey);
-      } else if (name === "copilot") {
-        this.set("model", DEFAULT_COPILOT_MODEL);
-        const newApiKey = await requestCopilotApiKey(rl);
-        this.set("copilot.apikey", newApiKey);
-        const endpoint = await requestCopilotEndpoint(rl);
-        this.set("copilot.endpoint", endpoint);
       }
       this.set("mode", "default");
       this.set("api", name);

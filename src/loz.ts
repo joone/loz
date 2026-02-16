@@ -351,7 +351,7 @@ export class Loz {
         } else if (api === "ollama") {
           // Handle Ollama streaming
           for await (const data of stream) {
-            if (data === null) return;
+            if (data === null) break; // Break instead of return to ensure newline is written
             const streamData = data.response || "";
             curCompleteText += streamData;
             process.stdout.write(streamData);
@@ -360,7 +360,7 @@ export class Loz {
         } else {
           // OpenAI streaming
           for await (const data of stream) {
-            if (data === null) return;
+            if (data === null) break; // Break instead of return to ensure newline is written
             const streamData = data.choices[0]?.delta?.content || "";
             curCompleteText += streamData;
             process.stdout.write(streamData);

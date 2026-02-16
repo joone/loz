@@ -128,13 +128,13 @@ export class OllamaAPI extends LLMService {
       params.prompt,
       // responseOutput callback - called for each chunk as it arrives
       (chunk: string) => {
+        // Queue the chunk first, then resolve if someone is waiting
+        chunks.push(chunk);
         if (resolveNext) {
-          // If someone is waiting for a chunk, give it to them immediately
-          resolveNext({ value: { response: chunk }, done: false });
+          // Someone is waiting - give them the chunk immediately
+          const nextChunk = chunks.shift()!;
+          resolveNext({ value: { response: nextChunk }, done: false });
           resolveNext = null;
-        } else {
-          // Otherwise, queue it for later
-          chunks.push(chunk);
         }
       },
       // contextOutput callback
@@ -153,6 +153,8 @@ export class OllamaAPI extends LLMService {
     }).catch((err: any) => {
       error = err;
       isComplete = true;
+      // Clear the queue on error to avoid returning stale chunks
+      chunks.length = 0;
       if (resolveNext) {
         resolveNext({ value: undefined, done: true });
         resolveNext = null;
@@ -163,7 +165,7 @@ export class OllamaAPI extends LLMService {
     return {
       [Symbol.asyncIterator]: () => ({
         next: (): Promise<IteratorResult<{ response: string }>> => {
-          // If there's an error, throw it
+          // If there's an error, throw it immediately (no chunks should be returned after error)
           if (error) {
             throw error;
           }

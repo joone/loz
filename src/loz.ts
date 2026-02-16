@@ -15,6 +15,7 @@ import {
   requestApiKey,
 } from "./config";
 import { Git } from "./git";
+import { enforceGuardrails } from "./guardrails";
 
 // Get the path to the home directory
 const HOME_PATH = os.homedir() || "";
@@ -563,6 +564,8 @@ export class Loz {
     if (answer.toLowerCase() === "y") {
       for (const cmd of commands) {
         try {
+          // Enforce guardrails to prevent dangerous commands
+          enforceGuardrails(cmd, true);
           await runCommand(cmd);
         } catch (error: any) {
           if (typeof error === "string" && error.indexOf("No output") === 0) {

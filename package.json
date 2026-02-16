@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "build": "tsc",
-    "test": "mocha -r ts-node/register src/**/*test.ts test/**/*test.ts",
+    "test": "TS_NODE_PROJECT=tsconfig.test.json mocha -r ts-node/register src/**/*test.ts test/**/*test.ts",
     "lint": "eslint 'src/**/*.{js,ts}'",
     "style": "npx prettier --write ."
   },
@@ -41,5 +41,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "ts-node": {
+    "project": "tsconfig.test.json"
+  }
 }

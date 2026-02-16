@@ -182,8 +182,7 @@ export class Config implements ConfigInterface {
         this.set("model", DEFAULT_OLLAMA_MODEL);
         this.set("mode", "default");
         this.set("api", "ollama");
-        // Don't save config in test mode
-        return false;
+        return false; // Skip config save in test mode
       }
       
       const rl = readlinePromises.createInterface({

@@ -335,7 +335,7 @@ export class MockLLMAPI extends LLMService {
     if (prompt.includes("find") && prompt.includes("text")) {
       // For "Find sfsdfef text in files" test case
       const match = prompt.match(/find (\w+) text/i);
-      const searchText = match ? match[1] : "sfsdfef";
+      const searchText = match ? match[1] : "nonexistenttext";
       command = `{ "commands": ["grep '${searchText}' *"] }`;
     } else if (prompt.includes("gpu") || prompt.includes("vga")) {
       command = '{ "commands": ["lspci | grep -i vga"] }';
@@ -355,7 +355,7 @@ export class MockLLMAPI extends LLMService {
     return { content: command, model: "mock-model" };
   }
 
-  public async completionStream(params: LLMSettings): Promise<any> {
+  public async completionStream(params: LLMSettings): Promise<AsyncIterable<{ response: string }>> {
     // For streaming, just return a simple async iterator
     const content = (await this.completion(params)).content;
     

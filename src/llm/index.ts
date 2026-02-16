@@ -316,3 +316,59 @@ export class GitHubCopilotAPI extends LLMService {
     return this.auth;
   }
 }
+
+export class MockLLMAPI extends LLMService {
+  constructor() {
+    super();
+    this.api = null;
+  }
+
+  // Map of test prompts to expected commands
+  private getCommandForPrompt(prompt: string): string {
+    // Extract the actual user prompt from the system prompt
+    const userPromptMatch = prompt.match(/Input:\s*(.+?)(?:\nResponse:|$)/);
+    const userPrompt = userPromptMatch ? userPromptMatch[1].trim() : prompt;
+
+    if (userPrompt.includes("Detect GPUs")) {
+      return '{ "commands": ["lspci | grep -i vga"] }';
+    } else if (userPrompt.includes("current date and time")) {
+      return '{ "commands": ["date"] }';
+    } else if (userPrompt.includes("available memory")) {
+      return '{ "commands": ["free -h"] }';
+    } else if (userPrompt.includes("largest file")) {
+      return '{ "commands": ["find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1"] }';
+    } else if (userPrompt.includes("apache2")) {
+      return '{ "commands": ["systemctl status apache2"] }';
+    } else if (userPrompt.includes("Find sfsdfef")) {
+      return '{ "commands": ["grep \'sfsdfef\' *"] }';
+    } else {
+      // Default: return a safe echo command without user input
+      return '{ "commands": ["echo Mock LLM - command not recognized"] }';
+    }
+  }
+
+  public async completion(
+    params: LLMSettings,
+  ): Promise<{ content: string; model: string }> {
+    if (DEBUG) {
+      console.log("Mock LLM completion");
+      console.log("Model: " + params.model);
+    }
+
+    const content = this.getCommandForPrompt(params.prompt);
+
+    return {
+      content,
+      model: params.model,
+    };
+  }
+
+  public async completionStream(params: LLMSettings): Promise<any> {
+    // For mock, we don't really stream, just return the completion
+    const completion = await this.completion(params);
+    // Return an async iterator that yields the content
+    return (async function* () {
+      yield { choices: [{ delta: { content: completion.content } }] };
+    })();
+  }
+}

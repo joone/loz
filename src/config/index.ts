@@ -170,7 +170,29 @@ export class Config implements ConfigInterface {
 
   public async loadConfig(configPath: string): Promise<boolean> {
     this.configFilePath = path.join(configPath, "config.json");
+    const isTestMode = process.env.MOCHA_ENV === "test";
+
     if (!fs.existsSync(this.configFilePath)) {
+      // In test mode, skip interactive prompts and use default configuration
+      if (isTestMode) {
+        this.set("openai.model", DEFAULT_OPENAI_MODEL);
+        this.set("ollama.model", DEFAULT_OLLAMA_MODEL);
+        this.set("github-copilot.model", DEFAULT_GITHUB_COPILOT_MODEL);
+        this.set("mode", "default");
+
+        // Use OpenAI if API key is available, otherwise use mock LLM for tests
+        const apiKey = process.env.LOZ_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+        if (apiKey) {
+          this.set("model", DEFAULT_OPENAI_MODEL);
+          this.set("api", "openai");
+          this.set("openai.apikey", apiKey);
+        } else {
+          this.set("model", DEFAULT_OLLAMA_MODEL);
+          this.set("api", "mock");
+        }
+        return false;
+      }
+      
       const rl = readlinePromises.createInterface({
         input: process.stdin,
         output: process.stdout,

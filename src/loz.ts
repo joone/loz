@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import * as readlinePromises from "readline/promises";
-import { OpenAiAPI, OllamaAPI, GitHubCopilotAPI, LLMSettings } from "./llm";
+import { OpenAiAPI, OllamaAPI, GitHubCopilotAPI, MockLLMAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand, checkGitRepo } from "./utils";
@@ -82,15 +82,27 @@ export class Loz {
     await this.config.loadConfig(this.configPath);
 
     const api = this.checkAPI() || "openai";
+    const isTestMode = process.env.MOCHA_ENV === "test";
+
+    if (api === "mock") {
+      // Use mock LLM for testing
+      this.llmAPI = new MockLLMAPI();
+      this.defaultSettings.model =
+        this.config.get("model")?.value || DEFAULT_OLLAMA_MODEL;
+      return;
+    }
 
     if (api === "ollama") {
-      const result = await runShellCommand("ollama --version");
-      if (DEBUG) console.log(result);
-      if (result.indexOf("ollama") === -1) {
-        console.log(
-          "Please install ollama first: see https://ollama.ai/download \n",
-        );
-        process.exit(1);
+      // Skip ollama version check in test mode
+      if (!isTestMode) {
+        const result = await runShellCommand("ollama --version");
+        if (DEBUG) console.log(result);
+        if (result.indexOf("ollama") === -1) {
+          console.log(
+            "Please install ollama first: see https://ollama.ai/download \n",
+          );
+          process.exit(1);
+        }
       }
       this.llmAPI = new OllamaAPI();
       this.defaultSettings.model =

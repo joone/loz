@@ -1,6 +1,16 @@
 
 ## What's New
 
+### v0.4.1 - 2026-02-16
+- **Added**
+  - **Guardrails for dangerous commands**: Loz now includes built-in safety guardrails that automatically block potentially dangerous shell commands before execution. The following commands are blocked:
+    - `rm -rf /` and its bypass variants (`rm -rf/*`, `rm -rf /.`)
+    - `shutdown` and `reboot` commands
+    - Fork bomb: `:(){ :|:& };:`
+    - Filesystem formatting: `mkfs`
+    - Direct disk operations: `dd if=`
+  - This feature provides an additional layer of protection to prevent accidental system damage, complementing the existing confirmation prompts.
+
 ### v0.4.0 - 2026-02-08
 - **Added**
   - Cross-platform command execution: Loz now detects your OS and shell (Linux, macOS, Windows PowerShell, or cmd) and generates/executed commands accordingly.
@@ -219,7 +229,7 @@ Loz empowers users to execute Linux commands using natural language. Below are s
 
 #### Caution
 
-To prevent unintentional system modifications, avoid running commands that can alter or remove system files or configurations, such as `rm`, `mv`, `rmdir`, or `mkfs`.
+To prevent unintentional system modifications, loz includes built-in guardrails that block the most dangerous commands (such as `rm -rf /`, `shutdown`, `mkfs`, etc.). However, you should still exercise caution with commands that can alter or remove system files or configurations, such as `rm`, `mv`, or `rmdir`.
 
 #### Safe Mode
 

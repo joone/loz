@@ -119,7 +119,7 @@ export class OllamaAPI extends LLMService {
     
     // Create a queue to handle chunks as they arrive
     const chunks: string[] = [];
-    let resolveNext: ((value: IteratorResult<{ response: string }>) => void) | null = null;
+    let pendingResolve: ((value: IteratorResult<{ response: string }>) => void) | null = null;
     let isComplete = false;
     let error: any = null;
     
@@ -130,11 +130,11 @@ export class OllamaAPI extends LLMService {
       (chunk: string) => {
         // Queue the chunk first, then resolve if someone is waiting
         chunks.push(chunk);
-        if (resolveNext) {
+        if (pendingResolve) {
           // Someone is waiting - give them the chunk immediately
           const nextChunk = chunks.shift()!;
-          resolveNext({ value: { response: nextChunk }, done: false });
-          resolveNext = null;
+          pendingResolve({ value: { response: nextChunk }, done: false });
+          pendingResolve = null;
         }
       },
       // contextOutput callback
@@ -146,18 +146,18 @@ export class OllamaAPI extends LLMService {
     ).then(() => {
       isComplete = true;
       // If someone is waiting, notify them we're done
-      if (resolveNext) {
-        resolveNext({ value: undefined, done: true });
-        resolveNext = null;
+      if (pendingResolve) {
+        pendingResolve({ value: undefined, done: true });
+        pendingResolve = null;
       }
     }).catch((err: any) => {
       error = err;
       isComplete = true;
       // Clear the queue on error to avoid returning stale chunks
-      chunks.length = 0;
-      if (resolveNext) {
-        resolveNext({ value: undefined, done: true });
-        resolveNext = null;
+      chunks.splice(0);
+      if (pendingResolve) {
+        pendingResolve({ value: undefined, done: true });
+        pendingResolve = null;
       }
     });
     
@@ -183,7 +183,7 @@ export class OllamaAPI extends LLMService {
           
           // Otherwise, wait for the next chunk
           return new Promise((resolve) => {
-            resolveNext = resolve;
+            pendingResolve = resolve;
           });
         }
       })

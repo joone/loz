@@ -108,6 +108,41 @@ export class OllamaAPI extends LLMService {
   }
 
   public async completionStream(params: LLMSettings): Promise<any> {
-    return {};
+    if (DEBUG) {
+      console.log("Ollama stream completion");
+      console.log("Model: " + params.model);
+    }
+    await this.api.setModel(params.model);
+
+    // Create a readable stream that will emit chunks from Ollama
+    const { Readable } = require("stream");
+    const stream = new Readable({
+      read() {},
+    });
+
+    // Use streamingGenerate to get streaming output
+    this.api
+      .streamingGenerate(
+        params.prompt,
+        (chunk: any) => {
+          // responseOutput callback - emit each chunk
+          if (chunk && chunk.response) {
+            stream.push(JSON.stringify({ content: chunk.response }));
+          }
+        },
+        null, // contextOutput
+        null, // fullResponseOutput
+        (stats: any) => {
+          // statsOutput callback - end the stream when done
+          if (stats && stats.done) {
+            stream.push(null); // Signal end of stream
+          }
+        },
+      )
+      .catch((error: any) => {
+        stream.destroy(error);
+      });
+
+    return stream;
   }
 }

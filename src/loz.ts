@@ -234,39 +234,44 @@ export class Loz {
   // Interactive mode
   private async runCompletion(params: LLMSettings): Promise<void> {
     let curCompleteText = "";
-    if (this.checkAPI() === "openai") {
-      let stream: any;
-      try {
-        stream = await this.llmAPI.completionStream(params);
-      } catch (error: any) {
-        console.log(error.message + ":");
-        if (error.response) {
-          // console.log(error.response.data);
-          if (error.response.status === 401) {
-            console.log("Invalid API key");
-          } else if (error.response.status === 429) {
-            console.log("API request limit reached");
-          }
-        }
-        process.exit();
-      }
+    let stream: any;
 
-      try {
+    try {
+      stream = await this.llmAPI.completionStream(params);
+    } catch (error: any) {
+      console.log(error.message + ":");
+      if (error.response) {
+        if (error.response.status === 401) {
+          console.log("Invalid API key");
+        } else if (error.response.status === 429) {
+          console.log("API request limit reached");
+        }
+      }
+      process.exit();
+    }
+
+    try {
+      if (this.checkAPI() === "openai") {
+        // OpenAI streaming format
         for await (const data of stream) {
           if (data === null) return;
           const streamData = data.choices[0]?.delta?.content || "";
           curCompleteText += streamData;
           process.stdout.write(streamData);
         }
-        process.stdout.write("\n");
-      } catch (error) {
-        console.error("An error occurred during OpenAI request: ", error);
+      } else {
+        // Ollama streaming format
+        for await (const chunk of stream) {
+          const data = JSON.parse(chunk.toString());
+          if (data.content) {
+            curCompleteText += data.content;
+            process.stdout.write(data.content);
+          }
+        }
       }
-    } else {
-      const complete = await this.llmAPI.completion(params);
-      curCompleteText = complete.content;
-      process.stdout.write(curCompleteText);
       process.stdout.write("\n");
+    } catch (error) {
+      console.error("An error occurred during request: ", error);
     }
 
     const promptAndCompleteText: PromptAndAnswer = {

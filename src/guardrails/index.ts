@@ -1,5 +1,12 @@
 // List of dangerous command patterns that should be blocked
 // Patterns are case-insensitive and stored in lowercase for efficiency
+//
+// NOTE: This is a basic substring-based approach that provides a first line of defense.
+// Future improvements could include:
+// - More comprehensive pattern list (sudo variants, different spacing, etc.)
+// - Word boundary checking to avoid false positives on filenames
+// - Command structure parsing to identify actual operations
+// - Allowlist approach for additional security
 const DENYLIST = [
   "rm -rf /",
   "rm -rf/*",

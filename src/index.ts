@@ -2,6 +2,7 @@
 import * as yargs from "yargs";
 import { Loz } from "./loz";
 import { DEBUG } from "./constant";
+import { AgentLoop, DEFAULT_AGENT_CONFIG } from "./agent";
 const LOZ_SAFE = process.env.LOZ_SAFE === "true" ? true : false;
 
 const isRunningInMocha = process.env.MOCHA_ENV === "test";
@@ -14,6 +15,16 @@ const args = yargs
       type: "string",
     });
   })
+  .command(
+    "agent <goal>",
+    "Run Loz in autonomous agent mode",
+    (yargs) => {
+      yargs.positional("goal", {
+        description: "The goal or task for the agent to accomplish",
+        type: "string",
+      });
+    }
+  )
   .options({
     git: {
       alias: "g",
@@ -29,6 +40,27 @@ const args = yargs
       describe:
         "Safe mode requires user confirmation before executing any Linux command.",
     },
+    "max-steps": {
+      describe: "Maximum number of steps for agent mode (default: 20)",
+      type: "number",
+      default: 20,
+    },
+    sandbox: {
+      describe: "Enable sandbox mode (restricts operations to working directory)",
+      type: "boolean",
+      default: true,
+    },
+    verbose: {
+      alias: "v",
+      describe: "Enable verbose logging in agent mode",
+      type: "boolean",
+      default: false,
+    },
+    "enable-network": {
+      describe: "Allow network commands in agent mode",
+      type: "boolean",
+      default: false,
+    },
   })
   .help()
   .parseSync();
@@ -39,6 +71,11 @@ const loz = new Loz();
 
 async function handleLozCommand(): Promise<boolean> {
   if (args.attribution) loz.attribution = true;
+
+  // Check if running in agent mode
+  if (args._[0] === "agent" && args.goal) {
+    return await handleAgentMode(args.goal as string);
+  }
 
   // If the stdin is a TTY
   // when runnig unit tests for running Linux commands, stdin is not a TTY
@@ -63,6 +100,37 @@ async function handleLozCommand(): Promise<boolean> {
     }
   }
   return true;
+}
+
+async function handleAgentMode(goal: string): Promise<boolean> {
+  // Validate goal is provided
+  if (!goal || goal.trim().length === 0) {
+    console.error("Error: Agent mode requires a goal. Usage: loz agent \"your task description\"");
+    return false;
+  }
+
+  console.log("Initializing agent mode...");
+
+  const agentConfig = {
+    maxSteps: args["max-steps"] as number,
+    verbose: args.verbose as boolean,
+    safetyConfig: {
+      ...DEFAULT_AGENT_CONFIG.safetyConfig,
+      sandboxMode: args.sandbox as boolean,
+      enableNetwork: args["enable-network"] as boolean,
+    },
+    temperature: 0,
+  };
+
+  const agent = new AgentLoop(loz, agentConfig);
+  
+  try {
+    await agent.run(goal);
+    return true;
+  } catch (error: any) {
+    console.error(`\n❌ Agent error: ${error.message}`);
+    return false;
+  }
 }
 
 async function handlePrompt(prompt: any, context?: string): Promise<boolean> {

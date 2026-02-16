@@ -1,14 +1,10 @@
 import { exec } from "child_process";
 import { expect } from "chai";
 import { describe, it } from "mocha";
-
-const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
-import { fileURLToPath } from "url";
 import * as path from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const LOZ_BIN = path.join(__dirname, "..", "dist");
+const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
+const LOZ_BIN = path.join(process.cwd(), "dist");
 
 describe("Test loz pipe mode", function () {
   // ls | loz "count the number of files

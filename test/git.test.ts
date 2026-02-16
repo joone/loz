@@ -1,16 +1,13 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import { fileURLToPath } from "url";
 import { expect } from "chai";
 import { describe, before, after, it } from "mocha";
 import * as mockStdin from "mock-stdin";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
 const LOZ_BIN = "../../dist";
+const testDir = path.join(process.cwd(), "test");
 
 describe("Test git operations", function () {
   let repoPath: string;
@@ -21,7 +18,7 @@ describe("Test git operations", function () {
     // scripts/prepare-commit-msg needs loz to be installed globally
     if (GITHUB_ACTIONS === true) execSync("npm install -g");
     // Create a new directory for the Git repo
-    repoPath = path.join(__dirname, "test_repo");
+    repoPath = path.join(testDir, "test_repo");
     if (fs.existsSync(repoPath)) execSync("rm -rf " + repoPath);
     fs.mkdirSync(repoPath);
     process.chdir(repoPath);
@@ -39,7 +36,7 @@ describe("Test git operations", function () {
 
   after(function () {
     // Clean up: remove the Git repo directory after the test
-    process.chdir(__dirname);
+    process.chdir(testDir);
     fs.rmSync(repoPath, { recursive: true });
     stdin.restore();
   });

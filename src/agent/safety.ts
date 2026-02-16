@@ -124,10 +124,14 @@ export function validateCommand(
   // Sandbox mode: prevent directory traversal outside working directory
   if (config.sandboxMode) {
     // Check for suspicious path patterns with .. (but allow git commands)
-    if (cmd.includes("..") && !cmd.includes("git")) {
-      throw new Error(
-        "Path traversal detected (..). Commands must stay within working directory in sandbox mode.",
-      );
+    if (cmd.includes("..")) {
+      // Allow .. only if command explicitly starts with git followed by whitespace
+      const trimmedCmd = cmd.trim();
+      if (!/^git\s+/.test(trimmedCmd)) {
+        throw new Error(
+          "Path traversal detected (..). Commands must stay within working directory in sandbox mode.",
+        );
+      }
     }
 
     // Check for absolute paths that might be outside working directory

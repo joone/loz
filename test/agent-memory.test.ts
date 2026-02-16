@@ -64,10 +64,13 @@ describe("Agent Memory", () => {
       }
       
       const context = memory.buildContext();
+      // Should show first steps
       expect(context).to.contain("Step 1");
       expect(context).to.contain("Step 2");
-      // Should skip middle steps
-      expect(context).to.contain("Step 10"); // or later steps
+      // Should show last steps
+      expect(context).to.contain("Step 14");
+      expect(context).to.contain("Step 15");
+      // Should indicate truncation
       expect(context).to.contain("Showing first");
     });
 

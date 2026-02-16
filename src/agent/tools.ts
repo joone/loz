@@ -149,11 +149,16 @@ function applyUnifiedDiff(content: string, patch: string): string | null {
 
       // Hunk header
       if (line.startsWith("@@")) {
-        const match = line.match(/@@ -(\d+),(\d+) \+(\d+),(\d+) @@/);
-        if (!match) continue;
+        // Match unified diff hunk header format: @@ -oldStart[,oldCount] +newStart[,newCount] @@
+        // Examples: @@ -1,5 +1,6 @@ or @@ -1 +1 @@
+        const match = line.match(/@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/);
+        if (!match) {
+          // Invalid hunk header format
+          return null;
+        }
 
         const oldStart = parseInt(match[1]) - 1; // Convert to 0-based
-        const oldCount = parseInt(match[2]);
+        const oldCount = match[2] ? parseInt(match[2]) : 1; // Default to 1 if not specified
         const newStart = parseInt(match[3]) - 1;
 
         // Collect hunk lines

@@ -52,6 +52,9 @@ IMPORTANT:
 - If you encounter repeated failures, try a different approach
 - When the goal is achieved, use the "done" action with a summary`;
 
+// Maximum number of times the agent can attempt the same action before being considered stuck
+const MAX_REPEATED_ATTEMPTS = 3;
+
 export class AgentLoop {
   private loz: Loz;
   private memory: AgentMemory;
@@ -90,7 +93,7 @@ export class AgentLoop {
 
       try {
         // Get LLM decision
-        const action = await this.getNextAction();
+        const action = await this.getNextAction(step);
 
         if (this.config.verbose) {
           console.log(`\n💭 LLM Decision:`);
@@ -150,7 +153,7 @@ export class AgentLoop {
   /**
    * Get next action from LLM
    */
-  private async getNextAction(): Promise<AgentAction> {
+  private async getNextAction(step: number): Promise<AgentAction> {
     const context = this.memory.buildContext();
     const prompt = `${AGENT_SYSTEM_PROMPT}\n\n${context}\n\nWhat is your next action? Respond with JSON only:`;
 
@@ -174,7 +177,7 @@ export class AgentLoop {
 
     // Parse and validate response
     const action = parseAgentAction(response);
-    this.memory.addAction(JSON.stringify(action), this.memory.getSize());
+    this.memory.addAction(JSON.stringify(action), step);
 
     return action;
   }
@@ -260,7 +263,7 @@ export class AgentLoop {
     const count = this.failureHistory.get(key) || 0;
     this.failureHistory.set(key, count + 1);
 
-    // If same action attempted 3 times, consider it stuck
-    return count >= 2;
+    // If same action attempted MAX_REPEATED_ATTEMPTS times, consider it stuck
+    return count >= MAX_REPEATED_ATTEMPTS - 1;
   }
 }

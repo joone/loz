@@ -103,6 +103,12 @@ async function handleLozCommand(): Promise<boolean> {
 }
 
 async function handleAgentMode(goal: string): Promise<boolean> {
+  // Validate goal is provided
+  if (!goal || goal.trim().length === 0) {
+    console.error("Error: Agent mode requires a goal. Usage: loz agent \"your task description\"");
+    return false;
+  }
+
   console.log("Initializing agent mode...");
 
   const agentConfig = {

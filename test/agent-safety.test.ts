@@ -4,7 +4,7 @@ import { validateCommand, validateFilePath, truncateOutput, DEFAULT_SAFETY_CONFI
 import * as path from "path";
 
 describe("Agent Safety", () => {
-  const workingDir = "/home/user/project";
+  const workingDir = path.join(process.cwd(), "project");
 
   describe("validateCommand", () => {
     it("should allow safe commands", () => {

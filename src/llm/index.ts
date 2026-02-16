@@ -158,8 +158,8 @@ export class GitHubCopilotAPI extends LLMService {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${copilotToken}`,
-            "Editor-Version": "Neovim/0.6.1",
-            "Editor-Plugin-Version": "copilot.vim/1.16.0",
+            "Editor-Version": "vscode/1.85.0",
+            "Editor-Plugin-Version": "copilot/1.155.0",
             "User-Agent": "GithubCopilot/1.155.0",
           },
           body: JSON.stringify(requestBody),
@@ -214,8 +214,8 @@ export class GitHubCopilotAPI extends LLMService {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${copilotToken}`,
-          "Editor-Version": "Neovim/0.6.1",
-          "Editor-Plugin-Version": "copilot.vim/1.16.0",
+          "Editor-Version": "vscode/1.85.0",
+          "Editor-Plugin-Version": "copilot/1.155.0",
           "User-Agent": "GithubCopilot/1.155.0",
         },
         body: JSON.stringify(requestBody),

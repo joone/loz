@@ -1,9 +1,13 @@
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
 import { expect } from "chai";
 import { describe, before, after, it } from "mocha";
 import * as mockStdin from "mock-stdin";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
 const LOZ_BIN = "../../dist";

@@ -66,17 +66,13 @@ describe("Linux Command Test", () => {
     let stdout = execSync(
       `MOCHA_ENV=test node ${LOZ_BIN} "Get the current date and time on this system"`,
     ).toString();
-    if (GITHUB_ACTIONS === false) {
-      // Fri Feb 23 10:57:41 PM PST 2024
-      expect(stdout).to.match(
-        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} (AM|PM) \w{3} \d{4}/,
-      );
-    } else {
-      // Sat Feb 24 06:49:11 UTC 2024
-      expect(stdout).to.match(
-        /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2} UTC \d{4}/,
-      );
-    }
+    // Match date formats like:
+    // Fri Feb 23 10:57:41 PM PST 2024
+    // Sat Feb 24 06:49:11 UTC 2024
+    // Mon Feb 16 13:31:51 PST 2026
+    expect(stdout).to.match(
+      /\w{3} \w{3} \s?\d{1,2} \d{2}:\d{2}:\d{2}\s*(AM|PM)?\s*\w{3,4} \d{4}/,
+    );
   });
 
   // Check available memory
@@ -87,10 +83,10 @@ describe("Linux Command Test", () => {
     expect(stdout).to.match(/Mem:/);
   });
 
-  // grep 'sfsfsfcf' *
+  // A command that produces no output
   it("Handle no output", function () {
     let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "Find sfsdfef text in files in the current directory"`,
+      `MOCHA_ENV=test node ${LOZ_BIN} "List files with .zqxwvut extension in the current directory"`,
     ).toString();
     expect(stdout).to.match(/No output/);
   });

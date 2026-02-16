@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import * as readlinePromises from "readline/promises";
-import { OpenAiAPI, OllamaAPI, LLMSettings } from "./llm";
+import { OpenAiAPI, OllamaAPI, GitHubCopilotAPI, LLMSettings } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand, checkGitRepo } from "./utils";
@@ -11,6 +11,7 @@ import {
   Config,
   DEFAULT_OLLAMA_MODEL,
   DEFAULT_OPENAI_MODEL,
+  DEFAULT_GITHUB_COPILOT_MODEL,
   requestApiKey,
 } from "./config";
 import { Git } from "./git";
@@ -93,6 +94,41 @@ export class Loz {
       this.llmAPI = new OllamaAPI();
       this.defaultSettings.model =
         this.config.get("model")?.value || DEFAULT_OLLAMA_MODEL;
+      return;
+    }
+
+    if (api === "github-copilot") {
+      let githubToken = this.config.get("github-copilot.token")?.value;
+      
+      if (!githubToken) {
+        // Need to authenticate
+        console.log("\n=== GitHub Copilot Authentication ===");
+        console.log("You need to authenticate with GitHub to use Copilot.\n");
+        
+        const copilotAPI = new GitHubCopilotAPI("");
+        const auth = copilotAPI.getAuth();
+        
+        try {
+          githubToken = await auth.authenticate(async (userCode, verificationUri) => {
+            console.log(`\nPlease visit: ${verificationUri}`);
+            console.log(`And enter code: ${userCode}\n`);
+            console.log("Waiting for authorization...");
+          });
+          
+          this.config.set("github-copilot.token", githubToken);
+          this.config.save();
+          console.log("\n✓ Authentication successful!\n");
+        } catch (error: any) {
+          console.error("Authentication failed:", error.message);
+          console.log("\nPlease try running loz again to authenticate.");
+          process.exit(1);
+        }
+      }
+      
+      this.llmAPI = new GitHubCopilotAPI(githubToken);
+      this.defaultSettings.model =
+        this.config.get("model")?.value || DEFAULT_GITHUB_COPILOT_MODEL;
+      this.initAttribution();
       return;
     }
 
@@ -234,7 +270,9 @@ export class Loz {
   // Interactive mode
   private async runCompletion(params: LLMSettings): Promise<void> {
     let curCompleteText = "";
-    if (this.checkAPI() === "openai") {
+    const api = this.checkAPI();
+    
+    if (api === "openai" || api === "github-copilot") {
       let stream: any;
       try {
         stream = await this.llmAPI.completionStream(params);
@@ -252,15 +290,76 @@ export class Loz {
       }
 
       try {
-        for await (const data of stream) {
-          if (data === null) return;
-          const streamData = data.choices[0]?.delta?.content || "";
-          curCompleteText += streamData;
-          process.stdout.write(streamData);
+        if (api === "github-copilot") {
+          // Handle GitHub Copilot streaming (ReadableStream with SSE format)
+          const reader = stream.getReader();
+          const decoder = new TextDecoder();
+          let buffer = ""; // Buffer for incomplete lines
+          
+          // eslint-disable-next-line no-constant-condition
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            // Decode chunk and add to buffer
+            buffer += decoder.decode(value, { stream: true });
+            
+            // Process complete lines
+            const lines = buffer.split('\n');
+            // Keep the last incomplete line in the buffer
+            buffer = lines.pop() || "";
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const data = line.slice(6).trim();
+                if (data === '[DONE]') continue;
+                
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices[0]?.delta?.content || "";
+                  curCompleteText += content;
+                  process.stdout.write(content);
+                } catch (e) {
+                  if (DEBUG) {
+                    console.error("Failed to parse SSE data:", data);
+                  }
+                }
+              }
+            }
+          }
+          
+          // Process any remaining data in buffer
+          if (buffer.trim()) {
+            if (buffer.startsWith('data: ')) {
+              const data = buffer.slice(6).trim();
+              if (data !== '[DONE]') {
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices[0]?.delta?.content || "";
+                  curCompleteText += content;
+                  process.stdout.write(content);
+                } catch (e) {
+                  if (DEBUG) {
+                    console.error("Failed to parse final SSE data:", data);
+                  }
+                }
+              }
+            }
+          }
+          
+          process.stdout.write("\n");
+        } else {
+          // OpenAI streaming
+          for await (const data of stream) {
+            if (data === null) return;
+            const streamData = data.choices[0]?.delta?.content || "";
+            curCompleteText += streamData;
+            process.stdout.write(streamData);
+          }
+          process.stdout.write("\n");
         }
-        process.stdout.write("\n");
       } catch (error) {
-        console.error("An error occurred during OpenAI request: ", error);
+        console.error("An error occurred during streaming request: ", error);
       }
     } else {
       const complete = await this.llmAPI.completion(params);

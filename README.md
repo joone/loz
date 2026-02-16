@@ -63,7 +63,7 @@ $ ./install.sh
 
 ## Configuring LLM
 
-Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node) and [Ollama](https://github.com/ollama/ollama) so you can switch between these LLM services easily, using the `config` command in the interactive mode.
+Loz supports [OpenAI API](https://platform.openai.com/docs/quickstart?context=node), [Ollama](https://github.com/ollama/ollama), and [GitHub Copilot](https://github.com/features/copilot) so you can switch between these LLM services easily, using the `config` command in the interactive mode.
 
 ### Set up Ollama
 
@@ -103,6 +103,28 @@ API request limit reached
 To continue using the API, it is necessary to set up a payment method through the following link:
 https://platform.openai.com/account/billing/payment-methods
 
+### Set up GitHub Copilot
+
+To use GitHub Copilot as your LLM provider, you need an active [GitHub Copilot subscription](https://github.com/features/copilot).
+
+When you first select GitHub Copilot as your LLM service, Loz will guide you through the OAuth authentication process:
+
+1. Loz will display a user code and verification URL
+2. Visit the URL in your browser
+3. Enter the user code to authorize the application
+4. Once authorized, Loz will automatically receive and store your access token
+
+The authentication token is securely stored in your `~/.loz/config.json` file and will be automatically refreshed as needed.
+
+**Available Models:**
+- `gpt-4o` (default)
+- `gpt-4`
+- `o1-preview`
+- `o1-mini`
+- `claude-3.5-sonnet`
+
+You can switch models using the `config model` command in interactive mode.
+
 ## Usage
 
 ### Initial Configuration
@@ -111,13 +133,19 @@ Upon your initial launch of Loz, you will have the opportunity to select your pr
 
 ```
 $ loz
-Choose your LLM service: (ollama, openai)
+Choose your LLM service: (ollama, openai, github-copilot)
 ```
 
 You can modify your LLM service preference at any time by using the `config` command in the interactive mode:
 
 ```
 > config api openai
+```
+
+or
+
+```
+> config api github-copilot
 ```
 
 Additionally, you can change the model by entering:
@@ -138,15 +166,21 @@ or for OpenAI:
 > config model gpt-3.5-turbo
 ```
 
+or for GitHub Copilot:
+
+```
+> config model gpt-4o
+```
+
 You can check the current settings by entering:
 
 ```
 > config
-  api: ollama
-  model: llama2
+  api: github-copilot
+  model: gpt-4o
 ```
 
-Currently, OpenAI models (gpt-3.5-turbo, gpt-4) and all models provided by Ollama are supported.
+Currently, OpenAI models (gpt-3.5-turbo, gpt-4), GitHub Copilot models (gpt-4o, claude-3.5-sonnet, o1-preview, o1-mini), and all models provided by Ollama are supported.
 
 ### Interactive mode
 

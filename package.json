@@ -41,8 +41,5 @@
   },
   "files": [
     "dist"
-  ],
-  "ts-node": {
-    "project": "tsconfig.test.json"
-  }
+  ]
 }

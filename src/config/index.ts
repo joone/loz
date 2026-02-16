@@ -113,6 +113,11 @@ export class Config implements ConfigInterface {
           "model",
           this.get("github-copilot.model")?.value || DEFAULT_GITHUB_COPILOT_MODEL,
         );
+      else if (value === "mock")
+        this.setInternal(
+          "model",
+          this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL,
+        );
       else {
         console.log("Invalid API");
         return false;

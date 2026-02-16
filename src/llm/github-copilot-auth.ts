@@ -88,7 +88,7 @@ export class GitHubCopilotAuth {
       } else if (data.error === "slow_down") {
         // Need to slow down polling - return new interval
         return { token: null, newInterval: data.interval };
-      } else if (data.error === "expired_token" || data.error === "token_expired") {
+      } else if (data.error === "expired_token") {
         throw new Error("Device code expired. Please restart authentication.");
       } else if (data.error === "access_denied") {
         throw new Error("Access denied by user");

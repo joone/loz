@@ -6,6 +6,17 @@ export const DEFAULT_OLLAMA_MODEL = "gpt-oss:20b";
 export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
 export const DEFAULT_GITHUB_COPILOT_MODEL = "gpt-4o";
 
+// GitHub Copilot supported models
+const GITHUB_COPILOT_MODELS = [
+  "gpt-4o",
+  "gpt-4",
+  "o1-preview",
+  "o1-mini",
+  "claude-3.5-sonnet",
+  "claude-3-opus",
+  "claude-3-sonnet",
+];
+
 interface ConfigInterface {
   items: ConfigItemInterface[];
 }
@@ -107,13 +118,15 @@ export class Config implements ConfigInterface {
         return false;
       }
     } else if (name === "model") {
-      if (value === "gpt-3.5-turbo" || value === "gpt-4") {
+      if (value === "gpt-3.5-turbo" || value === "gpt-4-turbo") {
+        // OpenAI-specific models
         this.setInternal("api", "openai");
-      } else if (value === "gpt-4o" || value.startsWith("o1-") || value.startsWith("claude-")) {
+      } else if (GITHUB_COPILOT_MODELS.includes(value)) {
         // GitHub Copilot models
         this.setInternal("github-copilot.model", value);
         this.setInternal("api", "github-copilot");
       } else {
+        // Default to Ollama for other models
         this.setInternal("ollama.model", value);
         this.setInternal("api", "ollama");
       }

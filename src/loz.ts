@@ -291,21 +291,27 @@ export class Loz {
 
       try {
         if (api === "github-copilot") {
-          // Handle GitHub Copilot streaming (ReadableStream)
+          // Handle GitHub Copilot streaming (ReadableStream with SSE format)
           const reader = stream.getReader();
           const decoder = new TextDecoder();
+          let buffer = ""; // Buffer for incomplete lines
           
           // eslint-disable-next-line no-constant-condition
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
+            // Decode chunk and add to buffer
+            buffer += decoder.decode(value, { stream: true });
+            
+            // Process complete lines
+            const lines = buffer.split('\n');
+            // Keep the last incomplete line in the buffer
+            buffer = lines.pop() || "";
             
             for (const line of lines) {
               if (line.startsWith('data: ')) {
-                const data = line.slice(6);
+                const data = line.slice(6).trim();
                 if (data === '[DONE]') continue;
                 
                 try {
@@ -314,11 +320,33 @@ export class Loz {
                   curCompleteText += content;
                   process.stdout.write(content);
                 } catch (e) {
-                  // Skip invalid JSON
+                  if (DEBUG) {
+                    console.error("Failed to parse SSE data:", data);
+                  }
                 }
               }
             }
           }
+          
+          // Process any remaining data in buffer
+          if (buffer.trim()) {
+            if (buffer.startsWith('data: ')) {
+              const data = buffer.slice(6).trim();
+              if (data !== '[DONE]') {
+                try {
+                  const parsed = JSON.parse(data);
+                  const content = parsed.choices[0]?.delta?.content || "";
+                  curCompleteText += content;
+                  process.stdout.write(content);
+                } catch (e) {
+                  if (DEBUG) {
+                    console.error("Failed to parse final SSE data:", data);
+                  }
+                }
+              }
+            }
+          }
+          
           process.stdout.write("\n");
         } else {
           // OpenAI streaming

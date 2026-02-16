@@ -340,7 +340,7 @@ export class MockLLMAPI extends LLMService {
     } else if (userPrompt.includes("apache2")) {
       return '{ "commands": ["systemctl status apache2"] }';
     } else if (userPrompt.includes("Find sfsdfef")) {
-      return '{ "commands": ["grep \'sfsdfef\' *"] }';
+      return '{ "commands": ["grep \'__LOZ_TEST_NO_OUTPUT_9f8b7c__\' README.md"] }';
     } else {
       // Default: return a safe echo command without user input
       return '{ "commands": ["echo Mock LLM - command not recognized"] }';

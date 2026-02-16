@@ -21,7 +21,7 @@ export class CommandLinePrompt implements PromptInterface {
     this.rl.prompt();
   }
 
-  public async start(blinking?: boolean): Promise<void> {
+  public async start(): Promise<void> {
     // Set the prompt to display before each input
     this.rl.setPrompt("> ");
 

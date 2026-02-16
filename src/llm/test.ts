@@ -1,6 +1,6 @@
 // npx mocha -r ts-node/register src/llm/test.ts
 import { expect } from "chai";
-import { OllamaAPI, OpenAiAPI, LLMSettings } from ".";
+import { OllamaAPI, OpenAiAPI, GitHubCopilotAPI, LLMSettings } from ".";
 import "mocha";
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
@@ -76,4 +76,20 @@ describe("Test LLM API", () => {
       expect(complete.content.indexOf("2")).to.not.equal(-1);
     });
   }
+
+  it("GitHubCopilotAPI should be instantiable with a token", () => {
+    const copilot = new GitHubCopilotAPI("test-token");
+    expect(copilot).to.be.an.instanceof(GitHubCopilotAPI);
+    expect(copilot.getAuth()).to.not.be.undefined;
+  });
+
+  it("GitHubCopilotAPI auth should manage tokens", () => {
+    const copilot = new GitHubCopilotAPI("initial-token");
+    const auth = copilot.getAuth();
+    
+    expect(auth.getGitHubToken()).to.equal("initial-token");
+    
+    auth.setGitHubToken("new-token");
+    expect(auth.getGitHubToken()).to.equal("new-token");
+  });
 });

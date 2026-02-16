@@ -3,6 +3,7 @@ import { expect } from "chai";
 import "mocha";
 
 const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS === "true" ? true : false;
+const IS_WSL = process.env.WSL_DISTRO_NAME !== undefined;
 const LOZ_BIN = "dist";
 
 describe("Linux Command Test", () => {
@@ -36,7 +37,7 @@ describe("Linux Command Test", () => {
   });*/
 
   // lspci | grep -i vga
-  if (GITHUB_ACTIONS === false) {
+  if (GITHUB_ACTIONS === false && !IS_WSL) {
     it("Detect GPUs on this system", function () {
       let stdout = execSync(
         `MOCHA_ENV=test node ${LOZ_BIN} "Detect GPUs on this system"`,
@@ -52,7 +53,9 @@ describe("Linux Command Test", () => {
       ).toString();
       expect(stdout).to.include("typescript.js");
     });
+  }
 
+  if (GITHUB_ACTIONS === false && !IS_WSL) {
     it("Run  systemctl status apache2", function () {
       let stdout = execSync(
         `MOCHA_ENV=test node ${LOZ_BIN} "check if apache2 is runnig on this system"`,

@@ -48,7 +48,7 @@ if (GITHUB_ACTIONS === false) {
     it("should return true", async () => {
       let loz = new Loz();
       await loz.init();
-      await loz.setAPI("ollama", "llama2");
+      await loz.setAPI("ollama", "gpt-oss:20b");
 
       expect((loz as any).checkAPI()).to.equal("ollama");
       const completion = await loz.completeUserPrompt("1+1=");

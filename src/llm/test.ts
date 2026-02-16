@@ -41,7 +41,7 @@ describe("Test LLM API", () => {
     it("Llama2 should generate '2'", async function () {
       const ollama = new OllamaAPI();
       const settings: LLMSettings = {
-        model: "llama2",
+        model: "gpt-oss:20b",
         prompt: "1+1=",
         temperature: 0,
         max_tokens: 60,
@@ -58,10 +58,10 @@ describe("Test LLM API", () => {
   }
 
   if (GITHUB_ACTIONS === false) {
-    it("codellama should generate '2'", async function () {
+    it("gpt-oss:20b should generate '2'", async function () {
       const ollama = new OllamaAPI();
       const settings: LLMSettings = {
-        model: "codellama",
+        model: "gpt-oss:20b",
         prompt: "1+1=",
         temperature: 0,
         max_tokens: 60,

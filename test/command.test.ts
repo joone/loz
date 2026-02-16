@@ -36,12 +36,14 @@ describe("Linux Command Test", () => {
   });*/
 
   // lspci | grep -i vga
-  it("Detect GPUs on this system", function () {
-    let stdout = execSync(
-      `MOCHA_ENV=test node ${LOZ_BIN} "Detect GPUs on this system"`,
-    ).toString();
-    expect(stdout).to.include("VGA compatible controller");
-  });
+  if (GITHUB_ACTIONS === false) {
+    it("Detect GPUs on this system", function () {
+      let stdout = execSync(
+        `MOCHA_ENV=test node ${LOZ_BIN} "Detect GPUs on this system"`,
+      ).toString();
+      expect(stdout).to.include("VGA compatible controller");
+    });
+  }
 
   if (GITHUB_ACTIONS === false) {
     it("Run find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1", function () {

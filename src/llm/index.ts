@@ -117,35 +117,75 @@ export class OllamaAPI extends LLMService {
     }
     await this.api.setModel(params.model);
     
-    // Return a promise that resolves with a stream-like object
-    return new Promise((resolve, reject) => {
-      const chunks: string[] = [];
-      
-      this.api.streamingGenerate(
-        params.prompt,
-        // responseOutput callback - called for each chunk
-        (chunk: string) => {
+    // Create a queue to handle chunks as they arrive
+    const chunks: string[] = [];
+    let resolveNext: ((value: IteratorResult<{ response: string }>) => void) | null = null;
+    let isComplete = false;
+    let error: any = null;
+    
+    // Start streaming immediately
+    this.api.streamingGenerate(
+      params.prompt,
+      // responseOutput callback - called for each chunk as it arrives
+      (chunk: string) => {
+        if (resolveNext) {
+          // If someone is waiting for a chunk, give it to them immediately
+          resolveNext({ value: { response: chunk }, done: false });
+          resolveNext = null;
+        } else {
+          // Otherwise, queue it for later
           chunks.push(chunk);
-        },
-        // contextOutput callback
-        null,
-        // fullResponseOutput callback
-        null,
-        // statsOutput callback
-        null
-      ).then(() => {
-        // When streaming is complete, resolve with an async iterator
-        resolve({
-          [Symbol.asyncIterator]: async function* () {
-            for (const chunk of chunks) {
-              yield { response: chunk };
-            }
-          }
-        });
-      }).catch((error: any) => {
-        reject(error);
-      });
+        }
+      },
+      // contextOutput callback
+      null,
+      // fullResponseOutput callback
+      null,
+      // statsOutput callback
+      null
+    ).then(() => {
+      isComplete = true;
+      // If someone is waiting, notify them we're done
+      if (resolveNext) {
+        resolveNext({ value: undefined, done: true });
+        resolveNext = null;
+      }
+    }).catch((err: any) => {
+      error = err;
+      isComplete = true;
+      if (resolveNext) {
+        resolveNext({ value: undefined, done: true });
+        resolveNext = null;
+      }
     });
+    
+    // Return an async iterator that yields chunks as they arrive
+    return {
+      [Symbol.asyncIterator]: () => ({
+        next: (): Promise<IteratorResult<{ response: string }>> => {
+          // If there's an error, throw it
+          if (error) {
+            throw error;
+          }
+          
+          // If we have queued chunks, return one immediately
+          if (chunks.length > 0) {
+            const chunk = chunks.shift()!;
+            return Promise.resolve({ value: { response: chunk }, done: false });
+          }
+          
+          // If streaming is complete, we're done
+          if (isComplete) {
+            return Promise.resolve({ value: undefined, done: true });
+          }
+          
+          // Otherwise, wait for the next chunk
+          return new Promise((resolve) => {
+            resolveNext = resolve;
+          });
+        }
+      })
+    };
   }
 }
 

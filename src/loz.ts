@@ -272,7 +272,7 @@ export class Loz {
     let curCompleteText = "";
     const api = this.checkAPI();
     
-    if (api === "openai" || api === "github-copilot") {
+    if (api === "openai" || api === "github-copilot" || api === "ollama") {
       let stream: any;
       try {
         stream = await this.llmAPI.completionStream(params);
@@ -348,6 +348,15 @@ export class Loz {
           }
           
           process.stdout.write("\n");
+        } else if (api === "ollama") {
+          // Handle Ollama streaming
+          for await (const data of stream) {
+            if (data === null) return;
+            const streamData = data.response || "";
+            curCompleteText += streamData;
+            process.stdout.write(streamData);
+          }
+          process.stdout.write("\n");
         } else {
           // OpenAI streaming
           for await (const data of stream) {
@@ -395,7 +404,7 @@ export class Loz {
         }
         cli.prompt();
       });
-      cli.start(true);
+      cli.start();
     });
   }
 

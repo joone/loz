@@ -111,8 +111,41 @@ export class OllamaAPI extends LLMService {
   }
 
   public async completionStream(params: LLMSettings): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return {};
+    if (DEBUG) {
+      console.log("Ollama stream completion");
+      console.log("Model: " + params.model);
+    }
+    await this.api.setModel(params.model);
+    
+    // Return a promise that resolves with a stream-like object
+    return new Promise((resolve, reject) => {
+      const chunks: string[] = [];
+      
+      this.api.streamingGenerate(
+        params.prompt,
+        // responseOutput callback - called for each chunk
+        (chunk: string) => {
+          chunks.push(chunk);
+        },
+        // contextOutput callback
+        null,
+        // fullResponseOutput callback
+        null,
+        // statsOutput callback
+        null
+      ).then(() => {
+        // When streaming is complete, resolve with an async iterator
+        resolve({
+          [Symbol.asyncIterator]: async function* () {
+            for (const chunk of chunks) {
+              yield { response: chunk };
+            }
+          }
+        });
+      }).catch((error: any) => {
+        reject(error);
+      });
+    });
   }
 }
 

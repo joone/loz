@@ -116,8 +116,83 @@ export class OllamaAPI extends LLMService {
   }
 
   public async completionStream(params: LLMSettings): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return {};
+    if (DEBUG) {
+      console.log("Ollama stream completion");
+      console.log("Model: " + params.model);
+    }
+    await this.api.setModel(params.model);
+    
+    // Create a queue to handle chunks as they arrive
+    const chunks: string[] = [];
+    let pendingResolve: ((value: IteratorResult<{ response: string }>) => void) | null = null;
+    let isComplete = false;
+    let error: any = null;
+    
+    // Start streaming immediately
+    this.api.streamingGenerate(
+      params.prompt,
+      // responseOutput callback - called for each chunk as it arrives
+      (chunk: string) => {
+        // Queue the chunk first, then resolve if someone is waiting
+        chunks.push(chunk);
+        if (pendingResolve) {
+          // Someone is waiting - give them the chunk immediately
+          const nextChunk = chunks.shift()!;
+          pendingResolve({ value: { response: nextChunk }, done: false });
+          pendingResolve = null;
+        }
+      },
+      // contextOutput callback
+      null,
+      // fullResponseOutput callback
+      null,
+      // statsOutput callback
+      null
+    ).then(() => {
+      isComplete = true;
+      // If someone is waiting, notify them we're done
+      if (pendingResolve) {
+        pendingResolve({ value: undefined, done: true });
+        pendingResolve = null;
+      }
+    }).catch((err: any) => {
+      error = err;
+      isComplete = true;
+      // Clear the queue on error to avoid returning stale chunks
+      chunks.splice(0);
+      if (pendingResolve) {
+        pendingResolve({ value: undefined, done: true });
+        pendingResolve = null;
+      }
+    });
+    
+    // Return an async iterator that yields chunks as they arrive
+    return {
+      [Symbol.asyncIterator]: () => ({
+        next: (): Promise<IteratorResult<{ response: string }>> => {
+          // If there's an error, throw it immediately (no chunks should be returned after error)
+          if (error) {
+            throw error;
+          }
+          
+          // If we have queued chunks, return one immediately
+          if (chunks.length > 0) {
+            const chunk = chunks.shift()!;
+            return Promise.resolve({ value: { response: chunk }, done: false });
+          }
+          
+          // If streaming is complete, we're done
+          if (isComplete) {
+            return Promise.resolve({ value: undefined, done: true });
+          }
+          
+          // Otherwise, wait for the next chunk
+          return new Promise((resolve) => {
+            pendingResolve = resolve;
+          });
+        }
+      })
+    };
   }
 }
 

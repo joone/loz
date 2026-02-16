@@ -26,6 +26,15 @@ describe("Guardrails Test", () => {
       );
     });
 
+    it("should block rm -rf / bypass attempts", () => {
+      expect(() => enforceGuardrails("rm -rf/*", true)).to.throw(
+        "Command blocked by guardrails",
+      );
+      expect(() => enforceGuardrails("rm -rf /.", true)).to.throw(
+        "Command blocked by guardrails",
+      );
+    });
+
     it("should block shutdown", () => {
       expect(() => enforceGuardrails("shutdown now", true)).to.throw(
         "Command blocked by guardrails: shutdown",

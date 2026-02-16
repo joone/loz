@@ -1,6 +1,9 @@
-// List of dangerous commands that should be blocked
+// List of dangerous command patterns that should be blocked
+// Patterns are case-insensitive and stored in lowercase for efficiency
 const DENYLIST = [
   "rm -rf /",
+  "rm -rf/*",
+  "rm -rf /.",
   "shutdown",
   "reboot",
   ":(){ :|:& };:",
@@ -8,9 +11,8 @@ const DENYLIST = [
   "dd if=",
 ];
 
-export interface CommandAction {
-  cmd: string;
-}
+// Pre-computed lowercase versions for efficient checking
+const DENYLIST_LOWER = DENYLIST.map((token) => token.toLowerCase());
 
 /**
  * Enforces guardrails to prevent execution of dangerous shell commands
@@ -24,10 +26,12 @@ export function enforceGuardrails(command: string, allowShell: boolean): void {
   }
 
   const lower = command.toLowerCase();
-  const blocked = DENYLIST.find((token) =>
-    lower.includes(token.toLowerCase()),
+  const blockedIndex = DENYLIST_LOWER.findIndex((token) =>
+    lower.includes(token),
   );
-  if (blocked) {
-    throw new Error(`Command blocked by guardrails: ${blocked}`);
+  if (blockedIndex !== -1) {
+    throw new Error(
+      `Command blocked by guardrails: ${DENYLIST[blockedIndex]}`,
+    );
   }
 }

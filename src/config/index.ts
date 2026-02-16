@@ -4,6 +4,7 @@ import * as readlinePromises from "readline/promises";
 
 export const DEFAULT_OLLAMA_MODEL = "gpt-oss:20b";
 export const DEFAULT_OPENAI_MODEL = "gpt-3.5-turbo";
+export const DEFAULT_GITHUB_COPILOT_MODEL = "gpt-4o";
 
 interface ConfigInterface {
   items: ConfigItemInterface[];
@@ -55,9 +56,9 @@ const requestApiName = async (
   rl: readlinePromises.Interface,
 ): Promise<string> => {
   const res = await rl.question(
-    "Choose your LLM service: (ollama, openai) ",
+    "Choose your LLM service: (ollama, openai, github-copilot) ",
   );
-  if (!["ollama", "openai"].includes(res.toLowerCase())) {
+  if (!["ollama", "openai", "github-copilot"].includes(res.toLowerCase())) {
     console.log("Received the wrong answer. Please try again.");
     return await requestApiName(rl);
   }
@@ -96,13 +97,22 @@ export class Config implements ConfigInterface {
           "model",
           this.get("ollama.model")?.value || DEFAULT_OLLAMA_MODEL,
         );
+      else if (value === "github-copilot")
+        this.setInternal(
+          "model",
+          this.get("github-copilot.model")?.value || DEFAULT_GITHUB_COPILOT_MODEL,
+        );
       else {
         console.log("Invalid API");
         return false;
       }
     } else if (name === "model") {
-      if (value === "gpt-3.5-turbo") {
+      if (value === "gpt-3.5-turbo" || value === "gpt-4") {
         this.setInternal("api", "openai");
+      } else if (value === "gpt-4o" || value.startsWith("o1-") || value.startsWith("claude-")) {
+        // GitHub Copilot models
+        this.setInternal("github-copilot.model", value);
+        this.setInternal("api", "github-copilot");
       } else {
         this.setInternal("ollama.model", value);
         this.setInternal("api", "ollama");
@@ -157,6 +167,8 @@ export class Config implements ConfigInterface {
 
       this.set("openai.model", DEFAULT_OPENAI_MODEL);
       this.set("ollama.model", DEFAULT_OLLAMA_MODEL);
+      this.set("github-copilot.model", DEFAULT_GITHUB_COPILOT_MODEL);
+      
       if (name === "ollama") {
         this.set("model", DEFAULT_OLLAMA_MODEL);
         console.log(
@@ -166,6 +178,10 @@ export class Config implements ConfigInterface {
         this.set("model", DEFAULT_OPENAI_MODEL);
         const newApiKey = await requestApiKey(rl);
         this.set("openai.apikey", newApiKey);
+      } else if (name === "github-copilot") {
+        this.set("model", DEFAULT_GITHUB_COPILOT_MODEL);
+        console.log("\nTo use GitHub Copilot, you need to authenticate with GitHub.");
+        console.log("Follow the authentication prompts when you first use the service.\n");
       }
       this.set("mode", "default");
       this.set("api", name);

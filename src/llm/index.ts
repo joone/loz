@@ -116,8 +116,11 @@ export class OllamaAPI extends LLMService {
     await this.api.setModel(params.model);
 
     // Create a readable stream that will emit chunks from Ollama
+    // Using push mode (empty read()) since chunks are pushed from callbacks
     const stream = new Readable({
-      read() {},
+      read() {
+        // Push mode: chunks are pushed from streamingGenerate callbacks
+      },
     });
 
     // Use streamingGenerate to get streaming output

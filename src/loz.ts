@@ -271,7 +271,10 @@ export class Loz {
           } catch (parseError) {
             // Skip malformed chunks that can't be parsed
             if (DEBUG) {
-              console.error("Error parsing chunk:", parseError);
+              console.error(
+                `Error parsing chunk (length: ${chunk.length}):`,
+                parseError,
+              );
             }
           }
         }

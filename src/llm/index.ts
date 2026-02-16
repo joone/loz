@@ -16,7 +16,9 @@ export interface LLMSettings {
 }
 abstract class LLMService {
   api: any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   abstract completion(params: LLMSettings): any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   abstract completionStream(params: LLMSettings): any;
 }
 
@@ -109,6 +111,7 @@ export class OllamaAPI extends LLMService {
   }
 
   public async completionStream(params: LLMSettings): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return {};
   }
 }

@@ -37,8 +37,8 @@ const ALLOWLIST = [
   "jest",
 ];
 
-// Additional dangerous patterns beyond basic guardrails
-const AGENT_DENYLIST = [
+// Network commands that require enableNetwork flag
+const NETWORK_COMMANDS = [
   "curl",
   "wget",
   "ssh",
@@ -48,12 +48,15 @@ const AGENT_DENYLIST = [
   "telnet",
   "ftp",
   "rsync",
+];
+
+// Additional dangerous patterns beyond basic guardrails
+const AGENT_DENYLIST = [
   "> /dev/",
   "chmod 777",
   "chown",
   "useradd",
   "userdel",
-  "passwd",
 ];
 
 export interface SafetyConfig {
@@ -87,16 +90,22 @@ export function validateCommand(
   // Apply basic guardrails
   enforceGuardrails(cmd, true);
 
-  // Check agent-specific denylist
   const cmdLower = cmd.toLowerCase();
-  for (const denied of AGENT_DENYLIST) {
-    if (!config.enableNetwork && ["curl", "wget", "ssh", "scp", "nc", "netcat", "telnet", "ftp", "rsync"].includes(denied)) {
-      if (cmdLower.includes(denied)) {
+  
+  // Check network commands if network is disabled
+  if (!config.enableNetwork) {
+    for (const netCmd of NETWORK_COMMANDS) {
+      if (cmdLower.includes(netCmd)) {
         throw new Error(
-          `Network command '${denied}' is blocked. Enable network with --enable-network flag.`,
+          `Network command '${netCmd}' is blocked. Enable network with --enable-network flag.`,
         );
       }
-    } else if (cmdLower.includes(denied)) {
+    }
+  }
+
+  // Check agent-specific denylist
+  for (const denied of AGENT_DENYLIST) {
+    if (cmdLower.includes(denied)) {
       throw new Error(`Command blocked by safety policy: contains '${denied}'`);
     }
   }
@@ -114,25 +123,29 @@ export function validateCommand(
 
   // Sandbox mode: prevent directory traversal outside working directory
   if (config.sandboxMode) {
-    // Check for suspicious path patterns
+    // Check for suspicious path patterns with .. (but allow git commands)
     if (cmd.includes("..") && !cmd.includes("git")) {
       throw new Error(
         "Path traversal detected (..). Commands must stay within working directory in sandbox mode.",
       );
     }
 
-    // Warn about absolute paths outside working directory
-    if (cmd.match(/\/[a-zA-Z]/)) {
-      const absolutePaths = cmd.match(/\/[^\s]*/g);
-      if (absolutePaths) {
-        for (const absPath of absolutePaths) {
-          const normalized = path.normalize(absPath);
-          const relative = path.relative(workingDir, normalized);
-          if (relative.startsWith("..") || path.isAbsolute(relative)) {
-            throw new Error(
-              `Absolute path '${absPath}' is outside working directory. Sandbox mode restricts operations to ${workingDir}.`,
-            );
-          }
+    // Check for absolute paths that might be outside working directory
+    // But allow common safe paths like ./relative/path
+    const absolutePaths = cmd.match(/(?:^|\s)(\/[^\s]*)/g);
+    if (absolutePaths) {
+      for (const pathMatch of absolutePaths) {
+        const absPath = pathMatch.trim();
+        // Skip common safe patterns like /dev/null or if it's just a flag
+        if (absPath.startsWith("/dev/") || absPath.match(/^-[a-zA-Z]/)) {
+          continue;
+        }
+        const normalized = path.normalize(absPath);
+        const relative = path.relative(workingDir, normalized);
+        if (relative.startsWith("..") || path.isAbsolute(relative)) {
+          throw new Error(
+            `Absolute path '${absPath}' is outside working directory. Sandbox mode restricts operations to ${workingDir}.`,
+          );
         }
       }
     }

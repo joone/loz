@@ -182,6 +182,93 @@ You can check the current settings by entering:
 
 Currently, OpenAI models (gpt-3.5-turbo, gpt-4), GitHub Copilot models (gpt-4o, claude-3.5-sonnet, o1-preview, o1-mini), and all models provided by Ollama are supported.
 
+### Agent Mode (New!)
+
+Loz now supports an **autonomous agent mode** that can complete complex tasks by iteratively planning, executing commands, editing files, and verifying results.
+
+#### What is Agent Mode?
+
+Agent mode transforms Loz from a single-shot command executor into a fully autonomous coding assistant that can:
+- Analyze your codebase
+- Run diagnostic commands
+- Edit files to fix issues
+- Run tests to verify changes
+- Iterate until the task is complete
+
+#### Basic Usage
+
+```bash
+loz agent "Fix failing tests in the test suite"
+```
+
+The agent will:
+1. Analyze the task
+2. Run commands to understand the problem (e.g., `npm test`)
+3. Edit files as needed
+4. Re-run tests to verify fixes
+5. Continue until done or max steps reached
+
+#### Command-line Flags
+
+- `--max-steps <number>` - Maximum iteration steps (default: 20)
+- `--verbose` or `-v` - Show detailed execution logs
+- `--sandbox` - Restrict operations to working directory (default: true)
+- `--enable-network` - Allow network commands like curl/wget (default: false)
+
+#### Examples
+
+**Fix a failing test:**
+```bash
+loz agent "Fix the failing unit test in test/utils.test.ts"
+```
+
+**Add a new feature:**
+```bash
+loz agent --max-steps 30 "Add input validation to the login function"
+```
+
+**Debug with verbose output:**
+```bash
+loz agent -v "Find and fix the memory leak in the server"
+```
+
+**Complex task with network access:**
+```bash
+loz agent --enable-network "Upgrade dependencies and fix breaking changes"
+```
+
+#### Safety Features
+
+Agent mode includes multiple safety layers:
+- **Command Validation**: Blocks dangerous commands (rm -rf, shutdown, etc.)
+- **Sandbox Mode**: Restricts file operations to working directory
+- **Network Isolation**: Network commands disabled by default
+- **Output Limits**: Truncates large outputs to prevent memory issues
+- **Step Limits**: Prevents infinite loops with max step counter
+- **Failure Detection**: Stops if same action fails repeatedly
+
+#### How It Works
+
+The agent uses a ReAct-style loop:
+
+```
+1. LLM receives task and context
+2. LLM responds with JSON action:
+   - {"action": "run", "cmd": "npm test"}
+   - {"action": "edit", "file": "src/index.ts", "patch": "..."}
+   - {"action": "done", "summary": "Task completed"}
+3. Execute action and capture result
+4. Add result to context
+5. Repeat until done or max steps
+```
+
+#### Tips for Best Results
+
+1. **Be specific**: "Fix the TypeError in validateUser function" works better than "fix the bug"
+2. **Set appropriate limits**: Complex tasks may need `--max-steps 30` or more
+3. **Use verbose mode**: Add `-v` to understand what the agent is doing
+4. **Start simple**: Test with simpler tasks before complex refactoring
+
 ### Interactive mode
 
 ```

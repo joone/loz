@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { Ollama } from "ollama-node";
+import { Readable } from "stream";
 import { DEBUG } from "../constant";
 
 export interface LLMSettings {
@@ -115,7 +116,6 @@ export class OllamaAPI extends LLMService {
     await this.api.setModel(params.model);
 
     // Create a readable stream that will emit chunks from Ollama
-    const { Readable } = require("stream");
     const stream = new Readable({
       read() {},
     });

@@ -31,6 +31,7 @@ export class CommandLinePrompt implements PromptInterface {
     // Listen for user input
     this.rl.on("line", async (input) => {
       await this.callback(input);
+      this.rl.prompt();
     });
 
     // Handle CTRL+C to exit the program

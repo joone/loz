@@ -262,10 +262,17 @@ export class Loz {
       } else {
         // Ollama streaming format
         for await (const chunk of stream) {
-          const data = JSON.parse(chunk.toString());
-          if (data.content) {
-            curCompleteText += data.content;
-            process.stdout.write(data.content);
+          try {
+            const data = JSON.parse(chunk.toString());
+            if (data.content) {
+              curCompleteText += data.content;
+              process.stdout.write(data.content);
+            }
+          } catch (parseError) {
+            // Skip malformed chunks that can't be parsed
+            if (DEBUG) {
+              console.error("Error parsing chunk:", parseError);
+            }
           }
         }
       }
@@ -299,7 +306,6 @@ export class Loz {
           params.max_tokens = 4000;
           await this.runCompletion(params);
         }
-        cli.prompt();
       });
       cli.start();
     });

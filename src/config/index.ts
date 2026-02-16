@@ -181,10 +181,10 @@ export class Config implements ConfigInterface {
         this.set("mode", "default");
         
         // Use OpenAI if API key is available, otherwise use mock LLM for tests
-        if (process.env.OPENAI_API_KEY || process.env.LOZ_OPENAI_API_KEY) {
+        const apiKey = process.env.LOZ_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+        if (apiKey) {
           this.set("model", DEFAULT_OPENAI_MODEL);
           this.set("api", "openai");
-          const apiKey = process.env.LOZ_OPENAI_API_KEY || process.env.OPENAI_API_KEY || "";
           this.set("openai.apikey", apiKey);
         } else {
           this.set("model", DEFAULT_OLLAMA_MODEL);

@@ -342,8 +342,8 @@ export class MockLLMAPI extends LLMService {
     } else if (userPrompt.includes("Find sfsdfef")) {
       return '{ "commands": ["grep \'sfsdfef\' *"] }';
     } else {
-      // Default: echo the prompt as a command
-      return `{ "commands": ["echo '${userPrompt}'"] }`;
+      // Default: return a safe echo command without user input
+      return '{ "commands": ["echo Mock LLM - command not recognized"] }';
     }
   }
 

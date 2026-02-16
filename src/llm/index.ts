@@ -3,6 +3,11 @@ import { Ollama } from "ollama-node";
 import { DEBUG } from "../constant";
 import { GitHubCopilotAuth } from "./github-copilot-auth";
 
+// GitHub Copilot API headers
+const COPILOT_EDITOR_VERSION = "vscode/1.85.0";
+const COPILOT_PLUGIN_VERSION = "copilot/1.155.0";
+const COPILOT_USER_AGENT = "GithubCopilot/1.155.0";
+
 export interface LLMSettings {
   model: string;
   prompt: string;
@@ -158,9 +163,9 @@ export class GitHubCopilotAPI extends LLMService {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${copilotToken}`,
-            "Editor-Version": "vscode/1.85.0",
-            "Editor-Plugin-Version": "copilot/1.155.0",
-            "User-Agent": "GithubCopilot/1.155.0",
+            "Editor-Version": COPILOT_EDITOR_VERSION,
+            "Editor-Plugin-Version": COPILOT_PLUGIN_VERSION,
+            "User-Agent": COPILOT_USER_AGENT,
           },
           body: JSON.stringify(requestBody),
         },
@@ -214,9 +219,9 @@ export class GitHubCopilotAPI extends LLMService {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${copilotToken}`,
-          "Editor-Version": "vscode/1.85.0",
-          "Editor-Plugin-Version": "copilot/1.155.0",
-          "User-Agent": "GithubCopilot/1.155.0",
+          "Editor-Version": COPILOT_EDITOR_VERSION,
+          "Editor-Plugin-Version": COPILOT_PLUGIN_VERSION,
+          "User-Agent": COPILOT_USER_AGENT,
         },
         body: JSON.stringify(requestBody),
       },

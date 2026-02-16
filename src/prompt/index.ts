@@ -30,7 +30,6 @@ export class CommandLinePrompt implements PromptInterface {
 
     // Listen for user input
     this.rl.on("line", async (input) => {
-      this.rl.prompt();
       await this.callback(input);
     });
 

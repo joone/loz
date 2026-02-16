@@ -316,3 +316,53 @@ export class GitHubCopilotAPI extends LLMService {
     return this.auth;
   }
 }
+
+// Mock LLM API for testing purposes
+export class MockLLMAPI extends LLMService {
+  constructor() {
+    super();
+  }
+
+  public async completion(
+    params: LLMSettings,
+  ): Promise<{ content: string; model: string }> {
+    // Generate simple mock commands based on the prompt
+    let command = "";
+    
+    const prompt = params.prompt.toLowerCase();
+    
+    // Check more specific patterns first
+    if (prompt.includes("find") && prompt.includes("text")) {
+      // For "Find sfsdfef text in files" test case
+      const match = prompt.match(/find (\w+) text/i);
+      const searchText = match ? match[1] : "sfsdfef";
+      command = `{ "commands": ["grep '${searchText}' *"] }`;
+    } else if (prompt.includes("gpu") || prompt.includes("vga")) {
+      command = '{ "commands": ["lspci | grep -i vga"] }';
+    } else if (prompt.includes("largest file")) {
+      command = '{ "commands": ["find . -type f -exec ls -l {} + | sort -k 5 -nr | head -n 1"] }';
+    } else if (prompt.includes("apache") || prompt.includes("running")) {
+      command = '{ "commands": ["systemctl status apache2"] }';
+    } else if (prompt.includes("date") || prompt.includes("time")) {
+      command = '{ "commands": ["date"] }';
+    } else if (prompt.includes("memory") || prompt.includes("available")) {
+      command = '{ "commands": ["free -h"] }';
+    } else {
+      // Default fallback command
+      command = '{ "commands": ["echo Mock command execution"] }';
+    }
+    
+    return { content: command, model: "mock-model" };
+  }
+
+  public async completionStream(params: LLMSettings): Promise<any> {
+    // For streaming, just return a simple async iterator
+    const content = (await this.completion(params)).content;
+    
+    return {
+      [Symbol.asyncIterator]: async function* () {
+        yield { response: content };
+      },
+    };
+  }
+}

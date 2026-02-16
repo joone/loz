@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import * as readlinePromises from "readline/promises";
-import { OpenAiAPI, OllamaAPI, GitHubCopilotAPI, LLMSettings } from "./llm";
+import { OpenAiAPI, OllamaAPI, GitHubCopilotAPI, LLMSettings, MockLLMAPI } from "./llm";
 import { CommandLinePrompt } from "./prompt";
 import { ChatHistoryManager, PromptAndAnswer } from "./history";
 import { runCommand, runShellCommand, checkGitRepo } from "./utils";
@@ -82,6 +82,14 @@ export class Loz {
     await this.config.loadConfig(this.configPath);
 
     const api = this.checkAPI() || "openai";
+    const isTestMode = process.env.MOCHA_ENV === "test";
+
+    // Use MockLLMAPI in test mode
+    if (isTestMode) {
+      this.llmAPI = new MockLLMAPI();
+      this.defaultSettings.model = "mock-model";
+      return;
+    }
 
     if (api === "ollama") {
       const result = await runShellCommand("ollama --version");

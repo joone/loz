@@ -171,6 +171,21 @@ export class Config implements ConfigInterface {
   public async loadConfig(configPath: string): Promise<boolean> {
     this.configFilePath = path.join(configPath, "config.json");
     if (!fs.existsSync(this.configFilePath)) {
+      // If running in test mode (MOCHA_ENV=test), skip interactive prompts
+      const isTestMode = process.env.MOCHA_ENV === "test";
+      
+      if (isTestMode) {
+        // Set up default test configuration without prompts
+        this.set("openai.model", DEFAULT_OPENAI_MODEL);
+        this.set("ollama.model", DEFAULT_OLLAMA_MODEL);
+        this.set("github-copilot.model", DEFAULT_GITHUB_COPILOT_MODEL);
+        this.set("model", DEFAULT_OLLAMA_MODEL);
+        this.set("mode", "default");
+        this.set("api", "ollama");
+        // Don't save config in test mode
+        return false;
+      }
+      
       const rl = readlinePromises.createInterface({
         input: process.stdin,
         output: process.stdout,

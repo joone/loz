@@ -13,6 +13,16 @@
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "args": ["list files"],
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Agent Mode",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/dist/index.js",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "args": ["agent", "Can you summarize top 5 articles from hacker news", "--enable-network", "--verbose"],
+      "console": "integratedTerminal"
     }
   ]
 }
